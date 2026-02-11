@@ -1,0 +1,466 @@
+package com.example.theknife;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.fxml.FXML;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.chart.PieChart;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.VBox;
+
+/**
+         * Controller per la gestione delle recensioni di un ristorante.
+         * <p>
+         * Permette di:
+         * <ul>
+         * <li>Visualizzare le recensioni in una TableView</li>
+         * <li>Aggiungere, modificare o eliminare recensioni da parte degli utenti</li>
+         * <li>Rispondere alle recensioni da parte dei ristoratori</li>
+         * <li>Filtrare recensioni per numero di stelle</li>
+         * <li>Mostrare un grafico a torta con la distribuzione delle stelle</li>
+         * </ul>
+         * </p>
+         *
+         * @author Samuele Secchi
+         * @author Flavio Marin
+         * @author Matilde Lecchi
+         * @author Davide Caccia
+         * @version 1.0
+         * @since 2025-05-20
+         */
+        public class RecensioniController {
+            @FXML private PieChart pieChart;
+            @FXML private ComboBox<Integer> comboBox;
+            @FXML private TableView<Recensione> tableView;
+            @FXML private TableColumn<Recensione, Integer> colStelle;
+            @FXML private TableColumn<Recensione, String> colTesto;
+            @FXML private TableColumn<Recensione, String> colData;
+            @FXML private TableColumn<Recensione, String> colUtente;
+            @FXML private TableColumn<Recensione, String> colRisposta;
+            @FXML private TextArea recensioneTextArea;
+            @FXML private Slider stelleSlider;
+            @FXML private Button inviaButton;
+            @FXML private Button modificaButton;
+            @FXML private Button eliminaButton;
+            @FXML private Button rispondiButton;
+            @FXML private VBox rispostaBox;
+            @FXML private TextArea rispostaTextArea;
+            @FXML private Label totaleRecensioniLabel;
+            @FXML private Button modificaRispostaButton;
+
+            private final GestioneRecensioni gestioneRecensioni = GestioneRecensioni.getInstance();
+            private final GestionePossessoRistorante ownershipService = GestionePossessoRistorante.getInstance();
+            private String ristoranteId;
+            private ObservableList<Recensione> masterRecensioniList;
+            private FilteredList<Recensione> filteredList;
+            private RistoratoreDashboardController parentController;
+            private Parent rootToRestore;
+            private Runnable tornaAlMenuPrincipaleCallback;
+
+
+            /**
+             * Imposta il controller della dashboard del ristoratore come parent.
+             *
+             * @param controller il controller padre della dashboard
+             */
+            public void setParentController(RistoratoreDashboardController controller) {
+                this.parentController = controller;
+            }
+
+            /**
+             * Notifica il controller padre di eventuali aggiornamenti alle recensioni.
+             */
+            private void notificaAggiornamentoRecensioni() {
+                if (parentController != null) {
+                    parentController.onRecensioneUpdated();
+                }
+            }
+
+            public void setRootToRestore(Parent root) {
+                this.rootToRestore = root;
+            }
+            public void setTornaAlMenuPrincipaleCallback(Runnable callback) {
+                this.tornaAlMenuPrincipaleCallback = callback;
+            }
+
+            /**
+             * Inizializza il controller e disabilita il riordino delle colonne.
+             */
+            @FXML
+            public void initialize() {
+                setupUI();
+                setupTable();
+                setupListeners();
+
+
+                colStelle.setReorderable(false);
+                colTesto.setReorderable(false);
+                colData.setReorderable(false);
+                colUtente.setReorderable(false);
+                colRisposta.setReorderable(false);
+            }
+
+            /**
+             * Configura l'interfaccia utente in base al ruolo e allo stato dell'utente corrente.
+             * <p>
+             * - Mostra i pulsanti e i campi di input per le recensioni se l'utente è loggato
+             *   e non è un ristoratore proprietario del ristorante.
+             * - Mostra i pulsanti per rispondere/modificare risposte se l'utente è un ristoratore
+             *   proprietario del ristorante.
+             * </p>
+             */
+            private void setupUI() {
+                boolean isUtenteLoggato = SessioneUtente.isUtenteLoggato();
+                boolean isRistoratore = SessioneUtente.isRistoratore();
+
+                // Verifica se il ristoratore possiede questo ristorante
+                boolean isProprietario = false;
+                if (isRistoratore && ristoranteId != null) {
+                    String currentUser = SessioneUtente.getUsernameUtente();
+                    List<String> ownedRestaurants = ownershipService.getOwnedRestaurants(currentUser);
+                    isProprietario = ownedRestaurants.contains(ristoranteId);
+                }
+
+                boolean puo_recensire = isUtenteLoggato && (!isRistoratore || !isProprietario);
+
+                // Nasconde o mostra i bottoni in base al ruolo dell'utente
+                inviaButton.setVisible(puo_recensire);
+                modificaButton.setVisible(false);
+                eliminaButton.setVisible(false);
+                rispondiButton.setVisible(isRistoratore && isProprietario);
+                modificaRispostaButton.setVisible(false); // Inizialmente nascosto
+                rispostaBox.setVisible(isRistoratore && isProprietario);
+
+                // I campi di input per le recensioni sono visibili per chi può recensire
+                recensioneTextArea.setVisible(puo_recensire);
+                stelleSlider.setVisible(puo_recensire);
+            }
+            /**
+             * Inizializza la tabella delle recensioni configurando le colonne
+             * e preparando le liste osservabili necessarie per filtrare i dati.
+             */
+            private void setupTable() {
+                colStelle.setCellValueFactory(new PropertyValueFactory<>("stelle"));
+                colTesto.setCellValueFactory(new PropertyValueFactory<>("testo"));
+                colData.setCellValueFactory(new PropertyValueFactory<>("data"));
+                colUtente.setCellValueFactory(new PropertyValueFactory<>("username"));
+                colRisposta.setCellValueFactory(new PropertyValueFactory<>("risposta"));
+
+                masterRecensioniList = FXCollections.observableArrayList();
+                filteredList = new FilteredList<>(masterRecensioniList, p -> true);
+                tableView.setItems(filteredList);
+                tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+    }
+    /**
+     * Imposta i listener sugli elementi dell'interfaccia, in particolare
+     * sulla selezione della tabella delle recensioni.
+     * <p>
+     * Gestisce la visibilità dei pulsanti e dei campi in base:
+     * - al ruolo dell'utente (cliente o ristoratore),
+     * - al fatto che sia autore della recensione,
+     * - alla presenza o meno di una risposta già esistente.
+     * </p>
+     */
+    private void setupListeners() {
+
+        tableView.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            boolean isRistoratore = SessioneUtente.isRistoratore();
+            String currentUser = SessioneUtente.getUsernameUtente();
+
+            // Verifica se il ristoratore possiede questo ristorante
+            boolean isProprietario = false;
+            if (isRistoratore && ristoranteId != null && currentUser != null) {
+                List<String> ownedRestaurants = ownershipService.getOwnedRestaurants(currentUser);
+                isProprietario = ownedRestaurants.contains(ristoranteId);
+            }
+
+            boolean puo_recensire = SessioneUtente.isUtenteLoggato() && (!isRistoratore || !isProprietario);
+
+            if (newVal != null) {
+                boolean isAutore = newVal.getUsername().equals(currentUser);
+                boolean hasRisposta = !newVal.getRisposta().isEmpty();
+
+                // Visibilità per utenti che possono recensire
+                modificaButton.setVisible(isAutore && puo_recensire);
+                eliminaButton.setVisible(isAutore && puo_recensire);
+                inviaButton.setVisible(false);
+
+                // Visibilità per ristoratore proprietario
+                rispondiButton.setVisible(isRistoratore && isProprietario && !hasRisposta);
+                modificaRispostaButton.setVisible(isRistoratore && isProprietario && hasRisposta);
+                rispostaBox.setVisible(isRistoratore && isProprietario);
+
+                // Precompila i campi se è l'autore della recensione
+                if (isAutore && puo_recensire) {
+                    recensioneTextArea.setText(newVal.getTesto());
+                    stelleSlider.setValue(newVal.getStelle());
+                } else {
+                    recensioneTextArea.clear();
+                    stelleSlider.setValue(3);
+                }
+
+                // Precompila la risposta se il ristoratore proprietario ha già risposto
+                if (isRistoratore && isProprietario && hasRisposta) {
+                    rispostaTextArea.setText(newVal.getRisposta());
+                } else if (isRistoratore && isProprietario) {
+                    rispostaTextArea.clear();
+                }
+
+            } else {
+                pulisciCampi();
+                modificaButton.setVisible(false);
+                eliminaButton.setVisible(false);
+                rispondiButton.setVisible(false);
+                modificaRispostaButton.setVisible(false);
+                inviaButton.setVisible(puo_recensire);
+            }
+        });
+    }
+
+    /**
+     * Aggiorna la lista delle recensioni e il grafico a torta.
+     */
+    public void refreshData() {
+        if (ristoranteId != null) {
+            masterRecensioniList.setAll(gestioneRecensioni.getRecensioniRistorante(ristoranteId));
+            aggiornaPieChart();
+            pulisciCampi();
+        }
+    }
+
+    /**
+     * Imposta l'ID del ristorante corrente e aggiorna i dati.
+     *
+     * @param id ID del ristorante
+     */
+    public void setRistoranteId(String id) {
+        this.ristoranteId = id;
+        refreshData();
+        aggiornaPieChart();
+
+        // Ri-configura l'UI con il nuovo ristorante
+        setupUI();
+    }
+    /**
+     * Torna al menu principale.
+     */
+    @FXML
+    private void handleTornaAlMenuPrincipale() {
+        if (tornaAlMenuPrincipaleCallback != null) {
+            tornaAlMenuPrincipaleCallback.run();
+        } else {
+            // Fallback se il callback non è impostato
+            if (rootToRestore != null) {
+                Scene scene = pieChart.getScene();
+                scene.setRoot(rootToRestore);
+            }
+        }
+    }
+
+    /**
+     * Aggiorna il grafico a torta con il conteggio delle recensioni per ogni numero di stelle.
+     */
+    private void aggiornaPieChart() {
+        pieChart.getData().clear();
+        Map<Integer, Integer> recensioniMap = new HashMap<>();
+        int totale = 0;
+
+        // Conta le recensioni per ogni numero di stelle basandosi sulla lista filtrata
+        for (Recensione r : filteredList) {
+            recensioniMap.merge(r.getStelle(), 1, Integer::sum);
+            totale++;
+        }
+
+        // Mostra sempre tutte le 5 quantità di stelle, anche se il conteggio è zero
+        for (int stelle = 1; stelle <= 5; stelle++) {
+            pieChart.getData().add(new PieChart.Data(stelle + " ⭐", recensioniMap.getOrDefault(stelle, 0)));
+        }
+
+        if (totaleRecensioniLabel != null) {
+            totaleRecensioniLabel.setText("Totale recensioni: " + masterRecensioniList.size());
+        }
+    }
+
+    /**
+     * Gestisce l'invio di una nuova recensione.
+     */
+    @FXML
+    private void handleInvia() {
+        if (!SessioneUtente.isUtenteLoggato()) {
+            mostraErrore("Accesso richiesto", "Per scrivere una recensione devi effettuare l'accesso.");
+            return;
+        }
+        if (recensioneTextArea.getText().trim().isEmpty()) {
+            mostraErrore("Errore", "Il testo della recensione non può essere vuoto.");
+            return;
+        }
+
+        // Controllo se l'utente ha già recensito questo ristorante
+        if (masterRecensioniList.stream().anyMatch(r -> Objects.equals(r.getUsername(), SessioneUtente.getUsernameUtente()))) {
+            mostraErrore("Errore", "Hai già recensito questo ristorante. Puoi modificare o eliminare la tua recensione esistente.");
+            return;
+        }
+
+        Recensione recensione = new Recensione(
+                (int) stelleSlider.getValue(),
+                recensioneTextArea.getText().trim(),
+                ristoranteId,
+                SessioneUtente.getUsernameUtente()
+        );
+        gestioneRecensioni.aggiungiRecensione(recensione);
+        refreshData();
+        notificaAggiornamentoRecensioni();
+    }
+
+    /**
+     * Gestisce la modifica della recensione selezionata.
+     */
+    @FXML
+    private void handleModifica() {
+        Recensione selected = tableView.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            mostraErrore("Selezione richiesta", "Seleziona una recensione da modificare.");
+            return;
+        }
+        if (!Objects.equals(selected.getUsername(), SessioneUtente.getUsernameUtente())) {
+            mostraErrore("Errore", "Puoi modificare solo le tue recensioni.");
+            return;
+        }
+
+        gestioneRecensioni.modificaRecensione(
+                selected.getUsername(),
+                ristoranteId,
+                recensioneTextArea.getText(),
+                (int) stelleSlider.getValue()
+        );
+        refreshData();
+        notificaAggiornamentoRecensioni();
+    }
+
+    /**
+     * Gestisce l'eliminazione della recensione selezionata.
+     */
+    @FXML
+    private void handleElimina() {
+        Recensione selected = tableView.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            mostraErrore("Selezione richiesta", "Seleziona una recensione da eliminare.");
+            return;
+        }
+        if (!Objects.equals(selected.getUsername(), SessioneUtente.getUsernameUtente())) {
+            mostraErrore("Errore", "Puoi eliminare solo le tue recensioni.");
+            return;
+        }
+
+        gestioneRecensioni.eliminaRecensione(selected.getUsername(), ristoranteId);
+        refreshData();
+        notificaAggiornamentoRecensioni();
+    }
+
+    /**
+     * Gestisce l'invio di una risposta alla recensione selezionata.
+     */
+    @FXML
+    private void handleRispondi() {
+        Recensione selected = tableView.getSelectionModel().getSelectedItem();
+        if (selected == null || !SessioneUtente.isRistoratore()) {
+            mostraErrore("Errore", "Non puoi rispondere a questa recensione.");
+            return;
+        }
+        if (rispostaTextArea.getText().trim().isEmpty()) {
+            mostraErrore("Errore", "Il testo della risposta non può essere vuoto.");
+            return;
+        }
+
+        selected.setRisposta(rispostaTextArea.getText().trim());
+        gestioneRecensioni.salvaRispostaRecensione(selected);
+        refreshData();
+        notificaAggiornamentoRecensioni();
+    }
+
+    /**
+     * Pulisce i campi di testo e resetta la selezione della tabella.
+     */
+    private void pulisciCampi() {
+        recensioneTextArea.clear();
+        rispostaTextArea.clear();
+        stelleSlider.setValue(3);
+        tableView.getSelectionModel().clearSelection();
+    }
+
+    /**
+     * Mostra un alert di errore.
+     */
+    private void mostraErrore(String titolo, String messaggio) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(titolo);
+        alert.setHeaderText(null);
+        alert.setContentText(messaggio);
+        alert.showAndWait();
+    }
+
+    /**
+     * Gestisce la modifica della risposta a una recensione da parte del ristoratore.
+     * <p>
+     * Controlla che:
+     * <ul>
+     *   <li>ci sia una recensione selezionata,</li>
+     *   <li>l'utente sia un ristoratore,</li>
+     *   <li>il ristoratore sia proprietario del ristorante,</li>
+     *   <li>il testo della risposta non sia vuoto.</li>
+     * </ul>
+     * Se le condizioni sono soddisfatte, aggiorna la risposta e la salva tramite
+     * {@code gestioneRecensioni}, ricaricando i dati e notificando l'aggiornamento.
+     * In caso di successo mostra un messaggio di conferma.
+     */
+    @FXML
+    private void handleModificaRisposta() {
+        Recensione selected = tableView.getSelectionModel().getSelectedItem();
+        if (selected == null || !SessioneUtente.isRistoratore()) {
+            mostraErrore("Errore", "Non puoi modificare questa risposta.");
+            return;
+        }
+
+        // Verifica che il ristoratore sia proprietario del ristorante
+        String currentUser = SessioneUtente.getUsernameUtente();
+        List<String> ownedRestaurants = ownershipService.getOwnedRestaurants(currentUser);
+        if (!ownedRestaurants.contains(ristoranteId)) {
+            mostraErrore("Errore", "Puoi modificare le risposte solo nei tuoi ristoranti.");
+            return;
+        }
+
+        if (rispostaTextArea.getText().trim().isEmpty()) {
+            mostraErrore("Errore", "Il testo della risposta non può essere vuoto.");
+            return;
+        }
+
+        // Aggiorna la risposta
+        selected.setRisposta(rispostaTextArea.getText().trim());
+        gestioneRecensioni.salvaRispostaRecensione(selected);
+        refreshData();
+        notificaAggiornamentoRecensioni();
+
+        // Mostra conferma
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Successo");
+        alert.setHeaderText(null);
+        alert.setContentText("Risposta modificata con successo!");
+        alert.showAndWait();
+    }
+}

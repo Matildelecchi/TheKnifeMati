@@ -1,0 +1,237 @@
+package com.example.theknife;
+
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
+/**
+ * Servizio per la gestione delle recensioni dei ristoranti.
+ * Implementa il pattern Singleton per garantire un'unica istanza.
+ * @author Samuele Secchi, 761031, Sede CO
+ * @author Flavio Marin, 759910, Sede CO
+ * @author Matilde Lecchi, 759875, Sede CO
+ * @author Davide Caccia, 760742, Sede CO
+ * @version 1.0
+ * @since 2025-05-20
+ */
+public class GestioneRecensioni {
+    private static final String CSV_FILE = "data/recensioni.csv";
+    private static final String CSV_HEADER = "username,ristorante,stelle,testo,data,risposta";
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+    private static GestioneRecensioni instance;
+    private final Map<String, List<Recensione>> recensioniMap = new HashMap<>();
+    private final ObservableList<Recensione> allRecensioni = FXCollections.observableArrayList();
+
+    /**
+     * Costruttore privato per implementare il pattern Singleton.
+     * Carica le recensioni dal file CSV.
+     */
+    private GestioneRecensioni() {
+        caricaRecensioni();
+    }
+
+    /**
+     * Restituisce l'istanza Singleton di {@code GestioneRecensioni}.
+     *
+     * @return istanza unica della classe
+     */
+    public static GestioneRecensioni getInstance() {
+        if (instance == null) {
+            instance = new GestioneRecensioni();
+        }
+        return instance;
+    }
+
+    /**
+     * Carica tutte le recensioni dal file CSV e le memorizza in
+     * {@link #recensioniMap} e {@link #allRecensioni}.
+     */
+    private void caricaRecensioni() {
+        recensioniMap.clear();
+        allRecensioni.clear();
+
+        File csvFile = new File(CSV_FILE);
+
+        if (!csvFile.exists()) {
+            createReviewsFile(csvFile);
+            return;
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(csvFile, StandardCharsets.UTF_8))) {
+            String line = reader.readLine(); // Skip header
+            while ((line = reader.readLine()) != null) {
+                processReviewLine(line);
+            }
+        } catch (IOException e) {
+            System.err.println("Errore nel caricamento delle recensioni: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Crea il file CSV delle recensioni con header se non esiste.
+     *
+     * @param file file CSV da creare
+     */
+    private void createReviewsFile(File file) {
+        File parentDir = file.getParentFile();
+        if (parentDir != null && !parentDir.exists()) {
+            parentDir.mkdirs();
+        }
+
+        try (FileWriter writer = new FileWriter(file, StandardCharsets.UTF_8)) {
+            writer.append(CSV_HEADER + "\n");
+        } catch (IOException e) {
+            System.err.println("Errore durante la creazione del file recensioni.csv: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Processa una singola riga del CSV e la trasforma in un oggetto {@link Recensione}.
+     *
+     * @param line riga del file CSV contenente i dati di una recensione
+     */
+    private void processReviewLine(String line) {
+        String[] parts = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+        if (parts.length >= 5) {
+            try {
+                String username = parts[0].trim();
+                String ristoranteId = parts[1].trim();
+                int stelle = Integer.parseInt(parts[2].trim());
+                String testo = cleanCsvValue(parts[3]);
+                String data = parts[4].trim();
+                String risposta = parts.length > 5 ? cleanCsvValue(parts[5]) : "";
+
+                Recensione recensione = new Recensione(stelle, testo, ristoranteId, username);
+                recensione.setData(data);
+                if (!risposta.isEmpty()) {
+                    recensione.setRisposta(risposta);
+                }
+
+                recensioniMap.computeIfAbsent(ristoranteId, k -> new ArrayList<>()).add(recensione);
+                allRecensioni.add(recensione);
+            } catch (NumberFormatException e) {
+                System.err.println("Errore nel parsing della recensione: " + e.getMessage());
+            }
+        }
+    }
+
+    /**
+     * Pulisce un valore CSV rimuovendo le virgolette.
+     *
+     * @param value valore da pulire
+     * @return stringa senza virgolette
+     */
+    private String cleanCsvValue(String value) {
+        return value.replace("\"", "").trim();
+    }
+
+    /**
+     * Salva tutte le recensioni su file CSV.
+     */
+    private void salvaRecensioni() {
+        try (PrintWriter writer = new PrintWriter(new FileWriter(CSV_FILE))) {
+            writer.println(CSV_HEADER);
+
+            recensioniMap.values().stream()
+                    .flatMap(List::stream)
+                    .forEach(r -> writer.printf("%s,%s,%d,\"%s\",%s,\"%s\"%n",
+                            r.getUsername(), r.getRistoranteId(), r.getStelle(),
+                            r.getTesto(), r.getData(), r.getRisposta()));
+
+        } catch (IOException e) {
+            System.err.println("Errore nel salvataggio delle recensioni: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Aggiunge una nuova recensione e la salva su file.
+     *
+     * @param recensione recensione da aggiungere
+     */
+    public void aggiungiRecensione(Recensione recensione) {
+        recensione.setData(LocalDateTime.now().format(DATE_FORMATTER));
+        recensioniMap.computeIfAbsent(recensione.getRistoranteId(), k -> new ArrayList<>()).add(recensione);
+        allRecensioni.add(recensione);
+        salvaRecensioni();
+    }
+
+    /**
+     * Modifica una recensione esistente identificata da utente e ristorante.
+     *
+     * @param username     nome dell’utente autore della recensione
+     * @param ristoranteId identificativo del ristorante
+     * @param nuovoTesto   nuovo testo della recensione
+     * @param nuoveStelle  nuovo numero di stelle
+     */
+    public void modificaRecensione(String username, String ristoranteId, String nuovoTesto, int nuoveStelle) {
+        List<Recensione> recensioni = recensioniMap.get(ristoranteId);
+        if (recensioni != null) {
+            recensioni.stream()
+                    .filter(r -> r.getUsername().equals(username) && r.getRistoranteId().equals(ristoranteId))
+                    .findFirst()
+                    .ifPresent(r -> {
+                        r.setTesto(nuovoTesto);
+                        r.setStelle(nuoveStelle);
+                        r.setData(LocalDateTime.now().format(DATE_FORMATTER));
+                    });
+            salvaRecensioni();
+        }
+    }
+
+    /**
+     * Elimina una recensione di un utente per un determinato ristorante.
+     *
+     * @param username     nome dell’utente autore della recensione
+     * @param ristoranteId identificativo del ristorante
+     */
+    public void eliminaRecensione(String username, String ristoranteId) {
+        List<Recensione> recensioni = recensioniMap.get(ristoranteId);
+        if (recensioni != null) {
+            recensioni.removeIf(r -> r.getUsername().equals(username) && r.getRistoranteId().equals(ristoranteId));
+            allRecensioni.removeIf(r -> r.getUsername().equals(username) && r.getRistoranteId().equals(ristoranteId));
+            salvaRecensioni();
+        }
+    }
+    /**
+     * Salva una risposta a una recensione esistente.
+     *
+     * @param recensione recensione con risposta aggiornata
+     */
+    public void salvaRispostaRecensione(Recensione recensione) {
+        salvaRecensioni();
+    }
+    /**
+     * Restituisce tutte le recensioni di un ristorante.
+     *
+     * @param nomeRistorante nome del ristorante
+     * @return lista di recensioni relative al ristorante
+     */
+    public List<Recensione> getRecensioniRistorante(String nomeRistorante) {
+        caricaRecensioni(); // Ricarica per avere dati aggiornati
+        return recensioniMap.getOrDefault(nomeRistorante, new ArrayList<>());
+    }
+
+    /**
+     * Restituisce tutte le recensioni scritte da un utente.
+     *
+     * @param username nome dell’utente
+     * @return lista di recensioni scritte dall’utente
+     */
+    public List<Recensione> getRecensioniUtente(String username) {
+        caricaRecensioni();
+        return recensioniMap.values().stream()
+                .flatMap(List::stream)
+                .filter(r -> r.getUsername().equals(username))
+                .collect(Collectors.toList());
+    }
+}

@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<ScrollPane fitToHeight="true" fitToWidth="true" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.theknife.RistoranteDetailController">
+    <content>
+        <VBox spacing="0.0" styleClass="main-container" VBox.vgrow="ALWAYS">
+            <!-- Pulsante Torna al menu principale -->
+            <HBox alignment="CENTER_RIGHT" spacing="10" style="-fx-padding: 10 0 0 0;" HBox.hgrow="ALWAYS">
+                <Button onAction="#handleTornaAlMenuPrincipale" styleClass="secondary-button" text="← Torna indietro" />
+            </HBox>
+
+            <!-- Header con immagine hero -->
+            <VBox alignment="TOP_LEFT" styleClass="header-section" VBox.vgrow="NEVER">
+                <VBox alignment="TOP_LEFT" styleClass="header-overlay">
+                    <Label fx:id="nomeLabel" styleClass="restaurant-name" text="Nome Ristorante">
+                        <font>
+                            <Font name="System Bold" size="32.0" />
+                        </font>
+                    </Label>
+                    <Label fx:id="cucinaLabel" styleClass="cuisine-type" text="Cucina Italiana">
+                        <font>
+                            <Font size="16.0" />
+                        </font>
+                    </Label>
+                </VBox>
+            </VBox>
+
+            <!-- Contenuto principale con layout a due colonne -->
+            <HBox alignment="TOP_LEFT" spacing="30.0" styleClass="content-section" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
+                <VBox.margin>
+                    <Insets bottom="30.0" left="0.0" right="30.0" top="30.0" />
+                </VBox.margin>
+
+                <!-- Colonna sinistra - Informazioni principali -->
+                <VBox alignment="TOP_LEFT" spacing="25.0" styleClass="left-column" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
+
+                    <!-- Sezione Indirizzo e Posizione -->
+                    <VBox alignment="TOP_LEFT" spacing="8.0" styleClass="info-section">
+                        <Label styleClass="section-title" text="📍 Posizione">
+                            <font>
+                                <Font name="System Bold" size="16.0" />
+                            </font>
+                        </Label>
+                        <VBox alignment="TOP_LEFT" spacing="5.0">
+                            <Label fx:id="indirizzoLabel" styleClass="info-text" text="Via Roma, 123" wrapText="true" />
+                            <Label fx:id="localitaLabel" styleClass="info-text-secondary" text="Milano, Italia" />
+                            <!-- Bottone Google Maps -->
+                            <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                <Button fx:id="preferitoButton" onAction="#handlePreferitoClick" text="🤍 Aggiungi ai preferiti" />
+                                <Button fx:id="posizioneButton" onAction="#handlePosizioneClick" styleClass="maps-button" text="📍 Vedi su Maps">
+                                    <HBox.margin>
+                                        <Insets top="5.0" />
+                                    </HBox.margin>
+                                </Button>
+                            </HBox>
+                        </VBox>
+                    </VBox>
+
+                    <!-- Sezione Prezzo con indicatori visivi -->
+                    <VBox spacing="8.0" styleClass="info-section">
+                        <Label styleClass="section-title" text="💰 Fascia di Prezzo">
+                            <font>
+                                <Font name="System Bold" size="16.0" />
+                            </font>
+                        </Label>
+                        <HBox fx:id="prezzoContainer" alignment="CENTER_LEFT" spacing="10.0">
+                            <Label fx:id="prezzoLabel" styleClass="price-text" text="€€">
+                                <font>
+                                    <Font name="System Bold" size="18.0" />
+                                </font>
+                            </Label>
+                        </HBox>
+                    </VBox>
+
+                    <!-- Sezione Contatti -->
+                    <VBox spacing="8.0" styleClass="info-section">
+                        <Label styleClass="section-title" text="📞 Contatti">
+                            <font>
+                                <Font name="System Bold" size="16.0" />
+                            </font>
+                        </Label>
+                        <VBox spacing="8.0">
+                            <Label fx:id="telefonoLabel" onMouseClicked="#handleTelefonoClick" styleClass="contact-link" text="+39 02 1234567" />
+                            <Hyperlink fx:id="sitoWebLink" onAction="#handleSitoWebClick" styleClass="website-link" text="Visita il sito web nella Guida Michelin" />
+                     <Hyperlink fx:id="sitoWebLink1" onAction="#handleSitoWebClick1" styleClass="website-link" text="Visita il sito web del Ristorante" />
+                        </VBox>
+                    </VBox>
+
+                    <!-- Sezione Riconoscimenti e Awards -->
+                    <VBox spacing="15.0" styleClass="awards-section">
+                        <Label styleClass="section-title" text="🏆 Riconoscimenti">
+                            <font>
+                                <Font name="System Bold" size="16.0" />
+                            </font>
+                        </Label>
+
+                        <!-- Premio -->
+                        <HBox fx:id="premioContainer" alignment="CENTER_LEFT" spacing="10.0" styleClass="award-item">
+                            <Label styleClass="award-icon" text="🏆">
+                                <font>
+                                    <Font size="20.0" />
+                                </font>
+                            </Label>
+                            <VBox>
+                                <Label styleClass="award-title" text="Premio">
+                                    <font>
+                                        <Font name="System Bold" size="14.0" />
+                                    </font>
+                                </Label>
+                                <Label fx:id="premioLabel" styleClass="award-text" text="Stella Michelin" wrapText="true" />
+                            </VBox>
+                        </HBox>
+
+                        <!-- Stella Verde -->
+                        <VBox fx:id="stellaVerdeContainer" alignment="CENTER_LEFT" spacing="10.0" styleClass="award-item">
+                            <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                <ImageView fx:id="stellaVerdeIcon" fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" />
+                                <VBox>
+                                    <Label styleClass="award-title" text="Sostenibilità">
+                                        <font>
+                                            <Font name="System Bold" size="14.0" />
+                                        </font>
+                                    </Label>
+                                    <Label fx:id="stellaVerdeLabel" styleClass="green-star-text" text="Stella Verde" />
+                                </VBox>
+                            </HBox>
+                        </VBox>
+                    </VBox>
+                </VBox>
+
+                <!-- Colonna destra - Descrizione e servizi -->
+                <VBox spacing="25.0" styleClass="right-column" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
+
+                    <!-- Sezione Descrizione -->
+                    <VBox spacing="10.0" styleClass="description-section">
+                        <Label styleClass="section-title" text="📖 Descrizione">
+                            <font>
+                                <Font name="System Bold" size="16.0" />
+                            </font>
+                        </Label>
+                        <TextArea fx:id="descrizioneTextArea" prefRowCount="6" styleClass="description-text" text="Descrizione del ristorante..." wrapText="true" />
+                    </VBox>
+
+                    <!-- Sezione Servizi e Strutture -->
+                    <VBox spacing="10.0" styleClass="services-section">
+                        <Label styleClass="section-title" text="🍽️ Servizi e Strutture">
+                            <font>
+                                <Font name="System Bold" size="16.0" />
+                            </font>
+                        </Label>
+                        <TextArea fx:id="serviziTextArea" prefRowCount="4" styleClass="services-text" text="Servizi disponibili..." wrapText="true" />
+                    </VBox>
+
+                    <!-- Separatore visivo opzionale -->
+                    <Separator styleClass="section-separator" />
+
+                    <!-- Spazio per eventuali sezioni aggiuntive -->
+                    <VBox spacing="10.0" styleClass="additional-info">
+                        <!-- Qui puoi aggiungere altre sezioni se necessario -->
+                    </VBox>
+
+                    <!-- Sezione Recensioni -->
+                    <VBox spacing="10.0" styleClass="reviews-section">
+                        <Label styleClass="section-title" text="⭐ Recensioni">
+                            <font>
+                                <Font name="System Bold" size="16.0" />
+                            </font>
+                        </Label>
+                        <HBox spacing="10.0">
+                            <Button fx:id="mostraRecensioniButton" onAction="#handleMostraRecensioni" styleClass="primary-button" text="Vedi tutte le recensioni" />
+                        </HBox>
+                        <ListView fx:id="recensioniRecentList" prefHeight="200" />
+                    </VBox>
+                </VBox>
+            </HBox>
+        </VBox>
+    </content>
+</ScrollPane>
