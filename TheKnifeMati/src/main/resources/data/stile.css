@@ -1,148 +1,335 @@
-/* Impostazioni generali: background con palette del logo e font eleganti */
+/* ============================================================
+   DESIGN TOKENS — modifica qui, si propagano ovunque
+   ============================================================ */
+* {
+    /* Palette primaria */
+    -brand-900:        #0a2f6e;
+    -brand-700:        #0d47a1;
+    -brand-500:        #1e88e5;
+    -brand-300:        #64b5f6;
+    -brand-100:        #e3f2fd;
+
+    /* Palette neutri */
+    -neutral-900:      #0f1923;
+    -neutral-700:      #334155;
+    -neutral-500:      #64748b;
+    -neutral-300:      #cbd5e1;
+    -neutral-100:      #f1f5f9;
+    -neutral-050:      #f8fafc;
+    -white:            #ffffff;
+
+    /* Accento secondario */
+    -accent-maps:      #4285f4;
+
+    /* Tipografia */
+    -font-family:      "Calibri", "Trebuchet MS", "Segoe UI", sans-serif;
+    -font-size-base:   14px;
+
+    /* Raggi */
+    -radius-sm:        8px;
+    -radius-md:        14px;
+    -radius-lg:        20px;
+    -radius-pill:      999px;
+
+    /* Ombre */
+    -shadow-xs:        dropshadow(gaussian, rgba(15,25,35,0.08), 4,  0, 0, 1);
+    -shadow-sm:        dropshadow(gaussian, rgba(15,25,35,0.10), 8,  0, 0, 2);
+    -shadow-md:        dropshadow(gaussian, rgba(15,25,35,0.12), 16, 0, 0, 4);
+    -shadow-focus:     dropshadow(three-pass-box, rgba(30,136,229,0.28), 6, 0, 0, 0);
+}
+
+/* ============================================================
+   ROOT
+   ============================================================ */
 .root {
-    -fx-background-color: #dddede; /* Grigio chiaro principale del logo */
-    -fx-font-family: "Montserrat", "Segoe UI", "Roboto", sans-serif;
-    -fx-font-size: 1em; /* Base font size per scalabilità */
+    -fx-background-color: -neutral-100;
+    -fx-font-family: -font-family;
+    -fx-font-size: -font-size-base;
 }
 
-/* Card di login: container centrale pulito con colori e proporzioni del logo, ombra più raffinata */
+/* ============================================================
+   LOGIN CARD
+   ============================================================ */
 .login-card {
-    -fx-background-color: #ffffff;
-    -fx-padding: 2.8em 2.2em; /* Proporzioni migliorate */
-    -fx-spacing: 1.4em;
-    -fx-background-radius: 0.6em;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.12), 1.2em, 0, 0, 0.3em); /* Ombra più raffinata */
-    -fx-max-width: 21em;
-    -fx-border-color: #90caf9; /* Colore del logo */
-    -fx-border-width: 0.06em;
+    -fx-background-color: -white;
+    -fx-padding: 2.6em 2.4em;
+    -fx-spacing: 1.2em;
+    -fx-background-radius: -radius-lg;
+    -fx-border-color: -neutral-300;
+    -fx-border-width: 1px;
+    -fx-border-radius: -radius-lg;
+    -fx-effect: -shadow-md;
+    -fx-max-width: 22em;
 }
 
-/* Titolo del login */
 .login-title {
-    -fx-font-size: 2em;
+    -fx-font-size: 1.75em;
     -fx-font-weight: 700;
-    -fx-text-fill: #0d47a1;
+    -fx-text-fill: -brand-900;
     -fx-alignment: center;
-    -fx-padding: 0 0 0.6em 0;
+    -fx-text-alignment: center;
+    -fx-padding: 0 0 0.5em 0;
+    -fx-wrap-text: true;
+    -fx-max-width: 20em;
 }
 
-/* Stile per i campi di input */
-.login-textfield {
-    -fx-pref-height: 3em;
-    -fx-font-size: 0.94em;
-    -fx-text-fill: #102027;
-    -fx-background-color: #ffffff;
-    -fx-border-color: #90caf9;
-    -fx-border-width: 0.06em;
-    -fx-border-radius: 0.38em;
-    -fx-background-radius: 0.38em;
-    -fx-padding: 0 0.94em;
+.login-subtitle {
+    -fx-font-size: 0.8em;
+    -fx-text-fill: -neutral-500;
 }
 
-/* Bottone principale (Accedi)*/
+/* ============================================================
+   CAMPI DI TESTO
+   ============================================================ */
+.login-textfield,
+.text-field,
+.search-field {
+    -fx-pref-height: 2.8em;
+    -fx-font-size: 0.93em;
+    -fx-text-fill: -neutral-900;
+    -fx-background-color: -white;
+    -fx-border-color: -neutral-300;
+    -fx-border-width: 1px;
+    -fx-border-radius: -radius-sm;
+    -fx-background-radius: -radius-sm;
+    -fx-padding: 0 0.875em;
+}
+
+.login-textfield:focused,
+.text-field:focused,
+.search-field:focused {
+    -fx-border-color: -brand-500;
+    -fx-border-width: 1.5px;
+    -fx-effect: -shadow-focus;
+}
+
+/* ============================================================
+   ETICHETTE FORM
+   ============================================================ */
+.field-label {
+    -fx-font-size: 0.78em;
+    -fx-font-weight: 700;
+    -fx-text-fill: -neutral-700;
+}
+
+.separator-text {
+    -fx-font-size: 0.72em;
+    -fx-text-fill: -neutral-500;
+}
+
+.description-text,
+.help-text {
+    -fx-font-size: 0.78em;
+    -fx-text-fill: -neutral-500;
+    -fx-wrap-text: true;
+}
+
+.disclaimer-text {
+    -fx-font-size: 0.68em;
+    -fx-text-fill: -neutral-300;
+    -fx-wrap-text: true;
+}
+
+/* ============================================================
+   PULSANTI
+   ============================================================ */
+
+/* Primario */
 .primary-button {
-    -fx-background-color: #1e88e5;
-    -fx-text-fill: #102027;
-    -fx-font-size: 1em;
-    -fx-font-weight: bold;
-    -fx-background-radius: 0.38em;
-    -fx-padding: 0.75em 1.5em;
+    -fx-background-color: -brand-700;
+    -fx-text-fill: -white;
+    -fx-font-size: 0.93em;
+    -fx-font-weight: 700;
+    -fx-background-radius: -radius-sm;
+    -fx-border-radius: -radius-sm;
+    -fx-padding: 0.65em 1.5em;
     -fx-cursor: hand;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 0.31em, 0, 0, 0.13em);
+    -fx-effect: -shadow-xs;
 }
 .primary-button:hover {
-    -fx-background-color: #1565c0;
-    -fx-text-fill: #ffffff;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 0.38em, 0, 0, 0.19em);
+    -fx-background-color: -brand-900;
+    -fx-effect: -shadow-sm;
+}
+.primary-button:pressed {
+    -fx-background-color: -brand-900;
+    -fx-effect: none;
+    -fx-translate-y: 1px;
 }
 
-/* Bottone secondario (Registrati) */
+/* Secondario (outline) */
 .secondary-button {
     -fx-background-color: transparent;
-    -fx-text-fill: #42a5f5;
-    -fx-font-size: 0.94em;
-    -fx-font-weight: bold;
-    -fx-border-color: #42a5f5;
-    -fx-border-width: 0.09em;
-    -fx-border-radius: 0.38em;
-    -fx-background-radius: 0.38em;
-    -fx-padding: 0.69em 1.38em;
+    -fx-text-fill: -brand-700;
+    -fx-font-size: 0.9em;
+    -fx-font-weight: 700;
+    -fx-border-color: -brand-700;
+    -fx-border-width: 1.5px;
+    -fx-border-radius: -radius-sm;
+    -fx-background-radius: -radius-sm;
+    -fx-padding: 0.6em 1.4em;
     -fx-cursor: hand;
 }
 .secondary-button:hover {
-    -fx-background-color: #42a5f5;
-    -fx-text-fill: #ffffff;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 0.25em, 0, 0, 0.13em);
+    -fx-background-color: -brand-100;
+    -fx-text-fill: -brand-900;
+    -fx-border-color: -brand-900;
+}
+.secondary-button:pressed {
+    -fx-background-color: -brand-300;
 }
 
-/* Bottone ospite */
+/* Ospite / ghost */
 .guest-button {
     -fx-background-color: transparent;
-    -fx-text-fill: #607d8b;
-    -fx-font-size: 0.88em;
-    -fx-font-weight: bold;
-    -fx-border-color: #607d8b;
-    -fx-border-width: 0.09em;
-    -fx-border-radius: 0.38em;
-    -fx-background-radius: 0.38em;
-    -fx-padding: 0.63em 1.25em;
+    -fx-text-fill: -neutral-500;
+    -fx-font-size: 0.85em;
+    -fx-font-weight: 600;
+    -fx-border-color: -neutral-300;
+    -fx-border-width: 1px;
+    -fx-border-radius: -radius-sm;
+    -fx-background-radius: -radius-sm;
+    -fx-padding: 0.55em 1.2em;
     -fx-cursor: hand;
 }
 .guest-button:hover {
-    -fx-background-color: #455a64;
-    -fx-text-fill: #ffffff;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 0.25em, 0, 0, 0.13em);
+    -fx-background-color: -neutral-100;
+    -fx-text-fill: -neutral-700;
+    -fx-border-color: -neutral-500;
 }
 
-/* Effetto focus per i TextField e PasswordField  */
-.login-textfield:focused {
-    -fx-border-color: #1e88e5; /* Verde vivace per focus */
-    -fx-border-width: 0.09em;
-    -fx-effect: dropshadow(three-pass-box, rgba(30, 136, 229, 0.25), 0.25em, 0, 0, 0);
+/* Google Maps */
+.maps-button {
+    -fx-background-color: -accent-maps;
+    -fx-text-fill: -white;
+    -fx-font-size: 0.78em;
+    -fx-font-weight: 700;
+    -fx-padding: 0.5em 1.1em;
+    -fx-background-radius: -radius-pill;
+    -fx-border-radius: -radius-pill;
+    -fx-cursor: hand;
+    -fx-effect: -shadow-xs;
+}
+.maps-button:hover {
+    -fx-background-color: #2f6fde;
+    -fx-effect: -shadow-sm;
+    -fx-scale-x: 1.04;
+    -fx-scale-y: 1.04;
+}
+.maps-button:pressed {
+    -fx-background-color: #2457b8;
+    -fx-effect: none;
+    -fx-scale-x: 0.98;
+    -fx-scale-y: 0.98;
+}
+.maps-button:disabled {
+    -fx-background-color: -neutral-300;
+    -fx-text-fill: -neutral-500;
+    -fx-opacity: 0.6;
+    -fx-cursor: default;
 }
 
-/* Stile tabella migliorato per un look moderno con colori del logo */
+/* ============================================================
+   INTESTAZIONI E LABEL
+   ============================================================ */
+.header-label, #customlabel {
+    -fx-background-color: rgba(100, 181, 246, 0.18);
+    -fx-border-color: -neutral-300;
+    -fx-border-width: 1px;
+    -fx-border-style: solid;
+    -fx-font-size: 1em;
+    -fx-font-weight: 700;
+    -fx-text-fill: -neutral-900;
+    -fx-padding: 0.5em 0.75em;
+    -fx-background-radius: -radius-sm;
+    -fx-border-radius: -radius-sm;
+}
+
+.title-label {
+    -fx-font-size: 1.5em;
+    -fx-font-weight: 700;
+    -fx-text-fill: -brand-900;
+    -fx-padding: 0 0 16px 0;
+}
+
+.section-title {
+    -fx-font-size: 1.05em;
+    -fx-font-weight: 700;
+    -fx-text-fill: -brand-700;
+    -fx-padding: 0 0 8px 0;
+}
+
+/* ============================================================
+   SEPARATORE
+   ============================================================ */
+.separator .line {
+    -fx-background-color: -neutral-300;
+}
+
+/* ============================================================
+   MENU E FILTRI
+   ============================================================ */
+.filter-menu, .menu-button {
+    -fx-background-color: -brand-500;
+    -fx-border-radius: -radius-sm;
+    -fx-background-radius: -radius-sm;
+    -fx-font-size: 0.93em;
+    -fx-font-weight: 700;
+    -fx-text-fill: -white;
+}
+.filter-menu .arrow, .menu-button .arrow {
+    -fx-background-color: -white;
+}
+
+/* ============================================================
+   TABLE VIEW
+   ============================================================ */
 .table-view {
-    -fx-background-color: #ffffff;
-    -fx-background-radius: 0.5em;
+    -fx-background-color: -white;
+    -fx-background-radius: -radius-md;
+    -fx-border-color: -neutral-300;
+    -fx-border-width: 1px;
+    -fx-border-radius: -radius-md;
+    -fx-effect: -shadow-sm;
     -fx-padding: 0;
-    -fx-border-color: #90caf9;
-    -fx-border-radius: 0.5em;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.12), 0.63em, 0, 0, 0.19em);
 }
 
 .table-view .column-header,
 .table-view .column-header-background .filler {
-    -fx-background-color: #0d47a1;
-    -fx-background-radius: 0.5em 0.5em 0 0;
-    -fx-padding: 0.31em;
+    -fx-background-color: -brand-900;
+    -fx-background-radius: 0;
+    -fx-padding: 0;
 }
 
 .table-view .column-header .label {
-    -fx-text-fill: #ffffff;
-    -fx-font-weight: 600;
-    -fx-font-size: 0.88em;
+    -fx-text-fill: -white;
+    -fx-font-weight: 700;
+    -fx-font-size: 0.82em;
     -fx-alignment: CENTER_LEFT;
-    -fx-padding: 0.63em 0.31em;
+    -fx-padding: 0.6em 0.75em;
+    -fx-letter-spacing: 0.02em;
 }
 
 .table-view .cell {
-    -fx-cell-size: 2.5em;
-    -fx-alignment: center-left;
-    -fx-background-color: #ffffff;
-    -fx-border-color: #dddede;
-    -fx-text-fill: #102027;
-    -fx-font-size: 0.81em;
+    -fx-cell-size: 2.4em;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent transparent -neutral-100 transparent;
+    -fx-border-width: 0 0 1px 0;
+    -fx-text-fill: -neutral-700;
+    -fx-font-size: 0.85em;
     -fx-alignment: CENTER_LEFT;
-    -fx-padding: 0.31em 0.63em;
+    -fx-padding: 0.3em 0.75em;
+}
+
+.table-row-cell {
+    -fx-background-color: -white;
 }
 
 .table-row-cell:odd {
-    -fx-background-color: #dddede;
+    -fx-background-color: -neutral-050;
 }
 
 .table-row-cell:hover {
-    -fx-background-color: #e3f2fd;
+    -fx-background-color: -brand-100;
 }
 
 .table-row-cell:selected {
@@ -150,10 +337,9 @@
 }
 
 .table-row-cell:selected .table-cell {
-    -fx-text-fill: #1976d2;
+    -fx-text-fill: -brand-900;
 }
 
-/* Rimuove il bordo di focus dalla TableView */
 .table-view:focused {
     -fx-background-color: -fx-box-border, -fx-control-inner-background;
     -fx-background-insets: 0, 1;
@@ -169,31 +355,61 @@
 .table-view .increment-button,
 .table-view .decrement-button {
     -fx-background-color: transparent;
-    -fx-background-radius: 2em;
-    -fx-padding: 0.31em;
+    -fx-padding: 4px;
 }
 
-.table-view .scroll-bar:horizontal .track,
-.table-view .scroll-bar:vertical .track {
+.table-view .scroll-bar .track {
     -fx-background-color: transparent;
     -fx-border-color: transparent;
-    -fx-background-radius: 0;
 }
 
-.table-view .scroll-bar:horizontal .thumb,
-.table-view .scroll-bar:vertical .thumb {
-    -fx-background-color: #90caf9;
-    -fx-background-radius: 0.63em;
+.table-view .scroll-bar .thumb {
+    -fx-background-color: -neutral-300;
+    -fx-background-radius: -radius-pill;
 }
 
-.table-view .scroll-bar:horizontal .thumb:hover,
-.table-view .scroll-bar:vertical .thumb:hover {
-    -fx-background-color: #607d8b;
+.table-view .scroll-bar .thumb:hover {
+    -fx-background-color: -neutral-500;
 }
 
-/* Stile grafico moderno con colori del logo */
+/* ============================================================
+   LIST VIEW
+   ============================================================ */
+.list-view,
+.result-list {
+    -fx-background-color: -white;
+    -fx-border-color: -neutral-300;
+    -fx-border-width: 1px;
+    -fx-border-radius: -radius-md;
+    -fx-background-radius: -radius-md;
+    -fx-effect: -shadow-sm;
+}
+
+.list-view .list-cell {
+    -fx-background-color: -white;
+    -fx-padding: 10px 12px;
+    -fx-cursor: hand;
+    -fx-border-color: transparent transparent -neutral-100 transparent;
+    -fx-border-width: 0 0 1px 0;
+    -fx-text-fill: -neutral-700;
+    -fx-font-size: 0.9em;
+}
+
+.list-view .list-cell:hover,
+.list-cell:filled:hover {
+    -fx-background-color: -brand-100;
+}
+
+.list-view .list-cell:selected {
+    -fx-background-color: #bbdefb;
+    -fx-text-fill: -brand-900;
+}
+
+/* ============================================================
+   GRAFICI
+   ============================================================ */
 .chart {
-    -fx-padding: 0.94em;
+    -fx-padding: 12px;
     -fx-background-color: transparent;
     -fx-legend-visible: false;
 }
@@ -207,495 +423,174 @@
     -fx-border-width: 0;
 }
 
-/* Stili per i campi di testo (unificati) con colori del logo */
-.text-field, .search-field {
-    -fx-background-color: #ffffff;
-    -fx-border-color: #90caf9;
-    -fx-border-width: 0.06em;
-    -fx-border-radius: 0.94em;
-    -fx-background-radius: 0.94em;
-    -fx-padding: 0.31em 0.63em;
-    -fx-text-fill: #102027;
+.chart-pie-label {
+    -fx-fill: -neutral-500;
+    -fx-font-size: 0.8em;
 }
 
-.text-field:focused, .search-field:focused {
-    -fx-border-color: #1e88e5;
-    -fx-border-width: 0.13em;
-}
-
-/* Stile per l'intestazione e le etichette principali con colori del logo */
-.header-label, #customlabel {
-    -fx-background-color: rgba(144, 202, 249, 0.45);
-    -fx-border-color: #607d8b;
-    -fx-border-width: 0.19em;
-    -fx-border-style: solid;
-    -fx-font-family: "Microsoft Tai Le Bold";
-    -fx-font-size: 1.13em;
-    -fx-font-weight: bold;
-    -fx-text-fill: #102027;
-}
-
-/* Stile per il pulsante di menu e filtri con colori del logo */
-.filter-menu, .menu-button {
-    -fx-background-color: rgba(66, 165, 245, 0.85);
-    -fx-border-radius: 0.63em;
-    -fx-background-radius: 0.63em;
-    -fx-font-family: "Microsoft Tai Le Bold";
-    -fx-font-size: 1.13em;
-    -fx-font-weight: bold;
-    -fx-text-fill: #ffffff;
-}
-
-.filter-menu .arrow, .menu-button .arrow {
-    -fx-background-color: #ffffff;
-}
-
-/* Stile per la lista dei risultati con colori del logo */
-.result-list, .list-view {
-    -fx-background-color: #ffffff;
-    -fx-background-radius: 0.31em;
-    -fx-border-color: #90caf9;
-    -fx-border-radius: 0.31em;
-}
-
-/* Colori per grafici utilizzando la palette del logo */
-.default-color0.chart-pie { -fx-pie-color: #1e88e5; }
+/* Palette grafici — tonalità blu corporate */
+.default-color0.chart-pie { -fx-pie-color: #0a2f6e; }
 .default-color1.chart-pie { -fx-pie-color: #0d47a1; }
-.default-color2.chart-pie { -fx-pie-color: #42a5f5; }
-.default-color3.chart-pie { -fx-pie-color: #90caf9; }
-.default-color4.chart-pie { -fx-pie-color: #607d8b; }
-.default-color5.chart-pie { -fx-pie-color: #1565c0; }
-.default-color6.chart-pie { -fx-pie-color: #455a64; }
-.default-color7.chart-pie { -fx-pie-color: #948c94; }
+.default-color2.chart-pie { -fx-pie-color: #1e88e5; }
+.default-color3.chart-pie { -fx-pie-color: #64b5f6; }
+.default-color4.chart-pie { -fx-pie-color: #334155; }
+.default-color5.chart-pie { -fx-pie-color: #64748b; }
+.default-color6.chart-pie { -fx-pie-color: #94a3b8; }
+.default-color7.chart-pie { -fx-pie-color: #cbd5e1; }
 
-/* Regole aggiuntive per la pagina Recensioni con palette del logo */
-
-/* Contenitore principale */
-#appRoot {
-    -fx-background-color: #dddede;
-    -fx-padding: 1.25em;
+/* ============================================================
+   DASHBOARD — sezioni statistiche
+   ============================================================ */
+.details-section,
+.stats-section,
+.reviews-section {
+    -fx-background-color: -neutral-050;
+    -fx-padding: 14px;
+    -fx-background-radius: -radius-md;
+    -fx-border-color: -neutral-300;
+    -fx-border-width: 1px;
+    -fx-border-radius: -radius-md;
 }
 
-/* HBox principale */
+.stat-box {
+    -fx-background-color: -white;
+    -fx-padding: 12px 16px;
+    -fx-min-width: 110px;
+    -fx-background-radius: -radius-md;
+    -fx-border-color: -neutral-300;
+    -fx-border-width: 1px;
+    -fx-border-radius: -radius-md;
+    -fx-effect: -shadow-xs;
+}
+
+.stat-title {
+    -fx-font-size: 0.78em;
+    -fx-font-weight: 600;
+    -fx-text-fill: -neutral-500;
+    -fx-letter-spacing: 0.04em;
+}
+
+.stats-value {
+    -fx-font-size: 1.8em;
+    -fx-font-weight: 700;
+    -fx-text-fill: -brand-900;
+}
+
+/* ============================================================
+   RECENSIONI
+   ============================================================ */
+#appRoot {
+    -fx-background-color: -neutral-100;
+    -fx-padding: 16px;
+}
+
 #mainHBox {
     -fx-alignment: center;
-    -fx-spacing: 0.94em;
+    -fx-spacing: 12px;
 }
 
-/* TableView specifica per le recensioni */
 #reviewTable {
     -fx-background-color: transparent;
     -fx-border-color: transparent;
     -fx-table-cell-border-color: transparent;
 }
 
-/* Colonne della TableView */
-#reviewColumnStelle,
-#reviewColumnRecensione {
-    -fx-font-size: 0.88em;
-    -fx-padding: 0.5em;
-    -fx-alignment: CENTER_LEFT;
-    -fx-text-fill: #102027;
-}
-
-/* VBox laterale a destra */
 #sideVBox {
-    -fx-background-color: #ffffff;
-    -fx-background-radius: 0.63em;
-    -fx-padding: 0.94em;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.12), 0.63em, 0, 0, 0.31em);
-    -fx-border-color: #90caf9;
-    -fx-border-width: 0.06em;
-    -fx-border-radius: 0.63em;
+    -fx-background-color: -white;
+    -fx-background-radius: -radius-md;
+    -fx-padding: 14px;
+    -fx-effect: -shadow-sm;
+    -fx-border-color: -neutral-300;
+    -fx-border-width: 1px;
+    -fx-border-radius: -radius-md;
 }
 
-/* ComboBox delle recensioni */
 #reviewComboBox {
-    -fx-font-size: 0.88em;
-    -fx-background-radius: 0.31em;
-    -fx-border-radius: 0.31em;
-    -fx-border-color: #90caf9;
-    -fx-border-width: 0.06em;
-    -fx-padding: 0.31em 0.5em;
-    -fx-background-color: #ffffff;
-    -fx-text-fill: #102027;
+    -fx-font-size: 0.87em;
+    -fx-background-radius: -radius-sm;
+    -fx-border-radius: -radius-sm;
+    -fx-border-color: -neutral-300;
+    -fx-border-width: 1px;
+    -fx-padding: 0.3em 0.6em;
+    -fx-background-color: -white;
+    -fx-text-fill: -neutral-900;
 }
 
 #reviewComboBox:focused {
-    -fx-border-color: #1e88e5;
-    -fx-border-width: 0.13em;
+    -fx-border-color: -brand-500;
+    -fx-border-width: 1.5px;
 }
 
-/* PieChart delle recensioni */
 #reviewPieChart {
     -fx-background-color: transparent;
-    -fx-padding: 0.63em;
-}
-
-/* Stile per il bottone Google Maps */
-.maps-button {
-    -fx-background-color: #4285f4;
-    -fx-text-fill: white;
-    -fx-font-size: 0.75em;
-    -fx-font-weight: bold;
-    -fx-padding: 0.5em 1em;
-    -fx-background-radius: 1.25em;
-    -fx-border-radius: 1.25em;
-    -fx-cursor: hand;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 0.125em, 0, 0, 0.0625em);
-}
-
-.maps-button:hover {
-    -fx-background-color: #3367d6; /* Blu più scuro al hover */
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 0.1875em, 0, 0, 0.125em);
-    -fx-scale-y: 1.05;
-    -fx-scale-x: 1.05;
-}
-
-.maps-button:pressed {
-    -fx-background-color: #2851a3; /* Blu ancora più scuro quando premuto */
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 0.0625em, 0, 0, 0);
-    -fx-scale-y: 0.98;
-    -fx-scale-x: 0.98;
-}
-
-.maps-button:disabled {
-    -fx-background-color: #cccccc;
-    -fx-text-fill: #666666;
-    -fx-opacity: 0.6;
-    -fx-cursor: default;
-}
-
-/* Stili aggiuntivi per la sezione contatti */
-.contact-section {
-    -fx-background-color: #f8f9fa;
-    -fx-padding: 0.94em;
-    -fx-background-radius: 0.63em;
-    -fx-border-radius: 0.63em;
-}
-
-.section-title {
-    -fx-font-size: 0.88em;
-    -fx-font-weight: bold;
-    -fx-text-fill: #0d47a1;
-}
-
-.info-icon {
-    -fx-font-size: 1em;
-    -fx-min-width: 1.56em;
-    -fx-text-fill: #0d47a1; /* Icone con colore del logo */
-}
-
-.info-text {
-    -fx-font-size: 0.88em;
-    -fx-text-fill: #102027;
-}
-
-.info-subtext {
-    -fx-font-size: 0.75em;
-    -fx-text-fill: #607d8b;
-}
-
-.clickable-info {
-    -fx-text-fill: #42a5f5;
-    -fx-cursor: hand;
-}
-
-.clickable-info:hover {
-    -fx-text-fill: #0d47a1;
-    -fx-underline: true;
-}
-
-/* Nuove classi per il login form */
-.login-subtitle {
-    -fx-font-size: 0.75em;
-    -fx-text-fill: #607d8b;
-}
-
-.field-label {
-    -fx-font-weight: bold;
-    -fx-font-size: 0.75em;
-    -fx-text-fill: #102027;
-}
-
-.separator-text {
-    -fx-font-size: 0.69em;
-    -fx-text-fill: #607d8b;
-}
-
-.description-text {
-    -fx-font-size: 0.75em;
-    -fx-text-fill: #607d8b;
-}
-
-.help-text {
-    -fx-font-size: 0.69em;
-    -fx-text-fill: #607d8b;
-    -fx-wrap-text: true;
-}
-
-.disclaimer-text {
-    -fx-font-size: 0.56em;
-    -fx-text-fill: #90caf9;
-    -fx-wrap-text: true;
-}
-
-/* Separator con colore del logo */
-.separator .line {
-    -fx-background-color: #90caf9;
-}
-
-/* Media queries simulate per diverse dimensioni di schermo (responsività mantenuta) */
-/* Per schermi piccoli (smartphone) */
-@media (max-width: 30em) {
-    .root {
-        -fx-font-size: 0.85em;
-    }
-
-    .login-card {
-        -fx-max-width: 18em;
-        -fx-padding: 2em 1.5em;
-        -fx-spacing: 1em;
-    }
-
-    .login-title {
-        -fx-font-size: 1.6em;
-    }
-
-    .login-textfield {
-        -fx-pref-height: 2.5em;
-        -fx-font-size: 0.85em;
-    }
-
-    .primary-button, .secondary-button, .guest-button {
-        -fx-padding: 0.6em 1.2em;
-        -fx-font-size: 0.9em;
-    }
-}
-
-/* Per schermi medi (tablet) */
-@media (min-width: 30.01em) and (max-width: 64em) {
-    .root {
-        -fx-font-size: 0.95em;
-    }
-
-    .login-card {
-        -fx-max-width: 20em;
-        -fx-padding: 2.5em 2em;
-    }
-
-    .login-title {
-        -fx-font-size: 1.8em;
-    }
-}
-
-/* Per schermi grandi (desktop) */
-@media (min-width: 64.01em) {
-    .root {
-        -fx-font-size: 1.1em;
-    }
-
-    .login-card {
-        -fx-max-width: 24em;
-        -fx-padding: 3.2em 2.5em;
-    }
-
-    .login-title {
-        -fx-font-size: 2.2em;
-    }
-}
-
-/* Review styles */
-.reviews-section {
-    -fx-padding: 10px;
-    -fx-spacing: 10px;
-    -fx-background-color: #ffffff;
-    -fx-border-radius: 5px;
-    -fx-background-radius: 5px;
+    -fx-padding: 8px;
 }
 
 .recensione-cell {
-    -fx-padding: 10px;
-    -fx-background-color: #f5f5f5;
-    -fx-border-radius: 5px;
-    -fx-background-radius: 5px;
+    -fx-padding: 12px;
+    -fx-background-color: -neutral-050;
+    -fx-border-radius: -radius-sm;
+    -fx-background-radius: -radius-sm;
 }
 
 .recensione-cell .data-label {
-    -fx-text-fill: #90caf9;
-    -fx-font-size: 12px;
+    -fx-text-fill: -brand-300;
+    -fx-font-size: 0.78em;
 }
 
 .recensione-cell .utente-label {
-    -fx-text-fill: #42a5f5;
-    -fx-font-weight: bold;
+    -fx-text-fill: -brand-500;
+    -fx-font-weight: 700;
 }
 
 .recensione-cell .risposta-box {
     -fx-padding: 10px;
-    -fx-background-color: #ffffff;
-    -fx-border-color: #1e88e5;
+    -fx-background-color: -white;
+    -fx-border-color: -brand-500;
     -fx-border-width: 0 0 0 2px;
-    -fx-border-radius: 2px;
-    -fx-background-radius: 2px;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
 }
 
 .recensione-cell .risposta-header {
-    -fx-text-fill: #0d47a1;
-    -fx-font-weight: bold;
-}
-
-.primary-button {
-    -fx-background-color: #1e88e5;
-    -fx-text-fill: white;
-    -fx-font-weight: bold;
-    -fx-background-radius: 5px;
-}
-
-.primary-button:hover {
-    -fx-background-color: #42a5f5;
-}
-
-/* Ristoratore Dashboard Styles */
-.title-label {
-    -fx-font-size: 24px;
-    -fx-font-weight: bold;
-    -fx-padding: 0 0 20 0;
-}
-
-.section-title {
-    -fx-font-size: 18px;
-    -fx-font-weight: bold;
-    -fx-padding: 0 0 10 0;
-}
-
-.details-section {
-    -fx-background-color: #f8f9fa;
-    -fx-padding: 15;
-    -fx-background-radius: 5;
-}
-
-.stats-section {
-    -fx-background-color: #f8f9fa;
-    -fx-padding: 15;
-    -fx-background-radius: 5;
-}
-
-.stat-box {
-    -fx-background-color: white;
-    -fx-padding: 10;
-    -fx-min-width: 120;
-    -fx-background-radius: 5;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 3, 0, 0, 1);
-}
-
-.stat-title {
-    -fx-font-size: 14px;
-    -fx-text-fill: #607d8b;
-}
-
-.stats-value {
-    -fx-font-size: 24px;
-    -fx-font-weight: bold;
-}
-
-.reviews-section {
-    -fx-background-color: #f8f9fa;
-    -fx-padding: 15;
-    -fx-background-radius: 5;
-}
-
-/* Override default ListView styles for better dashboard look */
-.list-view {
-    -fx-background-color: transparent;
-    -fx-border-color: #ddd;
-    -fx-border-radius: 5;
-    -fx-background-radius: 5;
-}
-
-.list-cell:filled:hover {
-    -fx-background-color: #e3f2fd;
-}
-
-/* PieChart customization */
-.chart-pie {
-    -fx-border-color: derive(-fx-pie-color, 1%);
-}
-
-.chart-pie-label {
-    -fx-fill: #666;
-}
-
-/* TableView styles */
-.table-view {
-    -fx-background-color: white;
-    -fx-table-cell-border-color: transparent;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 10, 0, 0, 3);
-}
-
-.table-view .column-header {
-    -fx-background-color: #42a5f5;
-    -fx-text-fill: white;
-    -fx-font-weight: bold;
-    -fx-padding: 10px;
-}
-
-.table-view .table-row-cell {
-    -fx-background-color: white;
-    -fx-border-color: transparent;
-    -fx-padding: 5px;
-    -fx-cursor: hand;
-}
-
-.table-view .table-row-cell:hover {
-    -fx-background-color: #e3f2fd;
-}
-
-.table-view .table-row-cell:selected {
-    -fx-background-color: #bbdefb;
-}
-
-.table-view .table-cell {
-    -fx-alignment: center-left;
-    -fx-padding: 8px;
-}
-
-.table-view:focused {
-    -fx-background-color: -fx-box-border, -fx-control-inner-background;
-    -fx-background-insets: 0, 1;
-    -fx-padding: 1;
-}
-
-/* ListView styles (for consistency) */
-.list-view {
-    -fx-background-color: white;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 10, 0, 0, 3);
-}
-
-.list-view .list-cell {
-    -fx-background-color: white;
-    -fx-padding: 10px;
-    -fx-cursor: hand;
-}
-
-.list-view .list-cell:hover {
-    -fx-background-color: #e3f2fd;
-}
-
-.list-view .list-cell:selected {
-    -fx-background-color: #bbdefb;
-    -fx-text-fill: black;
-}
-
-/* Override specifico per il titolo del login */
-.login-title {
-    -fx-font-size: 2em;
+    -fx-text-fill: -brand-900;
     -fx-font-weight: 700;
-    -fx-text-fill: #0d47a1;
-    -fx-alignment: center;
-    -fx-padding: 0 0 0.6em 0;
-    -fx-wrap-text: true !important;
-    -fx-text-alignment: center;
-    -fx-max-width: 350px;
-    -fx-pref-width: 350px;
+}
+
+/* ============================================================
+   CONTATTI
+   ============================================================ */
+.contact-section {
+    -fx-background-color: -neutral-050;
+    -fx-padding: 12px;
+    -fx-background-radius: -radius-md;
+    -fx-border-radius: -radius-md;
+    -fx-border-color: -neutral-300;
+    -fx-border-width: 1px;
+}
+
+.info-icon {
+    -fx-font-size: 0.93em;
+    -fx-min-width: 1.5em;
+    -fx-text-fill: -brand-700;
+}
+
+.info-text {
+    -fx-font-size: 0.88em;
+    -fx-text-fill: -neutral-700;
+}
+
+.info-subtext {
+    -fx-font-size: 0.78em;
+    -fx-text-fill: -neutral-500;
+}
+
+.clickable-info {
+    -fx-text-fill: -brand-500;
+    -fx-cursor: hand;
+}
+
+.clickable-info:hover {
+    -fx-text-fill: -brand-900;
+    -fx-underline: true;
 }
