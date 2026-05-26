@@ -11,58 +11,58 @@
     -fx-padding: 2.8em 2.2em; /* Proporzioni migliorate */
     -fx-spacing: 1.4em;
     -fx-background-radius: 0.6em;
-    -fx-effect: dropshadow(three-pass-box, rgba(9, 16, 15, 0.15), 1.2em, 0, 0, 0.3em); /* Ombra più raffinata */
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.12), 1.2em, 0, 0, 0.3em); /* Ombra più raffinata */
     -fx-max-width: 21em;
-    -fx-border-color: #88a4a4; /* Colore del logo */
+    -fx-border-color: #90caf9; /* Colore del logo */
     -fx-border-width: 0.06em;
 }
 
-/* Titolo del login: più elegante e moderno, utilizzando il verde scuro del logo */
+/* Titolo del login */
 .login-title {
     -fx-font-size: 2em;
     -fx-font-weight: 700;
-    -fx-text-fill: #0c4b3d; /* Verde scuro del logo */
+    -fx-text-fill: #0d47a1;
     -fx-alignment: center;
     -fx-padding: 0 0 0.6em 0;
 }
 
-/* Stile per i campi di input: più raffinato con transizioni e bordi con colori del logo */
+/* Stile per i campi di input */
 .login-textfield {
     -fx-pref-height: 3em;
     -fx-font-size: 0.94em;
-    -fx-text-fill: #09100f; /* Nero verdastro */
+    -fx-text-fill: #102027;
     -fx-background-color: #ffffff;
-    -fx-border-color: #88a4a4; /* Grigio-verde del logo */
+    -fx-border-color: #90caf9;
     -fx-border-width: 0.06em;
     -fx-border-radius: 0.38em;
     -fx-background-radius: 0.38em;
     -fx-padding: 0 0.94em;
 }
 
-/* Bottone principale (Accedi): verde vivace del logo e stile moderno */
+/* Bottone principale (Accedi)*/
 .primary-button {
-    -fx-background-color: #24de3b; /* Verde vivace del logo */
-    -fx-text-fill: #09100f; /* Testo scuro per contrasto */
+    -fx-background-color: #1e88e5;
+    -fx-text-fill: #102027;
     -fx-font-size: 1em;
     -fx-font-weight: bold;
     -fx-background-radius: 0.38em;
     -fx-padding: 0.75em 1.5em;
     -fx-cursor: hand;
-    -fx-effect: dropshadow(gaussian, rgba(9, 16, 15, 0.2), 0.31em, 0, 0, 0.13em);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 0.31em, 0, 0, 0.13em);
 }
 .primary-button:hover {
-    -fx-background-color: #04450e; /* Verde scuro per hover */
+    -fx-background-color: #1565c0;
     -fx-text-fill: #ffffff;
-    -fx-effect: dropshadow(gaussian, rgba(9, 16, 15, 0.3), 0.38em, 0, 0, 0.19em);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 0.38em, 0, 0, 0.19em);
 }
 
-/* Bottone secondario (Registrati): stile outline più elegante utilizzando il verde medio */
+/* Bottone secondario (Registrati) */
 .secondary-button {
     -fx-background-color: transparent;
-    -fx-text-fill: #40856c; /* Verde medio del logo */
+    -fx-text-fill: #42a5f5;
     -fx-font-size: 0.94em;
     -fx-font-weight: bold;
-    -fx-border-color: #40856c;
+    -fx-border-color: #42a5f5;
     -fx-border-width: 0.09em;
     -fx-border-radius: 0.38em;
     -fx-background-radius: 0.38em;
@@ -70,18 +70,18 @@
     -fx-cursor: hand;
 }
 .secondary-button:hover {
-    -fx-background-color: #40856c;
+    -fx-background-color: #42a5f5;
     -fx-text-fill: #ffffff;
-    -fx-effect: dropshadow(gaussian, rgba(9, 16, 15, 0.15), 0.25em, 0, 0, 0.13em);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 0.25em, 0, 0, 0.13em);
 }
 
-/* Bottone ospite: toni neutri del logo */
+/* Bottone ospite */
 .guest-button {
     -fx-background-color: transparent;
-    -fx-text-fill: #677374; /* Grigio medio */
+    -fx-text-fill: #607d8b;
     -fx-font-size: 0.88em;
     -fx-font-weight: bold;
-    -fx-border-color: #535f58; /* Grigio scuro */
+    -fx-border-color: #607d8b;
     -fx-border-width: 0.09em;
     -fx-border-radius: 0.38em;
     -fx-background-radius: 0.38em;
@@ -89,16 +89,16 @@
     -fx-cursor: hand;
 }
 .guest-button:hover {
-    -fx-background-color: #535f58;
+    -fx-background-color: #455a64;
     -fx-text-fill: #ffffff;
-    -fx-effect: dropshadow(gaussian, rgba(9, 16, 15, 0.1), 0.25em, 0, 0, 0.13em);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 0.25em, 0, 0, 0.13em);
 }
 
-/* Effetto focus per i TextField e PasswordField (stile più raffinato) */
+/* Effetto focus per i TextField e PasswordField  */
 .login-textfield:focused {
-    -fx-border-color: #24de3b; /* Verde vivace per focus */
+    -fx-border-color: #1e88e5; /* Verde vivace per focus */
     -fx-border-width: 0.09em;
-    -fx-effect: dropshadow(three-pass-box, rgba(36, 222, 59, 0.2), 0.25em, 0, 0, 0);
+    -fx-effect: dropshadow(three-pass-box, rgba(30, 136, 229, 0.25), 0.25em, 0, 0, 0);
 }
 
 /* Stile tabella migliorato per un look moderno con colori del logo */
@@ -106,14 +106,14 @@
     -fx-background-color: #ffffff;
     -fx-background-radius: 0.5em;
     -fx-padding: 0;
-    -fx-border-color: #88a4a4;
+    -fx-border-color: #90caf9;
     -fx-border-radius: 0.5em;
-    -fx-effect: dropshadow(three-pass-box, rgba(9, 16, 15, 0.1), 0.63em, 0, 0, 0.19em);
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.12), 0.63em, 0, 0, 0.19em);
 }
 
 .table-view .column-header,
 .table-view .column-header-background .filler {
-    -fx-background-color: #0c4b3d; /* Verde scuro del logo */
+    -fx-background-color: #0d47a1;
     -fx-background-radius: 0.5em 0.5em 0 0;
     -fx-padding: 0.31em;
 }
@@ -131,26 +131,26 @@
     -fx-alignment: center-left;
     -fx-background-color: #ffffff;
     -fx-border-color: #dddede;
-    -fx-text-fill: #09100f;
+    -fx-text-fill: #102027;
     -fx-font-size: 0.81em;
     -fx-alignment: CENTER_LEFT;
     -fx-padding: 0.31em 0.63em;
 }
 
 .table-row-cell:odd {
-    -fx-background-color: #dddede; /* Grigio chiaro alternato */
+    -fx-background-color: #dddede;
 }
 
 .table-row-cell:hover {
-    -fx-background-color: #e8f5e9; /* Verde chiaro per hover */
+    -fx-background-color: #e3f2fd;
 }
 
 .table-row-cell:selected {
-    -fx-background-color: #c8e6c9; /* Verde più intenso per selezione */
+    -fx-background-color: #bbdefb;
 }
 
 .table-row-cell:selected .table-cell {
-    -fx-text-fill: #2e7d32; /* Verde scuro per il testo delle righe selezionate */
+    -fx-text-fill: #1976d2;
 }
 
 /* Rimuove il bordo di focus dalla TableView */
@@ -160,7 +160,7 @@
     -fx-padding: 1;
 }
 
-/* Scrollbar moderno e minimale con colori del logo */
+/* Scrollbar */
 .table-view .scroll-bar:horizontal,
 .table-view .scroll-bar:vertical {
     -fx-background-color: transparent;
@@ -182,13 +182,13 @@
 
 .table-view .scroll-bar:horizontal .thumb,
 .table-view .scroll-bar:vertical .thumb {
-    -fx-background-color: #88a4a4;
+    -fx-background-color: #90caf9;
     -fx-background-radius: 0.63em;
 }
 
 .table-view .scroll-bar:horizontal .thumb:hover,
 .table-view .scroll-bar:vertical .thumb:hover {
-    -fx-background-color: #677374;
+    -fx-background-color: #607d8b;
 }
 
 /* Stile grafico moderno con colori del logo */
@@ -210,34 +210,34 @@
 /* Stili per i campi di testo (unificati) con colori del logo */
 .text-field, .search-field {
     -fx-background-color: #ffffff;
-    -fx-border-color: #88a4a4;
+    -fx-border-color: #90caf9;
     -fx-border-width: 0.06em;
     -fx-border-radius: 0.94em;
     -fx-background-radius: 0.94em;
     -fx-padding: 0.31em 0.63em;
-    -fx-text-fill: #09100f;
+    -fx-text-fill: #102027;
 }
 
 .text-field:focused, .search-field:focused {
-    -fx-border-color: #24de3b;
+    -fx-border-color: #1e88e5;
     -fx-border-width: 0.13em;
 }
 
 /* Stile per l'intestazione e le etichette principali con colori del logo */
 .header-label, #customlabel {
-    -fx-background-color: rgba(136, 164, 164, 0.8); /* Grigio-verde traslucido */
-    -fx-border-color: #535f58;
+    -fx-background-color: rgba(144, 202, 249, 0.45);
+    -fx-border-color: #607d8b;
     -fx-border-width: 0.19em;
     -fx-border-style: solid;
     -fx-font-family: "Microsoft Tai Le Bold";
     -fx-font-size: 1.13em;
     -fx-font-weight: bold;
-    -fx-text-fill: #09100f;
+    -fx-text-fill: #102027;
 }
 
 /* Stile per il pulsante di menu e filtri con colori del logo */
 .filter-menu, .menu-button {
-    -fx-background-color: rgba(64, 133, 108, 0.8); /* Verde medio traslucido */
+    -fx-background-color: rgba(66, 165, 245, 0.85);
     -fx-border-radius: 0.63em;
     -fx-background-radius: 0.63em;
     -fx-font-family: "Microsoft Tai Le Bold";
@@ -254,25 +254,25 @@
 .result-list, .list-view {
     -fx-background-color: #ffffff;
     -fx-background-radius: 0.31em;
-    -fx-border-color: #88a4a4;
+    -fx-border-color: #90caf9;
     -fx-border-radius: 0.31em;
 }
 
 /* Colori per grafici utilizzando la palette del logo */
-.default-color0.chart-pie { -fx-pie-color: #24de3b; } /* Verde vivace */
-.default-color1.chart-pie { -fx-pie-color: #0c4b3d; } /* Verde scuro */
-.default-color2.chart-pie { -fx-pie-color: #40856c; } /* Verde medio */
-.default-color3.chart-pie { -fx-pie-color: #88a4a4; } /* Grigio-verde */
-.default-color4.chart-pie { -fx-pie-color: #677374; } /* Grigio medio */
-.default-color5.chart-pie { -fx-pie-color: #04450e; } /* Verde molto scuro */
-.default-color6.chart-pie { -fx-pie-color: #535f58; } /* Grigio scuro */
-.default-color7.chart-pie { -fx-pie-color: #948c94; } /* Grigio viola */
+.default-color0.chart-pie { -fx-pie-color: #1e88e5; }
+.default-color1.chart-pie { -fx-pie-color: #0d47a1; }
+.default-color2.chart-pie { -fx-pie-color: #42a5f5; }
+.default-color3.chart-pie { -fx-pie-color: #90caf9; }
+.default-color4.chart-pie { -fx-pie-color: #607d8b; }
+.default-color5.chart-pie { -fx-pie-color: #1565c0; }
+.default-color6.chart-pie { -fx-pie-color: #455a64; }
+.default-color7.chart-pie { -fx-pie-color: #948c94; }
 
 /* Regole aggiuntive per la pagina Recensioni con palette del logo */
 
 /* Contenitore principale */
 #appRoot {
-    -fx-background-color: #dddede; /* Grigio chiaro principale */
+    -fx-background-color: #dddede;
     -fx-padding: 1.25em;
 }
 
@@ -295,7 +295,7 @@
     -fx-font-size: 0.88em;
     -fx-padding: 0.5em;
     -fx-alignment: CENTER_LEFT;
-    -fx-text-fill: #09100f;
+    -fx-text-fill: #102027;
 }
 
 /* VBox laterale a destra */
@@ -303,8 +303,8 @@
     -fx-background-color: #ffffff;
     -fx-background-radius: 0.63em;
     -fx-padding: 0.94em;
-    -fx-effect: dropshadow(three-pass-box, rgba(9, 16, 15, 0.15), 0.63em, 0, 0, 0.31em);
-    -fx-border-color: #88a4a4;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.12), 0.63em, 0, 0, 0.31em);
+    -fx-border-color: #90caf9;
     -fx-border-width: 0.06em;
     -fx-border-radius: 0.63em;
 }
@@ -314,15 +314,15 @@
     -fx-font-size: 0.88em;
     -fx-background-radius: 0.31em;
     -fx-border-radius: 0.31em;
-    -fx-border-color: #88a4a4;
+    -fx-border-color: #90caf9;
     -fx-border-width: 0.06em;
     -fx-padding: 0.31em 0.5em;
     -fx-background-color: #ffffff;
-    -fx-text-fill: #09100f;
+    -fx-text-fill: #102027;
 }
 
 #reviewComboBox:focused {
-    -fx-border-color: #24de3b;
+    -fx-border-color: #1e88e5;
     -fx-border-width: 0.13em;
 }
 
@@ -334,7 +334,7 @@
 
 /* Stile per il bottone Google Maps */
 .maps-button {
-    -fx-background-color: #4285f4; /* Blu di Google */
+    -fx-background-color: #4285f4;
     -fx-text-fill: white;
     -fx-font-size: 0.75em;
     -fx-font-weight: bold;
@@ -368,7 +368,7 @@
 
 /* Stili aggiuntivi per la sezione contatti */
 .contact-section {
-    -fx-background-color: #f8f9fa; /* Sfondo neutro */
+    -fx-background-color: #f8f9fa;
     -fx-padding: 0.94em;
     -fx-background-radius: 0.63em;
     -fx-border-radius: 0.63em;
@@ -377,72 +377,72 @@
 .section-title {
     -fx-font-size: 0.88em;
     -fx-font-weight: bold;
-    -fx-text-fill: #0c4b3d; /* Verde scuro del logo */
+    -fx-text-fill: #0d47a1;
 }
 
 .info-icon {
     -fx-font-size: 1em;
     -fx-min-width: 1.56em;
-    -fx-text-fill: #0c4b3d; /* Icone con colore del logo */
+    -fx-text-fill: #0d47a1; /* Icone con colore del logo */
 }
 
 .info-text {
     -fx-font-size: 0.88em;
-    -fx-text-fill: #09100f; /* Testo scuro */
+    -fx-text-fill: #102027;
 }
 
 .info-subtext {
     -fx-font-size: 0.75em;
-    -fx-text-fill: #677374; /* Grigio medio */
+    -fx-text-fill: #607d8b;
 }
 
 .clickable-info {
-    -fx-text-fill: #40856c; /* Verde medio del logo per link */
+    -fx-text-fill: #42a5f5;
     -fx-cursor: hand;
 }
 
 .clickable-info:hover {
-    -fx-text-fill: #0c4b3d; /* Verde scuro per hover */
+    -fx-text-fill: #0d47a1;
     -fx-underline: true;
 }
 
 /* Nuove classi per il login form */
 .login-subtitle {
     -fx-font-size: 0.75em;
-    -fx-text-fill: #677374;
+    -fx-text-fill: #607d8b;
 }
 
 .field-label {
     -fx-font-weight: bold;
     -fx-font-size: 0.75em;
-    -fx-text-fill: #09100f;
+    -fx-text-fill: #102027;
 }
 
 .separator-text {
     -fx-font-size: 0.69em;
-    -fx-text-fill: #677374;
+    -fx-text-fill: #607d8b;
 }
 
 .description-text {
     -fx-font-size: 0.75em;
-    -fx-text-fill: #677374;
+    -fx-text-fill: #607d8b;
 }
 
 .help-text {
     -fx-font-size: 0.69em;
-    -fx-text-fill: #677374;
+    -fx-text-fill: #607d8b;
     -fx-wrap-text: true;
 }
 
 .disclaimer-text {
     -fx-font-size: 0.56em;
-    -fx-text-fill: #88a4a4;
+    -fx-text-fill: #90caf9;
     -fx-wrap-text: true;
 }
 
 /* Separator con colore del logo */
 .separator .line {
-    -fx-background-color: #88a4a4;
+    -fx-background-color: #90caf9;
 }
 
 /* Media queries simulate per diverse dimensioni di schermo (responsività mantenuta) */
@@ -522,38 +522,38 @@
 }
 
 .recensione-cell .data-label {
-    -fx-text-fill: #88a4a4;
+    -fx-text-fill: #90caf9;
     -fx-font-size: 12px;
 }
 
 .recensione-cell .utente-label {
-    -fx-text-fill: #40856c;
+    -fx-text-fill: #42a5f5;
     -fx-font-weight: bold;
 }
 
 .recensione-cell .risposta-box {
     -fx-padding: 10px;
     -fx-background-color: #ffffff;
-    -fx-border-color: #24de3b;
+    -fx-border-color: #1e88e5;
     -fx-border-width: 0 0 0 2px;
     -fx-border-radius: 2px;
     -fx-background-radius: 2px;
 }
 
 .recensione-cell .risposta-header {
-    -fx-text-fill: #0c4b3d;
+    -fx-text-fill: #0d47a1;
     -fx-font-weight: bold;
 }
 
 .primary-button {
-    -fx-background-color: #24de3b;
+    -fx-background-color: #1e88e5;
     -fx-text-fill: white;
     -fx-font-weight: bold;
     -fx-background-radius: 5px;
 }
 
 .primary-button:hover {
-    -fx-background-color: #40856c;
+    -fx-background-color: #42a5f5;
 }
 
 /* Ristoratore Dashboard Styles */
@@ -591,7 +591,7 @@
 
 .stat-title {
     -fx-font-size: 14px;
-    -fx-text-fill: #666;
+    -fx-text-fill: #607d8b;
 }
 
 .stats-value {
@@ -614,7 +614,7 @@
 }
 
 .list-cell:filled:hover {
-    -fx-background-color: #ffd6c9;
+    -fx-background-color: #e3f2fd;
 }
 
 /* PieChart customization */
@@ -634,7 +634,7 @@
 }
 
 .table-view .column-header {
-    -fx-background-color: #40856c;
+    -fx-background-color: #42a5f5;
     -fx-text-fill: white;
     -fx-font-weight: bold;
     -fx-padding: 10px;
@@ -648,11 +648,11 @@
 }
 
 .table-view .table-row-cell:hover {
-    -fx-background-color: #e8f5e9;
+    -fx-background-color: #e3f2fd;
 }
 
 .table-view .table-row-cell:selected {
-    -fx-background-color: #c8e6c9;
+    -fx-background-color: #bbdefb;
 }
 
 .table-view .table-cell {
@@ -679,11 +679,11 @@
 }
 
 .list-view .list-cell:hover {
-    -fx-background-color: #e8f5e9;
+    -fx-background-color: #e3f2fd;
 }
 
 .list-view .list-cell:selected {
-    -fx-background-color: #aceaae;
+    -fx-background-color: #bbdefb;
     -fx-text-fill: black;
 }
 
@@ -691,7 +691,7 @@
 .login-title {
     -fx-font-size: 2em;
     -fx-font-weight: 700;
-    -fx-text-fill: #0c4b3d;
+    -fx-text-fill: #0d47a1;
     -fx-alignment: center;
     -fx-padding: 0 0 0.6em 0;
     -fx-wrap-text: true !important;
