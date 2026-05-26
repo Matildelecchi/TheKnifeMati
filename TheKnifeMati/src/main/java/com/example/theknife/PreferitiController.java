@@ -34,12 +34,12 @@ import javafx.scene.layout.HBox;
  * </ul>
  * </p>
  *
- * @author Samuele Secchi, 761031
- * @author Flavio Marin, 759910
- * @author Matilde Lecchi, 759875
- * @author Davide Caccia, 760742
+ * @author Matilde Lecchi, 759875, Sede CO
+ * @author Eleonora Anna Caredda, 762576, Sede CO
+ * @author Claudio Bonci, 759939, Sede CO
+ * @author Filippo Crippa, 762174, Sede CO
  * @version 1.0
- * @since 2025-05-20
+ * @since 2026-05-20
  */
 public class PreferitiController implements Initializable {
     @FXML private ListView<Ristorante> preferitiListView;
