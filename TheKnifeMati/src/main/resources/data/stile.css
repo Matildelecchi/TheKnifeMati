@@ -1,5 +1,5 @@
 /* ============================================================
-   DESIGN TOKENS — modifica qui, si propagano ovunque
+   DESIGN TOKENS â€” modifica qui, si propagano ovunque
    ============================================================ */
 * {
     /* Palette primaria */
@@ -168,6 +168,8 @@
     -fx-background-radius: -radius-sm;
     -fx-padding: 0.6em 1.4em;
     -fx-cursor: hand;
+    -fx-max-width: infinity;
+    -fx-alignment: center;
 }
 .secondary-button:hover {
     -fx-background-color: -brand-100;
@@ -190,11 +192,56 @@
     -fx-background-radius: -radius-sm;
     -fx-padding: 0.55em 1.2em;
     -fx-cursor: hand;
+    -fx-max-width: infinity;
+    -fx-alignment: center;
 }
 .guest-button:hover {
     -fx-background-color: -neutral-100;
     -fx-text-fill: -neutral-700;
     -fx-border-color: -neutral-500;
+}
+
+/* Danger (Logout, Elimina) */
+.danger-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: -neutral-500;
+    -fx-font-size: 0.85em;
+    -fx-font-weight: 600;
+    -fx-border-color: -neutral-300;
+    -fx-border-width: 1px;
+    -fx-border-radius: -radius-sm;
+    -fx-background-radius: -radius-sm;
+    -fx-padding: 0.55em 1.2em;
+    -fx-cursor: hand;
+}
+.danger-button:hover {
+    -fx-background-color: -neutral-100;
+    -fx-text-fill: #c0392b;
+    -fx-border-color: #c0392b;
+}
+.danger-button:pressed {
+    -fx-background-color: -neutral-300;
+    -fx-effect: none;
+    -fx-translate-y: 1px;
+}
+
+/* Nav button (barra di navigazione) */
+.nav-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: -brand-700;
+    -fx-font-size: 0.88em;
+    -fx-font-weight: 600;
+    -fx-border-color: -brand-300;
+    -fx-border-width: 1px;
+    -fx-border-radius: -radius-sm;
+    -fx-background-radius: -radius-sm;
+    -fx-padding: 0.45em 1em;
+    -fx-cursor: hand;
+}
+.nav-button:hover {
+    -fx-background-color: -brand-100;
+    -fx-border-color: -brand-500;
+    -fx-text-fill: -brand-900;
 }
 
 /* Google Maps */
@@ -428,7 +475,7 @@
     -fx-font-size: 0.8em;
 }
 
-/* Palette grafici — tonalità blu corporate */
+/* Palette grafici â€” tonalitÃ  blu corporate */
 .default-color0.chart-pie { -fx-pie-color: #0a2f6e; }
 .default-color1.chart-pie { -fx-pie-color: #0d47a1; }
 .default-color2.chart-pie { -fx-pie-color: #1e88e5; }
@@ -439,7 +486,7 @@
 .default-color7.chart-pie { -fx-pie-color: #cbd5e1; }
 
 /* ============================================================
-   DASHBOARD — sezioni statistiche
+   DASHBOARD â€” sezioni statistiche
    ============================================================ */
 .details-section,
 .stats-section,
