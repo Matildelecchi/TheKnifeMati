@@ -1,10 +1,12 @@
-package com.example.theknife;
+package com.example.theknife.client;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
+
+import com.example.theknife.common.Ristorante;
 
 import javafx.application.HostServices;
 import javafx.collections.FXCollections;
@@ -43,7 +45,7 @@ import javafx.scene.layout.HBox;
  */
 public class PreferitiController implements Initializable {
     @FXML private ListView<Ristorante> preferitiListView;
-    private final GestionePreferiti gestionePreferiti = com.example.theknife.GestionePreferiti.getInstance();
+    private final GestionePreferiti gestionePreferiti = com.example.theknife.client.GestionePreferiti.getInstance();
     private final GestioneRistorante gestioneRistorante = GestioneRistorante.getInstance();
     private HostServices hostServices;
 

@@ -1,4 +1,4 @@
-package com.example.theknife;
+package com.example.theknife.client;
 
 /**
  * La classe {@code SessioneUtente} gestisce lo stato dell'utente attualmente loggato

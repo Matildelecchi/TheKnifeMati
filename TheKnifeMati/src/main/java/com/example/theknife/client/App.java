@@ -1,4 +1,4 @@
-package com.example.theknife;
+package com.example.theknife.client;
 
 import java.io.IOException;
 
@@ -63,7 +63,7 @@ public class  App extends Application {
         System.out.println("Dimensioni finestra: " + windowWidth + "x" + windowHeight);
 
         // Carica il file FXML per la schermata di login
-        FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("login.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("/com/example/theknife/client/login.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
 
         // Applica il foglio di stile CSS dal classpath

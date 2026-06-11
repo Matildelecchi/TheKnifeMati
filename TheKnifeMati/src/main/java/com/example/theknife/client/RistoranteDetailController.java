@@ -1,4 +1,4 @@
-package com.example.theknife;
+package com.example.theknife.client;
 
 import java.awt.Desktop;
 import java.io.IOException;
@@ -8,6 +8,9 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.ResourceBundle;
+
+import com.example.theknife.common.Recensione;
+import com.example.theknife.common.Ristorante;
 
 import javafx.application.HostServices;
 import javafx.application.Platform;
@@ -92,7 +95,7 @@ public class RistoranteDetailController implements Initializable {
     /** Servizi host forniti dal framework JavaFX per l'apertura di link esterni. */
     private HostServices hostServices;
     /** Istanza singleton per la gestione delle operazioni sui preferiti. */
-    private final GestionePreferiti gestionePreferiti = com.example.theknife.GestionePreferiti.getInstance();
+    private final GestionePreferiti gestionePreferiti = com.example.theknife.client.GestionePreferiti.getInstance();
     /** Istanza singleton per la gestione delle operazioni sulle recensioni. */
     private final GestioneRecensioni gestioneRecensioni = GestioneRecensioni.getInstance();
     /** Callback opzionale per tornare al menu principale. */

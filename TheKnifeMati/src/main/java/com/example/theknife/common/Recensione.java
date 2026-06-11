@@ -1,4 +1,4 @@
-package com.example.theknife;
+package com.example.theknife.common;
 
 import javafx.beans.property.*;
 

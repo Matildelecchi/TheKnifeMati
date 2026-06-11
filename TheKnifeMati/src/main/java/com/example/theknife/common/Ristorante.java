@@ -1,4 +1,4 @@
-package com.example.theknife;
+package com.example.theknife.common;
 
 /**
  * La classe {@code Ristorante} rappresenta un'entità che contiene tutte le informazioni relative

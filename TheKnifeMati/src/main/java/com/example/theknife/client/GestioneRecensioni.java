@@ -1,4 +1,4 @@
-package com.example.theknife;
+package com.example.theknife.client;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import com.example.theknife.common.Recensione;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

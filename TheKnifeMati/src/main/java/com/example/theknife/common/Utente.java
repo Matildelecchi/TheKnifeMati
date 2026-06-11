@@ -1,4 +1,4 @@
-package com.example.theknife;
+package com.example.theknife.common;
 
 /**
  * La classe {@code Utente} rappresenta un utente del sistema TheKnife.

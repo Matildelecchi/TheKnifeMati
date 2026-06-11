@@ -1,4 +1,4 @@
-package com.example.theknife;
+package com.example.theknife.client;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -6,6 +6,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.example.theknife.common.Utente;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

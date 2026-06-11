@@ -1,4 +1,4 @@
-package com.example.theknife;
+package com.example.theknife.client;
 
 import java.io.IOException;
 import java.net.URL;
@@ -6,6 +6,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
+
+import com.example.theknife.common.Recensione;
+import com.example.theknife.common.Ristorante;
 
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -90,7 +93,7 @@ public class UserProfileController implements Initializable {
     @FXML private Button dashboardButton;
 
     private final GestioneRecensioni gestioneRecensioni = GestioneRecensioni.getInstance();
-    private final GestionePreferiti gestionePreferiti = com.example.theknife.GestionePreferiti.getInstance();
+    private final GestionePreferiti gestionePreferiti = com.example.theknife.client.GestionePreferiti.getInstance();
     private final GestioneRistorante gestioneRistorante = GestioneRistorante.getInstance();
 
     /**

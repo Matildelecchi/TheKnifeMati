@@ -1,10 +1,12 @@
-package com.example.theknife;
+package com.example.theknife.client;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
+import com.example.theknife.common.Recensione;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

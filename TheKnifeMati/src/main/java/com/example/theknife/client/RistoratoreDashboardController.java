@@ -1,4 +1,4 @@
-package com.example.theknife;
+package com.example.theknife.client;
 
 import java.io.IOException;
 import java.net.URL;
@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.ResourceBundle;
+
+import com.example.theknife.common.Recensione;
+import com.example.theknife.common.Ristorante;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;

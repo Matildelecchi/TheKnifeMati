@@ -1,4 +1,4 @@
-package com.example.theknife;
+package com.example.theknife.client;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -11,6 +11,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.example.theknife.common.Utente;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
