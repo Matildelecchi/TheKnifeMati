@@ -1,11 +1,5 @@
 package com.example.theknife.server;
 
-import com.example.theknife.common.DBService;
-import com.example.theknife.common.Ristorante;
-import com.example.theknife.common.Recensione;
-import com.example.theknife.common.Utente;
-
-import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -18,8 +12,14 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
+import com.example.theknife.common.DBService;
+import com.example.theknife.common.Recensione;
+import com.example.theknife.common.Ristorante;
+import com.example.theknife.common.Utente;
+
 public class ServerMain implements DBService {
     static int PORT = 1234;
+    static int PORT_STUB = 1;
     private static final String URL = "jdbc:postgresql://localhost:5432/mydb";
     private static final String USER = "myuser";
     private static final String PASSWORD = "mypassword";
@@ -33,17 +33,17 @@ public class ServerMain implements DBService {
     }
 
 
-    public ServerMain(){
+    public ServerMain() throws RemoteException {
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws RemoteException {
         System.out.println("Hello from Server!");
         DBService stub = null;
 
         ServerMain obj = new ServerMain();
         try {
             stub = (DBService) UnicastRemoteObject.exportObject(
-                    obj, PORT);
+                    obj, PORT_STUB);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -56,10 +56,8 @@ public class ServerMain implements DBService {
             e.printStackTrace();
         }
         try {
-            registry.bind("TimeService", stub);
+            registry.rebind("TimeService", stub);
         } catch (RemoteException e) {
-            e.printStackTrace();
-        } catch (AlreadyBoundException e) {
             e.printStackTrace();
         }
         System.err.println("Server ready");
@@ -233,7 +231,7 @@ public class ServerMain implements DBService {
 
 
     @Override
-    public boolean saveRistorante(String string, Ristorante ristorante) {
+    public boolean saveRistorante(String string, Ristorante ristorante) throws RemoteException {
         if (string == null || string.trim().isEmpty() || ristorante == null) {
             return false;
         }
@@ -263,7 +261,7 @@ public class ServerMain implements DBService {
     }
 
     @Override
-    public boolean saveOwnership(String string, String username, String nome) {
+    public boolean saveOwnership(String string, String username, String nome) throws RemoteException {
         if (string == null || string.trim().isEmpty() || username == null || nome == null) {
             return false;
         }
