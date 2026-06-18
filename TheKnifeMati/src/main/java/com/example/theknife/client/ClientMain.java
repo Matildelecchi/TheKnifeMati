@@ -1,6 +1,6 @@
 package com.example.theknife.client;
 
-import com.example.theknife.common.TimeService;
+import com.example.theknife.common.DBService;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -16,7 +16,7 @@ public class ClientMain
             Registry registry = LocateRegistry.getRegistry("127.0.0.1", PORT);
 
             // Looking up the registry for the remote object
-            TimeService stub = (TimeService) registry.lookup("TimeService");
+            DBService stub = (DBService) registry.lookup("TimeService");
 
             // Calling the remote method using the obtained object
             System.out.println(stub.getCurrentDateTime());

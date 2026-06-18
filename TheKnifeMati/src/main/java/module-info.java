@@ -6,6 +6,8 @@ module com.example.theknife {
     requires com.opencsv;
     requires java.desktop;
     requires transitive javafx.graphics;
+    requires java.net.http;
+    requires java.sql;
 
 
     opens com.example.theknife.client to javafx.fxml;

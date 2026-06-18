@@ -1,6 +1,11 @@
 package com.example.theknife.client;
 
 import java.io.*;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,6 +29,8 @@ import java.util.Map;
 public class GestionePossessoRistorante {
     private static final String OWNERSHIP_FILE_PATH = "data/proprietari_ristoranti.csv";
     private static final String CSV_HEADER = "username,ristorante";
+    // Endpoint per recuperare i dati di proprietà dal server
+    private static final String OWNERSHIP_ENDPOINT = "http://localhost:8080/ownership";
 
     private static GestionePossessoRistorante instance;
     private final Map<String, List<String>> ownershipMap = new HashMap<>();
@@ -54,23 +61,51 @@ public class GestionePossessoRistorante {
      * </p>
      */
     private void loadOwnershipData() {
-        File file = new File(OWNERSHIP_FILE_PATH);
+    // Prepara la query da mandare al server
+    String query = "SELECT * FROM ownership"; // o quello che ti serve
+    String encodedQuery = URLEncoder.encode(query, StandardCharsets.UTF_8);
+    String url = OWNERSHIP_ENDPOINT + "?query=" + encodedQuery;
 
-        if (!file.exists()) {
-            createOwnershipFile(file);
+    ownershipMap.clear();
+
+    HttpClient client = HttpClient.newHttpClient();
+    HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create(url))
+            .GET()
+            .build();
+
+    try {
+        HttpResponse<String> response =
+                client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        if (response.statusCode() != 200) {
+            System.err.println("Errore HTTP nel caricamento dati: " + response.statusCode());
             return;
         }
 
-        ownershipMap.clear();
-        try (BufferedReader reader = new BufferedReader(new FileReader(file, StandardCharsets.UTF_8))) {
-            String line = reader.readLine(); // Skip header
-            while ((line = reader.readLine()) != null) {
+        String body = response.body();
+
+        // Supponiamo che il server restituisca un testo con righe stile CSV
+        // prima riga = header, come prima
+        String[] lines = body.split("\\R"); // split su qualsiasi newline
+
+        if (lines.length <= 1) {
+            return; // niente dati
+        }
+
+        // saltiamo l’header (indice 0)
+        for (int i = 1; i < lines.length; i++) {
+            String line = lines[i].trim();
+            if (!line.isEmpty()) {
                 processOwnershipLine(line);
             }
-        } catch (IOException e) {
-            System.err.println("Errore nel caricamento dei dati di proprietà: " + e.getMessage());
         }
+
+    } catch (IOException | InterruptedException e) {
+        System.err.println("Errore nel caricamento dei dati di proprietà da server: " + e.getMessage());
+        Thread.currentThread().interrupt(); // buona pratica se è stato interrotto
     }
+}
 
     /**
      * Crea il file di proprietà con header se non esiste.
