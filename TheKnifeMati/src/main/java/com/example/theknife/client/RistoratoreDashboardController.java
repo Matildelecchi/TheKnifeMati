@@ -128,7 +128,7 @@ public class RistoratoreDashboardController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         // Inizializza i dati dei servizi di gestione
-        gestioneRistorante.initializeData();
+        gestioneRistorante.caricaRistoranti();
         ownershipService.initialize();
         // Configura le viste (tabelle, liste)
         setupRistorantiTable();
@@ -149,7 +149,7 @@ public class RistoratoreDashboardController implements Initializable {
     public void refreshData() {
         System.out.println("Debug: Inizio refreshData");
 
-        gestioneRistorante.forceRefresh();
+        gestioneRistorante.caricaRistoranti();
         ownershipService.refreshOwnershipData();
 
         loadRistoranti();
@@ -440,7 +440,7 @@ public class RistoratoreDashboardController implements Initializable {
 
             controller.setAggiornaDatabaseRistorantiCallback(() -> {
                 System.out.println("Debug: Inizia aggiornamento database");
-                gestioneRistorante.initializeData();
+                gestioneRistorante.caricaRistoranti();
             });
 
             controller.setTornaAllaDashboardCallback(() -> {

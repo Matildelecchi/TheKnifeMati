@@ -207,7 +207,7 @@ public class RistoranteInputController implements Initializable {
             System.out.println("Debug: Salvataggio ristorante completato");
 
             // Aggiorna i servizi dopo il salvataggio
-            GestioneRistorante.getInstance().forceRefresh();
+            gestioneRistorante.caricaRistoranti();
             GestionePossessoRistorante.getInstance().refreshOwnershipData();
 
             // Esegue il callback per tornare alla dashboard
