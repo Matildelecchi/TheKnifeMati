@@ -175,19 +175,19 @@ public class RistoranteInputController implements Initializable {
                     .collect(Collectors.joining(", "));
 
             Ristorante nuovoRistorante = new Ristorante(
+                    telefonoField.getText().trim(),
                     nome,
                     indirizzoField.getText().trim(),
                     localitaField.getText().trim(),
-                    prezzoComboBox.getValue(),
-                    cucine,
-                    longitudine,
-                    latitudine,
-                    telefonoField.getText().trim(),
-                    urlField.getText().trim(),
+                    localitaField.getText().trim(),
+                    servizi,
                     sitoWebField.getText().trim(),
                     premiComboBox.getValue(),
-                    stellaVerdeCheckBox.isSelected() ? "Sì" : "No",
-                    servizi,
+                    cucine,
+                    stellaVerdeCheckBox.isSelected() ? 0.0 : 1.0,
+                    prezzoComboBox.getValue(),
+                    false, //prenotazione
+                    false, //consegna
                     descrizioneArea.getText().trim()
             );
 
@@ -335,7 +335,7 @@ public class RistoranteInputController implements Initializable {
                     ristorante.getUrl(),
                     ristorante.getSitoWeb(),
                     ristorante.getPremio(),
-                    ristorante.getStellaVerde(),
+                    String.valueOf(ristorante.getStellaVerde()),
                     ristorante.getServizi(),
                     ristorante.getDescrizione()
             };

@@ -108,7 +108,11 @@ public class RegistrazioneController {
             String password = campoPassword.getText();
             LocalDate dataNascita = campoDataNascita.getValue();
             String luogoDomicilio = campoLuogoDomicilio.getText().trim();
-            String ruolo = comboRuolo.getValue().toLowerCase();
+
+
+            //cmabiare
+
+            boolean ruolo = (comboRuolo.getValue().toLowerCase().equals("Cliente")) ? false : true;
 
             // Verifica che l'username non esista già
             if (verificaUsernameEsistente(username)) {
@@ -122,9 +126,10 @@ public class RegistrazioneController {
 
             // Crea il nuovo utente
             Utente nuovoUtente = new Utente(
-                    nome, cognome, username, passwordCifrata,
+                    username, nome, cognome,"email", passwordCifrata,luogoDomicilio,
+                    "stato","citta",
                     dataNascita.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
-                    luogoDomicilio, ruolo
+                    ruolo
             );
 
             // Salva l'utente nel file CSV

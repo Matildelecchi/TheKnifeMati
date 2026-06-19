@@ -1,5 +1,7 @@
 package com.example.theknife.common;
 
+import java.io.Serializable;
+
 /**
  * La classe {@code Ristorante} rappresenta un'entità che contiene tutte le informazioni relative
  * ad un ristorante, quali il nome, l'indirizzo, la località, il prezzo, la tipologia di cucina, le coordinate
@@ -20,7 +22,9 @@ package com.example.theknife.common;
  * @version 1.0
  * @since 2026-05-20
  */
-public class Ristorante {
+public class Ristorante implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     /**
      * Il nome del ristorante.
@@ -80,7 +84,7 @@ public class Ristorante {
     /**
      * Il riconoscimento "stella verde" del ristorante.
      */
-    private String stellaVerde;
+    private double stelle;
 
     /**
      * I servizi offerti dal ristorante.
@@ -91,6 +95,10 @@ public class Ristorante {
      * Una descrizione del ristorante.
      */
     private String descrizione;
+    private String citta;
+    private String stato;
+    private boolean consegna;
+    private boolean prenotazione;
 
     /**
      * Crea un nuovo oggetto {@code Ristorante} con i dettagli specificati.
@@ -110,21 +118,22 @@ public class Ristorante {
      * @param servizi        i servizi offerti dal ristorante.
      * @param descrizione    una descrizione del ristorante.
      */
-    public Ristorante(String nome, String indirizzo, String localita, String prezzo, String cucina,
-                      double longitudine, double latitudine, String numeroTelefono, String url,
-                      String sitoWeb, String premio, String stellaVerde, String servizi, String descrizione) {
+    public Ristorante(String numeroTelefono, String nome, String indirizzo, String stato, String citta, String servizi, 
+                      String sitoWeb, String premio, String cucina,double stelle, String prezzo, 
+                      boolean prenotazione,boolean consegna, String descrizione) {
         this.nome = nome;
         this.indirizzo = indirizzo;
-        this.localita = localita;
+        this.localita = citta;
+        this.citta = citta;
         this.prezzo = prezzo;
         this.cucina = cucina;
-        this.longitudine = longitudine;
-        this.latitudine = latitudine;
+        this.prenotazione = prenotazione;
+        this.consegna = consegna;
         this.numeroTelefono = numeroTelefono;
-        this.url = url;
+        this.stato = stato;
         this.sitoWeb = sitoWeb;
         this.premio = premio;
-        this.stellaVerde = stellaVerde;
+        this.stelle = stelle;
         this.servizi = servizi;
         this.descrizione = descrizione;
     }
@@ -233,8 +242,8 @@ public class Ristorante {
      *
      * @return lo status "stella verde".
      */
-    public String getStellaVerde() {
-        return stellaVerde;
+    public double getStellaVerde() {
+        return stelle;
     }
 
     /**
@@ -274,7 +283,7 @@ public class Ristorante {
                 ", url='" + url + '\'' +
                 ", sitoWeb='" + sitoWeb + '\'' +
                 ", premio='" + premio + '\'' +
-                ", stellaVerde='" + stellaVerde + '\'' +
+                ", stellaVerde='" + stelle + '\'' +
                 ", servizi='" + servizi + '\'' +
                 ", descrizione='" + descrizione + '\'' +
                 '}';

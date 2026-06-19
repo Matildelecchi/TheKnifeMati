@@ -1,6 +1,11 @@
 package com.example.theknife.common;
 
-import javafx.beans.property.*;
+import java.io.Serializable;
+
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 
 /**
  * Rappresenta una recensione per un ristorante.
@@ -26,7 +31,9 @@ import javafx.beans.property.*;
  * @version 1.0
  * @since 2026-05-20
  */
-public class Recensione {
+public class Recensione  implements Serializable {
+
+    private static final long serialVersionUID = 1L;
     private final IntegerProperty stelle;
     private final StringProperty testo;
     private final StringProperty ristoranteId;

@@ -20,9 +20,9 @@ import com.example.theknife.common.Utente;
 public class ServerMain implements DBService {
     static int PORT = 1234;
     static int PORT_STUB = 1;
-    private static final String URL = "jdbc:postgresql://localhost:5432/mydb";
-    private static final String USER = "myuser";
-    private static final String PASSWORD = "mypassword";
+    private static final String URL = "jdbc:postgresql://localhost:5432/theknife";
+    private static final String USER = "postgres";
+    private static final String PASSWORD = "password";
 
     
 
@@ -82,21 +82,22 @@ public class ServerMain implements DBService {
 
             while (rs.next()) {
                 Ristorante ristorante = new Ristorante(
+                        rs.getString("num_tel"),
                         rs.getString("nome"),
                         rs.getString("indirizzo"),
-                        rs.getString("localita"),
-                        rs.getString("prezzo"),
-                        rs.getString("cucina"),
-                        rs.getDouble("longitudine"),
-                        rs.getDouble("latitudine"),
-                        rs.getString("numeroTelefono"),
-                        rs.getString("url"),
-                        rs.getString("sitoWeb"),
-                        rs.getString("premio"),
-                        rs.getString("stellaVerde"),
+                        rs.getString("stato"),
+                        rs.getString("citta"),
                         rs.getString("servizi"),
+                        rs.getString("sito"),
+                        rs.getString("premi"),
+                        rs.getString("cucina"),
+                        rs.getDouble("stelle"),
+                        rs.getString("prezzo"),
+                        rs.getBoolean("prenotazione"),
+                        rs.getBoolean("consegna"),
                         rs.getString("descrizione")
                 );
+                System.out.println(ristorante);
                 results.add(ristorante);
             }
 
@@ -154,13 +155,16 @@ public class ServerMain implements DBService {
 
             while (rs.next()) {
                 Utente utente = new Utente(
+                        rs.getString("username"),
                         rs.getString("nome"),
                         rs.getString("cognome"),
-                        rs.getString("username"),
-                        rs.getString("passwordHash"),
-                        rs.getString("dataNascita"),
-                        rs.getString("luogoDomicilio"),
-                        rs.getString("ruolo")
+                        rs.getString("email"),
+                        rs.getString("password_hash"),
+                        rs.getString("indirizzo"),
+                        rs.getString("stato"),
+                        rs.getString("citta"),
+                        rs.getString("data_nascita"),
+                        rs.getBoolean("ruolo")
                 );
                 results.add(utente);
             }
@@ -249,7 +253,7 @@ public class ServerMain implements DBService {
             ps.setString(9, ristorante.getUrl());
             ps.setString(10, ristorante.getSitoWeb());
             ps.setString(11, ristorante.getPremio());
-            ps.setString(12, ristorante.getStellaVerde());
+            ps.setDouble(12, ristorante.getStellaVerde());
             ps.setString(13, ristorante.getServizi());
             ps.setString(14, ristorante.getDescrizione());
 

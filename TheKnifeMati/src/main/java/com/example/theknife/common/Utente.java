@@ -1,5 +1,7 @@
 package com.example.theknife.common;
 
+import java.io.Serializable;
+
 /**
  * La classe {@code Utente} rappresenta un utente del sistema TheKnife.
  * Contiene tutte le informazioni personali e di accesso necessarie per gestire le interazioni con l'applicazione.
@@ -20,7 +22,9 @@ package com.example.theknife.common;
  * @version 1.0
  * @since 2026-05-20
  */
-public class Utente {
+public class Utente  implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private String nome;
     private String cognome;
@@ -29,6 +33,9 @@ public class Utente {
     private String dataNascita;
     private String luogoDomicilio;
     private String ruolo;
+    private String citta;
+    private String stato;
+    private String email;
 
     /**
      * Costruttore completo per inizializzare un nuovo utente con tutti i parametri necessari.
@@ -42,15 +49,18 @@ public class Utente {
      * @param luogoDomicilio La città o il luogo di domicilio dell'utente.
      * @param ruolo Il ruolo assegnato all'utente, che definisce i suoi permessi all'interno del sistema (es. "cliente", "ristoratore", "ospite").
      */
-    public Utente(String nome, String cognome, String username, String passwordHash,
-                  String dataNascita, String luogoDomicilio, String ruolo) {
+    public Utente(String username, String nome, String cognome,String email, String passwordHash,
+                  String indirizzo, String stato,String citta,String data_nascita, boolean ruolo) {
         this.nome = nome;
         this.cognome = cognome;
         this.username = username;
         this.passwordHash = passwordHash;
-        this.dataNascita = dataNascita;
-        this.luogoDomicilio = luogoDomicilio;
-        this.ruolo = ruolo;
+        this.citta = citta;
+        this.email = email;
+        this.stato = stato;
+        this.dataNascita = data_nascita;
+        this.luogoDomicilio = indirizzo;
+        this.ruolo = (ruolo) ? "Ristoratore" : "Cliente";
     }
 
     /**

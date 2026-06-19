@@ -548,9 +548,10 @@ public class RistoranteDetailController implements Initializable {
     private void updateStellaVerdeDisplay() {
         if (stellaVerdeLabel == null) return;
 
-        String stellaVerde = ristorante.getStellaVerde();
-        if (stellaVerde != null && !stellaVerde.trim().isEmpty() &&
-                !"No".equalsIgnoreCase(stellaVerde.trim())) {
+        double stellaVerde = ristorante.getStellaVerde();
+        /*if (stellaVerde != null && !stellaVerde.trim().isEmpty() &&
+                !"No".equalsIgnoreCase(stellaVerde.trim()))*/ 
+        if (stellaVerde > 0){
             stellaVerdeLabel.setText("Stella Verde");
 
             // Mostra il container della stella verde se disponibile

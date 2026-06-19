@@ -1,14 +1,17 @@
 package com.example.theknife.client;
 
-import java.io.*;
+import java.io.IOException;
 import java.net.URL;
-import java.util.Arrays;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
+import com.example.theknife.common.DBService;
 import com.example.theknife.common.Ristorante;
-import com.opencsv.CSVReader;
-import com.opencsv.exceptions.CsvValidationException;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -17,7 +20,13 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import javafx.stage.Window;
@@ -91,6 +100,7 @@ public class RistorantiController implements Initializable {
 
     private final ObservableList<Ristorante> listaRistoranti = FXCollections.observableArrayList();
     private String fasciaPrezzoSelezionata = "";
+    private static DBService server;
 
     /**
      * Inizializza il controller dopo che il file FXML è stato caricato.
@@ -177,6 +187,26 @@ public class RistorantiController implements Initializable {
      * @throws RuntimeException se si verifica un errore di I/O o di validazione del CSV.
      */
     private void caricaDatiCSV() {
+        ArrayList<Ristorante> ris = null;
+        try {
+            server = ClientMain.getServer();
+            System.out.println("\n\nciao\n\n");
+            ris = server.getRistoranti("SELECT * FROM RISTORANTI");
+        } catch(RemoteException | NotBoundException | SQLException e) {
+            e.printStackTrace();
+        }
+
+        if(ris==null) {
+            System.out.println("Non è presente alcun ristorante nel Database");
+            return;
+        } 
+
+        System.out.println("Sono presenti ristoranti nel Database");
+
+        for(Ristorante r: ris) {
+            if(r!=null) listaRistoranti.add(r);
+        }
+        /* 
         String filePath = "data/michelin_my_maps.csv";
         File csvFile = new File(filePath);
 
@@ -234,7 +264,7 @@ public class RistorantiController implements Initializable {
             }
         } catch (IOException | CsvValidationException e) {
             throw new RuntimeException("Errore di I/O o di validazione nel caricamento del CSV.", e);
-        }
+        }*/
     }
 
     /**

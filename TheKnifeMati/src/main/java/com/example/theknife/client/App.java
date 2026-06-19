@@ -1,6 +1,10 @@
 package com.example.theknife.client;
 
 import java.io.IOException;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+
+import com.example.theknife.common.DBService;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -23,11 +27,12 @@ import javafx.stage.Stage;
  * @version 1.0
  * @since 2026-05-20
  */
-public class  App extends Application {
+public class App extends Application {
 
     private static final double MIN_WIDTH = 800;
     private static final double MIN_HEIGHT = 600;
-
+    private static ClientMain client;
+    private static DBService server;
     /**
      * Avvia l'applicazione JavaFX, inizializzando l'interfaccia utente.
      *
@@ -142,7 +147,9 @@ public class  App extends Application {
      *
      * @param args gli argomenti della riga di comando.
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws RemoteException, NotBoundException {
+        client = new ClientMain();
+        server = client.getServer();
         launch();
     }
 }

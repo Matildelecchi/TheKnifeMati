@@ -1,12 +1,19 @@
 package com.example.theknife.client;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.rmi.RemoteException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
+import java.rmi.*;
 
+import com.example.theknife.common.DBService;
 import com.example.theknife.common.Utente;
 
 import javafx.event.ActionEvent;
@@ -40,10 +47,21 @@ public class LoginController {
     @FXML private PasswordField campoPassword;
 
     private Runnable onLoginSuccess;
+    private static DBService server;
 
     public void setOnLoginSuccess(Runnable callback) {
         this.onLoginSuccess = callback;
     }
+
+    @FXML 
+    private void initialize() {
+        try {
+            server = ClientMain.getServer();
+        } catch(RemoteException | NotBoundException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     /**
      * Gestisce il processo di login verificando username e password.
@@ -146,7 +164,8 @@ public class LoginController {
      * @throws Exception se si verifica un errore di lettura o cifratura
      */
     private Utente autenticaUtente(String username, String password) throws Exception {
-        List<Utente> utenti = caricaUtentiDaCSV();
+        //List<Utente> utenti = caricaUtentiDaCSV();
+        ArrayList<Utente> utenti = server.getUtenti("SELECT * FROM UTENTI");
         String passwordCifrata = cifraPassword(password);
 
         return utenti.stream()
@@ -154,6 +173,11 @@ public class LoginController {
                         utente.getPasswordHash().equals(passwordCifrata))
                 .findFirst()
                 .orElse(null);
+        /*return utenti.stream()
+                .filter(utente -> utente.getUsername().equals(username) &&
+                        utente.getPasswordHash().equals(password))
+                .findFirst()
+                .orElse(null);*/
     }
 
     /**
@@ -162,7 +186,7 @@ public class LoginController {
      * @return lista di {@link Utente}
      * @throws IOException se si verifica un errore di lettura del file
      */
-    private List<Utente> caricaUtentiDaCSV() throws IOException {
+    /*private List<Utente> caricaUtentiDaCSV() throws IOException {
         List<Utente> utenti = new ArrayList<>();
         File csvFile = new File(USERS_FILE);
 
@@ -185,7 +209,7 @@ public class LoginController {
             }
         }
         return utenti;
-    }
+    }*/
 
     /**
      * Crea il file utenti con l’header se non esiste.
@@ -210,7 +234,7 @@ public class LoginController {
      * @param riga stringa CSV contenente i dati di un utente
      * @return oggetto {@link Utente} oppure {@code null} se i dati non sono validi
      */
-    private Utente parseUserFromCsv(String riga) {
+    /*private Utente parseUserFromCsv(String riga) {
         String[] parti = riga.split(",");
         if (parti.length >= 7) {
             return new Utente(
@@ -219,7 +243,7 @@ public class LoginController {
             );
         }
         return null;
-    }
+    }*/
 
     /**
      * Cifra una password in SHA-256.
