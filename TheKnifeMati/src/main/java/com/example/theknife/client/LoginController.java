@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.rmi.RemoteException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -31,10 +32,10 @@ import javafx.stage.Stage;
 /**
  * Controller per la gestione del login degli utenti.
  * Gestisce l'autenticazione degli utenti e il reindirizzamento alla schermata principale.
- * @author Claudio Bonci, 759939, Sede CO
- * @author Eleonora Anna Caredda, 762576, Sede CO
- * @author Filippo Crippa, 762174, Sede CO
  * @author Matilde Lecchi, 759875, Sede CO
+ * @author Eleonora Anna Caredda, 762576, Sede CO
+ * @author Claudio Bonci, 759939, Sede CO
+ * @author Filippo Crippa, 762174, Sede CO
  * @version 1.0
  * @since 2026-05-20
  */

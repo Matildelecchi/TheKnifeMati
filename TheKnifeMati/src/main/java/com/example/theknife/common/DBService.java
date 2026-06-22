@@ -15,5 +15,6 @@ public interface DBService extends Remote {
     ArrayList<String> getPreferiti(String query) throws RemoteException, SQLException;
     boolean saveRistorante(String string, Ristorante ristorante) throws RemoteException ;
     boolean saveOwnership(String string, String username, String nome) throws RemoteException ;
+    Boolean setUtente(Utente utente) throws RemoteException ;
 }
 

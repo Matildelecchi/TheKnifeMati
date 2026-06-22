@@ -280,5 +280,35 @@ public class ServerMain implements DBService {
             return false;
         }
     }
+
+
+    @Override
+    public Boolean setUtente(Utente utente) {
+        if (utente == null) {
+            return false;
+        }
+
+        String insertQuery = "INSERT INTO utenti (username, nome, cognome, email, password_hash, indirizzo, stato, citta, data_nascita, ruolo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(insertQuery)) {
+
+            ps.setString(1, utente.getUsername());
+            ps.setString(2, utente.getNome());
+            ps.setString(3, utente.getCognome());
+            ps.setString(4, utente.getEmail());
+            ps.setString(5, utente.getPasswordHash());
+            ps.setString(6, utente.getLuogoDomicilio());
+            ps.setString(7, utente.getStato());
+            ps.setString(8, utente.getCitta());
+            ps.setDate(9, utente.getDataNascitaSql());
+            ps.setBoolean(10, utente.isRistoratore());
+
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("Errore DB setUtente: " + e.getMessage());
+            return false;
+        }
+    }
 }
 

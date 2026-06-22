@@ -5,13 +5,17 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.theknife.common.DBService;
 import com.example.theknife.common.Utente;
 
 import javafx.event.ActionEvent;
@@ -75,11 +79,22 @@ public class RegistrazioneController {
 
     private Runnable onUserRegistered;
 
+    private static DBService server;
+
     /**
      * Inizializza il controller impostando i valori della ComboBox per il ruolo.
      */
     @FXML
     private void initialize() {
+        try {
+            server = ClientMain.getServer();
+        } catch (RemoteException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (NotBoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         // Popola la ComboBox con i ruoli disponibili
         comboRuolo.getItems().addAll("Cliente", "Ristoratore");
         comboRuolo.setValue("Cliente"); // Valore di default
@@ -132,8 +147,8 @@ public class RegistrazioneController {
                     ruolo
             );
 
-            // Salva l'utente nel file CSV
-            if (salvaUtenteNelCSV(nuovoUtente)) {
+            // Salva l'utente nel database
+            if (salvaUtenteNelDB(nuovoUtente)) {
                 mostraAvviso("Successo", "Registrazione completata con successo!\nPuoi ora effettuare il login.",
                         Alert.AlertType.INFORMATION);
                 if (onUserRegistered != null) onUserRegistered.run();
@@ -297,21 +312,15 @@ public class RegistrazioneController {
     private boolean verificaUsernameEsistente(String username) {
         try {
             // Usa lo stesso percorso esterno del metodo di salvataggio
-            File file = new File("data/utenti.csv");
-            if (!file.exists()) {
-                return false; // Se il file non esiste, l'username non può esistere
-            }
-
-            try (BufferedReader lettore = new BufferedReader(new FileReader(file, StandardCharsets.UTF_8))) {
-                String riga = lettore.readLine(); // Salta l'header
-                while ((riga = lettore.readLine()) != null) {
-                    if (!riga.trim().isEmpty()) {
-                        String[] parti = riga.split(",");
-                        if (parti.length >= 3 && parti[2].trim().equals(username)) {
-                            return true; // Username trovato
-                        }
+            try {
+                server.getUtenti("SELECT * FROM UTENTI").forEach(utente -> {
+                    if (utente.getUsername().equalsIgnoreCase(username)) {
+                        throw new RuntimeException("Username esistente");
                     }
-                }
+                });
+            } catch (SQLException e) {
+                System.err.println("Errore SQL durante la verifica dell'username: " + e.getMessage());
+                e.printStackTrace();
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -326,53 +335,19 @@ public class RegistrazioneController {
      * @return true se il salvataggio è riuscito, false altrimenti.
      */
 
-    private boolean salvaUtenteNelCSV(Utente utente) {
-        try {
+    private boolean salvaUtenteNelDB(Utente utente) throws RemoteException {
+       
+            Boolean risultato = server.setUtente(utente);
             // Usa un percorso esterno, che si trova nella stessa directory del JAR
-            String percorsoFile = "data/utenti.csv";
-
-            // Controlla e crea la cartella 'data' se non esiste.
-            File file = new File(percorsoFile);
-            File parentDir = file.getParentFile();
-
-            // Questo blocco deve essere eseguito prima di qualsiasi operazione sul file
-            if (parentDir != null && !parentDir.exists()) {
-                if (!parentDir.mkdirs()) {
-                    System.err.println("ERRORE: Impossibile creare la directory: " + parentDir.getAbsolutePath());
-                    return false;
-                }
+            
+           if (risultato != null && risultato) {
+                System.out.println("DEBUG: Utente salvato nel database: " + utente.toString());
+                return true;
+            } else {
+                System.err.println("ERRORE: Impossibile salvare l'utente nel database: " + utente.toString());
+                return false;
             }
-
-            // Controlla se il file esiste, se non esiste lo crea con l'header
-            if (!file.exists()) {
-                try (FileWriter writer = new FileWriter(file, StandardCharsets.UTF_8)) {
-                    writer.write("nome,cognome,username,password,data_nascita,luogo_domicilio,ruolo\n");
-                }
-            }
-
-            // Crea la stringa CSV per il nuovo utente
-            String rigaCSV = String.format("%s,%s,%s,%s,%s,%s,%s%n",
-                    utente.getNome(),
-                    utente.getCognome(),
-                    utente.getUsername(),
-                    utente.getPasswordHash(),
-                    utente.getDataNascita(),
-                    utente.getLuogoDomicilio(),
-                    utente.getRuolo()
-            );
-
-            // Aggiungi la riga al file CSV. Usa StandardOpenOption.APPEND per non sovrascrivere
-            Files.write(Paths.get(percorsoFile), rigaCSV.getBytes(StandardCharsets.UTF_8),
-                    StandardOpenOption.APPEND);
-
-            System.out.println("DEBUG: Utente salvato nel CSV: " + utente.toString());
-            return true;
-
-        } catch (IOException e) {
-            System.err.println("ERRORE: Impossibile salvare l'utente nel CSV: " + e.getMessage());
-            e.printStackTrace();
-            return false;
-        }
+       
     }
 
     /**

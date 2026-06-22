@@ -37,6 +37,30 @@ public class Utente  implements Serializable {
     private String stato;
     private String email;
 
+    public String getCitta() {
+        return citta;
+    }
+
+    public void setCitta(String citta) {
+        this.citta = citta;
+    }
+
+    public String getStato() {
+        return stato;
+    }
+
+    public void setStato(String stato) {
+        this.stato = stato;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     /**
      * Costruttore completo per inizializzare un nuovo utente con tutti i parametri necessari.
      * Questo costruttore è utilizzato per la registrazione e il caricamento dei dati da database.
@@ -63,6 +87,7 @@ public class Utente  implements Serializable {
         this.ruolo = (ruolo) ? "Ristoratore" : "Cliente";
     }
 
+    
     /**
      * Costruttore vuoto, utile per la deserializzazione o l'inizializzazione di un oggetto Utente
      * prima di impostarne i valori tramite i metodi setter.
@@ -277,5 +302,16 @@ public class Utente  implements Serializable {
     @Override
     public int hashCode() {
         return username != null ? username.hashCode() : 0;
+    }
+
+    public java.sql.Date getDataNascitaSql() {
+        java.sql.Date sqlDate = null;
+        try {
+            sqlDate = java.sql.Date.valueOf(this.dataNascita);
+        } catch (IllegalArgumentException e) {
+            System.err.println("Formato data non valido: " + this.dataNascita);
+            // Gestisci l'eccezione come necessario, ad esempio impostando una data di default o loggando l'errore
+        }
+        return sqlDate;
     }
 }
