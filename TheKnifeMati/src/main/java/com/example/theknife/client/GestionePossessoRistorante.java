@@ -1,21 +1,15 @@
 package com.example.theknife.client;
 
 import java.io.*;
-import java.net.URI;
-import java.net.URLEncoder;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Servizio per la gestione delle proprietà dei ristoranti.
+ * Servizio per la gestione delle propriet� dei ristoranti.
  * Implementa il pattern Singleton e gestisce le associazioni tra ristoratori
- * e i loro ristoranti, mantenendo la persistenza su file CSV.
+ * e i loro ristoranti, mantenendo la persistenza tramite RMI dal server.
  *
  *
  * @author Claudio Bonci, 759939, Sede CO
@@ -29,8 +23,6 @@ import java.util.Map;
 public class GestionePossessoRistorante {
     private static final String OWNERSHIP_FILE_PATH = "data/proprietari_ristoranti.csv";
     private static final String CSV_HEADER = "username,ristorante";
-    // Endpoint per recuperare i dati di proprietà dal server
-    private static final String OWNERSHIP_ENDPOINT = "http://localhost:8080/ownership";
 
     private static GestionePossessoRistorante instance;
     private final Map<String, List<String>> ownershipMap = new HashMap<>();
@@ -53,62 +45,38 @@ public class GestionePossessoRistorante {
     }
 
     /**
-     * Carica i dati di proprietà dal file CSV.
+     * Carica i dati di propriet� dal server tramite RMI.
      * <p>
-     * Se il file non esiste, viene creato con l'header predefinito.
      * I dati vengono memorizzati nella mappa {@code ownershipMap},
      * associando ciascun utente alla lista di ristoranti posseduti.
+     * Se il caricamento fallisce, l'applicazione continua comunque.
      * </p>
      */
     private void loadOwnershipData() {
-    // Prepara la query da mandare al server
-    String query = "SELECT * FROM ownership"; // o quello che ti serve
-    String encodedQuery = URLEncoder.encode(query, StandardCharsets.UTF_8);
-    String url = OWNERSHIP_ENDPOINT + "?query=" + encodedQuery;
-
-    ownershipMap.clear();
-
-    HttpClient client = HttpClient.newHttpClient();
-    HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create(url))
-            .GET()
-            .build();
-
-    try {
-        HttpResponse<String> response =
-                client.send(request, HttpResponse.BodyHandlers.ofString());
-
-        if (response.statusCode() != 200) {
-            System.err.println("Errore HTTP nel caricamento dati: " + response.statusCode());
-            return;
-        }
-
-        String body = response.body();
-
-        // Supponiamo che il server restituisca un testo con righe stile CSV
-        // prima riga = header, come prima
-        String[] lines = body.split("\\R"); // split su qualsiasi newline
-
-        if (lines.length <= 1) {
-            return; // niente dati
-        }
-
-        // saltiamo l’header (indice 0)
-        for (int i = 1; i < lines.length; i++) {
-            String line = lines[i].trim();
-            if (!line.isEmpty()) {
-                processOwnershipLine(line);
+        ownershipMap.clear();
+        
+        try {
+            ArrayList<String> remoteOwnership = RMIService.getService().getOwnership(
+                    "SELECT username, ristorante FROM proprietari_ristoranti"
+            );
+            
+            if (remoteOwnership != null) {
+                for (String row : remoteOwnership) {
+                    if (row == null || row.isBlank()) {
+                        continue;
+                    }
+                    processOwnershipLine(row);
+                }
             }
+            System.out.println("Ownership data loaded successfully from database");
+        } catch (Exception e) {
+            System.err.println("Errore nel caricamento dei dati di propriet� da server: " + e.getMessage());
+            // Non lanciare eccezione, permettere all'applicazione di continuare
         }
-
-    } catch (IOException | InterruptedException e) {
-        System.err.println("Errore nel caricamento dei dati di proprietà da server: " + e.getMessage());
-        Thread.currentThread().interrupt(); // buona pratica se è stato interrotto
     }
-}
 
     /**
-     * Crea il file di proprietà con header se non esiste.
+     * Crea il file di propriet� con header se non esiste.
      *@param file file CSV da creare
      */
     private void createOwnershipFile(File file) {
@@ -117,7 +85,7 @@ public class GestionePossessoRistorante {
             parentDir.mkdirs();
         }
 
-        try (FileWriter writer = new FileWriter(file, StandardCharsets.UTF_8)) {
+        try (FileWriter writer = new FileWriter(file)) {
             writer.write(CSV_HEADER + "\n");
         } catch (IOException e) {
             System.err.println("Errore nella creazione del file: " + e.getMessage());
@@ -125,7 +93,7 @@ public class GestionePossessoRistorante {
     }
 
     /**
-     * Processa una singola riga del file di proprietà.
+     * Processa una singola riga del file di propriet�.
      * <p>
      * La riga deve contenere almeno due campi: username e ID del ristorante.
      * Se il ristorante non esiste nel database, l'associazione viene ignorata.
@@ -175,8 +143,7 @@ public class GestionePossessoRistorante {
     }
 
     /**
-     * Aggiorna la mappa {@code ownershipMap} rileggendo i dati
-     * dal file CSV {@code OWNERSHIP_FILE_PATH}.
+     * Aggiorna la mappa {@code ownershipMap} rileggendo i dati dal server.
      */
     public void refreshOwnershipData() {
         loadOwnershipData();

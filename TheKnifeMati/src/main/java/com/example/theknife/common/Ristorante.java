@@ -39,7 +39,7 @@ public class Ristorante implements Serializable {
     /**
      * La località in cui si trova il ristorante.
      */
-    private String localita;
+    private String citta;
 
     /**
      * Il prezzo medio espresso come stringa.
@@ -51,15 +51,7 @@ public class Ristorante implements Serializable {
      */
     private String cucina;
 
-    /**
-     * La longitudine della posizione del ristorante.
-     */
-    private double longitudine;
 
-    /**
-     * La latitudine della posizione del ristorante.
-     */
-    private double latitudine;
 
     /**
      * Il numero di telefono del ristorante.
@@ -69,7 +61,7 @@ public class Ristorante implements Serializable {
     /**
      * L'URL associato al ristorante.
      */
-    private String url;
+    //private String url;
 
     /**
      * Il sito web del ristorante.
@@ -95,8 +87,42 @@ public class Ristorante implements Serializable {
      * Una descrizione del ristorante.
      */
     private String descrizione;
-    private String citta;
+    
     private String stato;
+    private String proprietario;
+
+    public String getStato() {
+        return stato;
+    }
+
+    public void setStato(String stato) {
+        this.stato = stato;
+    }
+
+    public String getProprietario() {
+        return proprietario;
+    }
+
+    public void setProprietario(String proprietario) {
+        this.proprietario = proprietario;
+    }
+
+    public boolean isConsegna() {
+        return consegna;
+    }
+
+    public void setConsegna(boolean consegna) {
+        this.consegna = consegna;
+    }
+
+    public boolean isPrenotazione() {
+        return prenotazione;
+    }
+
+    public void setPrenotazione(boolean prenotazione) {
+        this.prenotazione = prenotazione;
+    }
+
     private boolean consegna;
     private boolean prenotazione;
 
@@ -105,9 +131,8 @@ public class Ristorante implements Serializable {
      *
      * @param nome           il nome del ristorante.
      * @param indirizzo      l'indirizzo del ristorante.
-     * @param localita       la località in cui si trova il ristorante.
+     * @param citta       la località in cui si trova il ristorante.
      * @param prezzo         il prezzo medio espresso come stringa.
-     * @param cucina         il tipo di cucina offerto.
      * @param longitudine    la longitudine della posizione del ristorante.
      * @param latitudine     la latitudine della posizione del ristorante.
      * @param numeroTelefono il numero di telefono del ristorante.
@@ -117,13 +142,13 @@ public class Ristorante implements Serializable {
      * @param stellaVerde    il riconoscimento "stella verde" assegnato.
      * @param servizi        i servizi offerti dal ristorante.
      * @param descrizione    una descrizione del ristorante.
+     * @param string 
      */
-    public Ristorante(String numeroTelefono, String nome, String indirizzo, String stato, String citta, String servizi, 
-                      String sitoWeb, String premio, String cucina,double stelle, String prezzo, 
-                      boolean prenotazione,boolean consegna, String descrizione) {
+    public Ristorante(String numeroTelefono, String nome, String indirizzo, String stato, String citta, String servizi,
+                       String sitoWeb, String premio,String cucina, double stelle, String prezzo,
+                      boolean prenotazione, boolean consegna, String descrizione, String proprietario) {
         this.nome = nome;
         this.indirizzo = indirizzo;
-        this.localita = citta;
         this.citta = citta;
         this.prezzo = prezzo;
         this.cucina = cucina;
@@ -131,11 +156,21 @@ public class Ristorante implements Serializable {
         this.consegna = consegna;
         this.numeroTelefono = numeroTelefono;
         this.stato = stato;
+        //this.url = url;
         this.sitoWeb = sitoWeb;
         this.premio = premio;
         this.stelle = stelle;
         this.servizi = servizi;
         this.descrizione = descrizione;
+        this.proprietario = proprietario;
+    }
+
+    
+
+    /*public Ristorante(Object trim, String nome2, Object trim2, String string, Object trim3, String servizi2,
+            Object trim4, Object value, String cucine, Object object, Object value2, boolean b, boolean c, Object trim5,
+            String usernameUtente) {
+        //TODO Auto-generated constructor stub
     }
 
     /**
@@ -161,8 +196,18 @@ public class Ristorante implements Serializable {
      *
      * @return la località del ristorante.
      */
-    public String getLocalita() {
-        return localita;
+    public String getcitta() {
+        return citta;
+    }
+
+    /**
+     * Restituisce la località del ristorante.
+     * Metodo aggiuntivo con nome standard per JavaFX PropertyValueFactory.
+     *
+     * @return la località del ristorante.
+     */
+    public String getCitta() {
+        return citta;
     }
 
     /**
@@ -188,18 +233,14 @@ public class Ristorante implements Serializable {
      *
      * @return la longitudine.
      */
-    public double getLongitudine() {
-        return longitudine;
-    }
+    
 
     /**
      * Restituisce la latitudine della posizione del ristorante.
      *
      * @return la latitudine.
      */
-    public double getLatitudine() {
-        return latitudine;
-    }
+    
 
     /**
      * Restituisce il numero di telefono del ristorante.
@@ -210,14 +251,7 @@ public class Ristorante implements Serializable {
         return numeroTelefono;
     }
 
-    /**
-     * Restituisce l'URL associato al ristorante.
-     *
-     * @return l'URL del ristorante.
-     */
-    public String getUrl() {
-        return url;
-    }
+    
 
     /**
      * Restituisce il sito web del ristorante.
@@ -274,18 +308,18 @@ public class Ristorante implements Serializable {
         return "Ristorante{" +
                 "nome='" + nome + '\'' +
                 ", indirizzo='" + indirizzo + '\'' +
-                ", localita='" + localita + '\'' +
+                ", citta='" + citta + '\'' +
                 ", prezzo='" + prezzo + '\'' +
                 ", cucina='" + cucina + '\'' +
-                ", longitudine=" + longitudine +
-                ", latitudine=" + latitudine +
+                
                 ", numeroTelefono='" + numeroTelefono + '\'' +
-                ", url='" + url + '\'' +
+                //", url='" + url + '\'' +
                 ", sitoWeb='" + sitoWeb + '\'' +
                 ", premio='" + premio + '\'' +
                 ", stellaVerde='" + stelle + '\'' +
                 ", servizi='" + servizi + '\'' +
                 ", descrizione='" + descrizione + '\'' +
+                ", proprietario='" + proprietario + '\'' +
                 '}';
     }
 }

@@ -6,7 +6,7 @@
 
 <VBox spacing="20" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" 
       fx:controller="com.example.theknife.client.UserProfileController"
-      stylesheets="@../../../data/stile.css">
+    stylesheets="/data/stile.css">
     <padding>
         <Insets top="20" right="20" bottom="20" left="20"/>
     </padding>

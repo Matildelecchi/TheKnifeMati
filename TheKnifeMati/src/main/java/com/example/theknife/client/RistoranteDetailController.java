@@ -56,7 +56,7 @@ public class RistoranteDetailController implements Initializable {
     /** Etichetta per visualizzare l'indirizzo completo del ristorante. */
     @FXML private Label indirizzoLabel;
     /** Etichetta per visualizzare la località del ristorante. */
-    @FXML private Label localitaLabel;
+    @FXML private Label cittaLabel;
     /** Etichetta per visualizzare la fascia di prezzo del ristorante. */
     @FXML private Label prezzoLabel;
     /** Etichetta per visualizzare il tipo di cucina offerta dal ristorante. */
@@ -228,7 +228,7 @@ public class RistoranteDetailController implements Initializable {
     private void initializeDefaultValues() {
         if (nomeLabel != null) nomeLabel.setText("Caricamento...");
         if (indirizzoLabel != null) indirizzoLabel.setText("Caricamento...");
-        if (localitaLabel != null) localitaLabel.setText("Caricamento...");
+        if (cittaLabel != null) cittaLabel.setText("Caricamento...");
         if (cucinaLabel != null) cucinaLabel.setText("Caricamento...");
         if (telefonoLabel != null) telefonoLabel.setText("Caricamento...");
         if (prezzoLabel != null) prezzoLabel.setText("€");
@@ -264,7 +264,7 @@ public class RistoranteDetailController implements Initializable {
             System.out.println("=== DEBUG RISTORANTE ===");
             System.out.println("Nome: " + ristorante.getNome());
             System.out.println("Indirizzo: " + ristorante.getIndirizzo());
-            System.out.println("Localita: " + ristorante.getLocalita());
+            System.out.println("citta: " + ristorante.getcitta());
             System.out.println("Cucina: " + ristorante.getCucina());
             System.out.println("Prezzo: " + ristorante.getPrezzo());
             System.out.println("Telefono: " + ristorante.getNumeroTelefono());
@@ -309,8 +309,8 @@ public class RistoranteDetailController implements Initializable {
                     indirizzoLabel.setText(ristorante.getIndirizzo() != null ? ristorante.getIndirizzo() : "Indirizzo non disponibile");
                 }
 
-                if (localitaLabel != null) {
-                    localitaLabel.setText(ristorante.getLocalita() != null ? ristorante.getLocalita() : "Località non disponibile");
+                if (cittaLabel != null) {
+                    cittaLabel.setText(ristorante.getcitta() != null ? ristorante.getcitta() : "Località non disponibile");
                 }
 
                 if (cucinaLabel != null) {
@@ -408,10 +408,10 @@ public class RistoranteDetailController implements Initializable {
         if (ristorante == null) return false;
 
         String indirizzo = ristorante.getIndirizzo();
-        String localita = ristorante.getLocalita();
+        String citta = ristorante.getcitta();
 
         return (indirizzo != null && !indirizzo.trim().isEmpty()) ||
-                (localita != null && !localita.trim().isEmpty());
+                (citta != null && !citta.trim().isEmpty());
     }
 
     /**
@@ -434,9 +434,9 @@ public class RistoranteDetailController implements Initializable {
         }
 
         // Aggiungi la località se disponibile
-        String localita = ristorante.getLocalita();
-        if (localita != null && !localita.trim().isEmpty()) {
-            address.append(localita.trim());
+        String citta = ristorante.getcitta();
+        if (citta != null && !citta.trim().isEmpty()) {
+            address.append(citta.trim());
         }
 
         // Rimuovi eventuali virgole finali
@@ -628,7 +628,7 @@ public class RistoranteDetailController implements Initializable {
      * Aggiunge un protocollo HTTPS se mancante e tenta di aprire l'URL esterno.
      */
 
-    @FXML
+    /*@FXML
     private void handleSitoWebClick() {
         if (ristorante == null || ristorante.getUrl() == null ||
                 ristorante.getUrl().trim().isEmpty()) {

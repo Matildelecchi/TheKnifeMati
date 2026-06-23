@@ -42,7 +42,7 @@ public class GestioneRistorante {
         ArrayList<Ristorante> remoteRistoranti = null;
         try {
             remoteRistoranti = RMIService.getService().getRistoranti(
-                    "SELECT nome, indirizzo, localita, prezzo, cucina, longitudine, latitudine, numeroTelefono, url, sitoWeb, premio, stellaVerde, servizi, descrizione FROM ristoranti"
+                    "SELECT * FROM ristoranti"
             );
         } catch (Exception e) {
             // TODO Auto-generated catch block
@@ -114,7 +114,7 @@ public class GestioneRistorante {
             boolean saved = false;
             try {
                 saved = RMIService.getService().saveRistorante(
-                        "INSERT INTO ristoranti (nome, indirizzo, localita, prezzo, cucina, longitudine, latitudine, numeroTelefono, url, sitoWeb, premio, stellaVerde, servizi, descrizione) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                        "INSERT INTO ristoranti (nome, indirizzo, citta, prezzo, cucina, longitudine, latitudine, num_tel, sito, sitoWeb, premi, stellaVerde, servizi, descrizione) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                         ristorante
                 );
             } catch (Exception e) {

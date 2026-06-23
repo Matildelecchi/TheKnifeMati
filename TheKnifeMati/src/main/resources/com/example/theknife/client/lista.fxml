@@ -14,7 +14,7 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox spacing="10" stylesheets="/data/stile.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.theknife.client.RistorantiController">
+<VBox spacing="10" stylesheets="/data/stile.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.theknife.client.RistorantiController">
 
     <!-- Barra di navigazione -->
     <HBox alignment="CENTER_LEFT" prefHeight="73.0" prefWidth="500.0" spacing="10" styleClass="header-bar">
@@ -70,7 +70,7 @@
         <columns>
             <TableColumn fx:id="colonnaNome" editable="false" sortable="false" text="Nome" />
             <TableColumn fx:id="colonnaIndirizzo" editable="false" sortable="false" text="Indirizzo" />
-            <TableColumn fx:id="colonnaLocalita" editable="false" sortable="false" text="Località" />
+            <TableColumn fx:id="colonnacitta" editable="false" sortable="false" text="citta" />
             <TableColumn fx:id="colonnaPrezzo" editable="false" sortable="false" text="Prezzo" />
             <TableColumn fx:id="colonnaCucina" editable="false" sortable="false" text="Cucina" />
         </columns>

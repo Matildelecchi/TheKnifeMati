@@ -36,11 +36,42 @@ public class ServerMain implements DBService {
     public ServerMain() throws RemoteException {
     }
 
+    private void initializeDatabase() {
+        try (Connection conn = getConnection()) {
+            String createTableSQL = "CREATE TABLE IF NOT EXISTS proprietari_ristoranti (" +
+                    "id SERIAL PRIMARY KEY, " +
+                    "username VARCHAR(255) NOT NULL, " +
+                    "ristorante VARCHAR(255) NOT NULL, " +
+                    "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
+                    "UNIQUE(username, ristorante))";
+            
+            try (PreparedStatement ps = conn.prepareStatement(createTableSQL)) {
+                ps.execute();
+                System.out.println("proprietari_ristoranti table initialized");
+            }
+            
+            String createIndexSQL1 = "CREATE INDEX IF NOT EXISTS idx_proprietari_username ON proprietari_ristoranti(username)";
+            String createIndexSQL2 = "CREATE INDEX IF NOT EXISTS idx_proprietari_ristorante ON proprietari_ristoranti(ristorante)";
+            
+            try (PreparedStatement ps = conn.prepareStatement(createIndexSQL1)) {
+                ps.execute();
+            }
+            try (PreparedStatement ps = conn.prepareStatement(createIndexSQL2)) {
+                ps.execute();
+            }
+            System.out.println("Database indexes initialized");
+        } catch (SQLException e) {
+            System.err.println("Errore durante l'inizializzazione del database: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
     public static void main(String[] args) throws RemoteException {
         System.out.println("Hello from Server!");
         DBService stub = null;
 
         ServerMain obj = new ServerMain();
+        obj.initializeDatabase();
         try {
             stub = (DBService) UnicastRemoteObject.exportObject(
                     obj, PORT_STUB);
@@ -89,13 +120,15 @@ public class ServerMain implements DBService {
                         rs.getString("citta"),
                         rs.getString("servizi"),
                         rs.getString("sito"),
+                        
                         rs.getString("premi"),
                         rs.getString("cucina"),
                         rs.getDouble("stelle"),
                         rs.getString("prezzo"),
                         rs.getBoolean("prenotazione"),
                         rs.getBoolean("consegna"),
-                        rs.getString("descrizione")
+                        rs.getString("descrizione"),
+                        rs.getString("proprietario")
                 );
                 System.out.println(ristorante);
                 results.add(ristorante);
@@ -199,6 +232,10 @@ public class ServerMain implements DBService {
 
         } catch (SQLException e) {
             System.err.println("Errore DB getOwnership: " + e.getMessage());
+            if (e.getMessage() != null && (e.getMessage().contains("proprietari_ristoranti") || e.getMessage().contains("not exist"))) {
+                System.err.println("Ownership table not found, returning empty results");
+                return results;
+            }
             throw e;
         }
 
@@ -244,18 +281,17 @@ public class ServerMain implements DBService {
              PreparedStatement ps = conn.prepareStatement(string)) {
             ps.setString(1, ristorante.getNome());
             ps.setString(2, ristorante.getIndirizzo());
-            ps.setString(3, ristorante.getLocalita());
+            ps.setString(3, ristorante.getcitta());
             ps.setString(4, ristorante.getPrezzo());
             ps.setString(5, ristorante.getCucina());
-            ps.setDouble(6, ristorante.getLongitudine());
-            ps.setDouble(7, ristorante.getLatitudine());
-            ps.setString(8, ristorante.getNumeroTelefono());
-            ps.setString(9, ristorante.getUrl());
-            ps.setString(10, ristorante.getSitoWeb());
-            ps.setString(11, ristorante.getPremio());
-            ps.setDouble(12, ristorante.getStellaVerde());
-            ps.setString(13, ristorante.getServizi());
-            ps.setString(14, ristorante.getDescrizione());
+            ps.setString(6, ristorante.getNumeroTelefono());
+            
+            ps.setString(7, ristorante.getSitoWeb());
+            ps.setString(8, ristorante.getPremio());
+            ps.setDouble(9, ristorante.getStellaVerde());
+            ps.setString(10, ristorante.getServizi());
+            ps.setString(11, ristorante.getDescrizione());
+            ps.setString(12, ristorante.getStato());
 
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -307,6 +343,41 @@ public class ServerMain implements DBService {
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             System.err.println("Errore DB setUtente: " + e.getMessage());
+            return false;
+        }
+    }
+
+
+    @Override
+    public Boolean setRistorante(Ristorante ristorante,String utente) throws RemoteException {
+        if (ristorante == null) {
+            return false;
+        }
+
+        // Aggiunta della foreign key 'username' che punta alla tabella 'utenti'
+        String insertQuery = "INSERT INTO ristoranti (nome, indirizzo, citta, prezzo, cucina, num_tel, sito, sitoWeb, premi, stellaVerde, servizi, descrizione, proprietario, stato) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(insertQuery)) {
+
+            ps.setString(1, ristorante.getNome());
+            ps.setString(2, ristorante.getIndirizzo());
+            ps.setString(3, ristorante.getcitta());
+            ps.setString(4, ristorante.getPrezzo());
+            ps.setString(5, ristorante.getCucina());
+            ps.setString(6, ristorante.getNumeroTelefono());
+            ps.setString(7, ristorante.getSitoWeb());
+            ps.setString(8, ristorante.getPremio());
+            ps.setDouble(9, ristorante.getStellaVerde());
+            ps.setString(10, ristorante.getServizi());
+            ps.setString(11, ristorante.getDescrizione());
+            // Imposta la foreign key verso l'utente proprietario (username)
+            ps.setString(12, utente);
+            ps.setString(13, ristorante.getStato());
+
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("Errore DB setRistorante: " + e.getMessage());
             return false;
         }
     }

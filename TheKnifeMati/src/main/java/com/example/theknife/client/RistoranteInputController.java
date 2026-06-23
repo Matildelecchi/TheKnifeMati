@@ -4,9 +4,12 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
+import com.example.theknife.common.DBService;
 import com.example.theknife.common.Ristorante;
 import com.opencsv.CSVWriter;
 
@@ -52,7 +55,7 @@ public class RistoranteInputController implements Initializable {
     /** Campo di testo per l'indirizzo del ristorante. */
     @FXML private TextField indirizzoField;
     /** Campo di testo per la località del ristorante. */
-    @FXML private TextField localitaField;
+    @FXML private TextField cittaField;
     /** ComboBox per la selezione della fascia di prezzo. */
     @FXML private ComboBox<String> prezzoComboBox;
     /** ListView per la selezione multipla dei tipi di cucina. */
@@ -86,6 +89,8 @@ public class RistoranteInputController implements Initializable {
     private Runnable tornaAllaDashboardCallback;
     private Runnable aggiornaDatabaseRistorantiCallback;
 
+    private static DBService server;
+
     /**
      * Imposta il callback da eseguire per tornare alla dashboard principale.
      * Questo metodo viene utilizzato per implementare la navigazione tra le scene.
@@ -118,7 +123,17 @@ public class RistoranteInputController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         prezzoComboBox.setItems(FXCollections.observableArrayList("€", "€€", "€€€", "€€€€"));
-
+        try {
+            try {
+                server = ClientMain.getServer();
+            } catch (NotBoundException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        } catch (RemoteException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } 
         cucinaListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         cucinaListView.setItems(FXCollections.observableArrayList(
                 "Creativa", "Contemporanea", "Coreana", "Francese", "Italiana",
@@ -178,20 +193,22 @@ public class RistoranteInputController implements Initializable {
                     telefonoField.getText().trim(),
                     nome,
                     indirizzoField.getText().trim(),
-                    localitaField.getText().trim(),
-                    localitaField.getText().trim(),
+                    "", // stato non disponibile nel form
+                    cittaField.getText().trim(),
                     servizi,
+                    //urlField.getText().trim(),
                     sitoWebField.getText().trim(),
                     premiComboBox.getValue(),
                     cucine,
                     stellaVerdeCheckBox.isSelected() ? 0.0 : 1.0,
                     prezzoComboBox.getValue(),
-                    false, //prenotazione
-                    false, //consegna
-                    descrizioneArea.getText().trim()
+                    false, // prenotazione
+                    false, // consegna
+                    descrizioneArea.getText().trim(),
+                    SessioneUtente.getUsernameUtente()
             );
 
-            aggiungiRistoranteAlCSV(nuovoRistorante);
+            aggiungiRistoranteAlDB(nuovoRistorante);
 
             String username = SessioneUtente.getUsernameUtente();
             if (username != null && SessioneUtente.isRistoratore()) {
@@ -240,7 +257,7 @@ public class RistoranteInputController implements Initializable {
         if (indirizzoField.getText().trim().isEmpty()) {
             errori.append("- L'indirizzo è obbligatorio\n");
         }
-        if (localitaField.getText().trim().isEmpty()) {
+        if (cittaField.getText().trim().isEmpty()) {
             errori.append("- La località è obbligatoria\n");
         }
         if (prezzoComboBox.getValue() == null) {
@@ -309,41 +326,16 @@ public class RistoranteInputController implements Initializable {
      * @param ristorante L'oggetto {@link Ristorante} da salvare.
      * @throws IOException se si verifica un errore durante la scrittura del file.
      */
-    private void aggiungiRistoranteAlCSV(Ristorante ristorante) throws IOException {
-        String filePath = "data/michelin_my_maps.csv";
-        // Controlla e crea il file e le directory necessarie
-        File file = new File(filePath);
-        if (!file.getParentFile().exists()) {
-            file.getParentFile().mkdirs();
-        }
-        if (!file.exists()) {
-            try (FileWriter writer = new FileWriter(file)) {
-                writer.append("nome,indirizzo,localita,prezzo,cucina,longitudine,latitudine,numeroTelefono,url,sitoWeb,premio,stellaVerde,servizi,descrizione\n");
+    private void aggiungiRistoranteAlDB(Ristorante ristorante) throws IOException {
+        Boolean risultato = server.setRistorante(ristorante, SessioneUtente.getUsernameUtente());
+            // Usa un percorso esterno, che si trova nella stessa directory del JAR
+            
+           if (risultato != null && risultato) {
+                System.out.println("DEBUG: Ristorante salvato nel database: " + ristorante.toString());
+            
+            } else {
+                System.err.println("ERRORE: Impossibile salvare il ristorante nel database: " + ristorante.toString());
+                
             }
-        }
-
-        try (CSVWriter writer = new CSVWriter(new FileWriter(filePath, true))) {
-            String[] record = new String[]{
-                    ristorante.getNome(),
-                    ristorante.getIndirizzo(),
-                    ristorante.getLocalita(),
-                    ristorante.getPrezzo(),
-                    ristorante.getCucina(),
-                    String.valueOf(ristorante.getLongitudine()),
-                    String.valueOf(ristorante.getLatitudine()),
-                    ristorante.getNumeroTelefono(),
-                    ristorante.getUrl(),
-                    ristorante.getSitoWeb(),
-                    ristorante.getPremio(),
-                    String.valueOf(ristorante.getStellaVerde()),
-                    ristorante.getServizi(),
-                    ristorante.getDescrizione()
-            };
-            writer.writeNext(record);
-            System.out.println("Ristorante aggiunto al file CSV.");
-        } catch (IOException e) {
-            System.err.println("Errore durante l'aggiunta del ristorante al CSV: " + e.getMessage());
-            throw e; // Rilancia l'eccezione per la gestione a livello superiore
-        }
     }
 }

@@ -64,7 +64,7 @@ public class RistorantiController implements Initializable {
     /**
      * Colonna della tabella per la località del ristorante.
      */
-    @FXML private TableColumn<Ristorante, String> colonnaLocalita;
+    @FXML private TableColumn<Ristorante, String> colonnacitta;
     /**
      * Colonna della tabella per la fascia di prezzo del ristorante.
      */
@@ -117,14 +117,14 @@ public class RistorantiController implements Initializable {
         // Collega le colonne della tabella alle proprietà dell'oggetto Ristorante
         colonnaNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
         colonnaIndirizzo.setCellValueFactory(new PropertyValueFactory<>("indirizzo"));
-        colonnaLocalita.setCellValueFactory(new PropertyValueFactory<>("localita"));
+        colonnacitta.setCellValueFactory(new PropertyValueFactory<>("citta"));
         colonnaPrezzo.setCellValueFactory(new PropertyValueFactory<>("prezzo"));
         colonnaCucina.setCellValueFactory(new PropertyValueFactory<>("cucina"));
 
         // Imposta la proprietà reorderable su false per ogni colonna
         colonnaNome.setReorderable(false);
         colonnaIndirizzo.setReorderable(false);
-        colonnaLocalita.setReorderable(false);
+        colonnacitta.setReorderable(false);
         colonnaPrezzo.setReorderable(false);
         colonnaCucina.setReorderable(false);
 
@@ -219,7 +219,7 @@ public class RistorantiController implements Initializable {
         if (!csvFile.exists()) {
             System.err.println("File CSV non trovato. Creazione di un nuovo file.");
             try (FileWriter writer = new FileWriter(csvFile)) {
-                writer.append("nome,indirizzo,localita,prezzo,cucina,longitudine,latitudine,numeroTelefono,url,sitoWeb,premio,stellaVerde,servizi,descrizione\n");
+                writer.append("nome,indirizzo,citta,prezzo,cucina,longitudine,latitudine,numeroTelefono,url,sitoWeb,premio,stellaVerde,servizi,descrizione\n");
                 System.out.println("DEBUG: Nuovo file CSV creato con header.");
             } catch (IOException e) {
                 System.err.println("Errore durante la creazione del file CSV: " + e.getMessage());
@@ -238,7 +238,7 @@ public class RistorantiController implements Initializable {
                 try {
                     String nome = riga[0];
                     String indirizzo = riga[1];
-                    String localita = riga[2];
+                    String citta = riga[2];
                     String prezzo = riga[3];
                     String cucina = riga[4];
                     double longitudine = Double.parseDouble(riga[5]);
@@ -252,7 +252,7 @@ public class RistorantiController implements Initializable {
                     String descrizione = riga[13];
 
                     Ristorante ristorante = new Ristorante(
-                            nome, indirizzo, localita, prezzo, cucina,
+                            nome, indirizzo, citta, prezzo, cucina,
                             longitudine, latitudine, numeroTelefono,
                             url, sitoWeb, premio, stellaVerde,
                             servizi, descrizione
@@ -364,11 +364,11 @@ public class RistorantiController implements Initializable {
         ObservableList<Ristorante> risultati = FXCollections.observableArrayList(
                 listaRistoranti.filtered(r -> {
                     boolean matchNome = ricercaR.isEmpty() || r.getNome().toLowerCase().contains(ricercaR);
-                    boolean matchLocalita = ricercaL.isEmpty() || r.getLocalita().toLowerCase().startsWith(ricercaL);
+                    boolean matchcitta = ricercaL.isEmpty() || r.getcitta().toLowerCase().startsWith(ricercaL);
                     boolean matchCucina = ricercaC.isEmpty() || r.getCucina().toLowerCase().contains(ricercaC);
                     int prezzoCount = r.getPrezzo() == null ? 0 : r.getPrezzo().length();
                     boolean matchPrezzo = (selezioneCount == 0) || (prezzoCount == selezioneCount);
-                    return matchNome && matchLocalita && matchCucina && matchPrezzo;
+                    return matchNome && matchcitta && matchCucina && matchPrezzo;
                 })
         );
 

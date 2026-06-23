@@ -8,7 +8,7 @@
 
 <VBox spacing="20" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1" 
       fx:controller="com.example.theknife.client.RistoratoreDashboardController"
-      stylesheets="@../../../data/stile.css">
+    stylesheets="/data/stile.css">
     
     <padding>
         <Insets top="20" right="20" bottom="20" left="0"/>
@@ -39,7 +39,7 @@
                 <columns>
                     <TableColumn fx:id="nomeColumn" text="Nome" prefWidth="150"/>
                     <TableColumn fx:id="indirizzoColumn" text="Indirizzo" prefWidth="200"/>
-                    <TableColumn fx:id="localitaColumn" text="Località" prefWidth="120"/>
+                    <TableColumn fx:id="cittaColumn" text="Località" prefWidth="120"/>
                     <TableColumn fx:id="cucinaColumn" text="Cucina" prefWidth="150"/>
                     <TableColumn fx:id="prezzoColumn" text="Prezzo" prefWidth="80"/>
                 </columns>

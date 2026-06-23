@@ -16,5 +16,6 @@ public interface DBService extends Remote {
     boolean saveRistorante(String string, Ristorante ristorante) throws RemoteException ;
     boolean saveOwnership(String string, String username, String nome) throws RemoteException ;
     Boolean setUtente(Utente utente) throws RemoteException ;
+    Boolean setRistorante(Ristorante ristorante,String utente) throws RemoteException ;
 }
 

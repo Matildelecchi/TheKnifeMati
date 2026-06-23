@@ -65,7 +65,7 @@ public class RistoratoreDashboardController implements Initializable {
     /**
      * Colonna della tabella per la località del ristorante.
      */
-    @FXML private TableColumn<Ristorante, String> localitaColumn;
+    @FXML private TableColumn<Ristorante, String> cittaColumn;
     /**
      * Colonna della tabella per il tipo di cucina.
      */
@@ -172,7 +172,7 @@ public class RistoratoreDashboardController implements Initializable {
     private void setupRistorantiTable() {
         nomeColumn.setCellValueFactory(new PropertyValueFactory<>("nome"));
         indirizzoColumn.setCellValueFactory(new PropertyValueFactory<>("indirizzo"));
-        localitaColumn.setCellValueFactory(new PropertyValueFactory<>("localita"));
+        cittaColumn.setCellValueFactory(new PropertyValueFactory<>("citta"));
         cucinaColumn.setCellValueFactory(new PropertyValueFactory<>("cucina"));
         prezzoColumn.setCellValueFactory(new PropertyValueFactory<>("prezzo"));
 

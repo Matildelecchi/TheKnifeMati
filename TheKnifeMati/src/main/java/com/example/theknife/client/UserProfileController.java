@@ -184,7 +184,7 @@ public class UserProfileController implements Initializable {
         // Configura l'azione per il pulsante Dashboard.
         dashboardButton.setOnAction(event -> {
             try {
-                URL resourceUrl = getClass().getResource("/com/example/theknife/ristoratore-dashboard.fxml");
+                URL resourceUrl = getClass().getResource("/com/example/theknife/client/ristoratore-dashboard.fxml");
                 if (resourceUrl == null) {
                     throw new IOException("FXML file not found: ristoratore-dashboard.fxml");
                 }
@@ -221,7 +221,7 @@ public class UserProfileController implements Initializable {
     @FXML
     private void handleTornaAlMenu() {
         try {
-            URL resourceUrl = getClass().getResource("/com/example/theknife/lista.fxml");
+            URL resourceUrl = getClass().getResource("/com/example/theknife/client/lista.fxml");
             if (resourceUrl == null) {
                 throw new IOException("FXML file not found: lista.fxml");
             }
@@ -248,7 +248,7 @@ public class UserProfileController implements Initializable {
     private void handleLogout() {
         SessioneUtente.eseguiLogout();
         try {
-            URL resourceUrl = getClass().getResource("/com/example/theknife/login.fxml");
+            URL resourceUrl = getClass().getResource("/com/example/theknife/client/login.fxml");
             if (resourceUrl == null) {
                 throw new IOException("FXML file not found: login.fxml");
             }
