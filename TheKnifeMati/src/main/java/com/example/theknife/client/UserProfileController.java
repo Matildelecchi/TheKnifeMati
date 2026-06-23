@@ -2,11 +2,14 @@ package com.example.theknife.client;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.HashSet;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.Set;
 
+import com.example.theknife.common.DBService;
 import com.example.theknife.common.Recensione;
 import com.example.theknife.common.Ristorante;
 
@@ -76,10 +79,6 @@ public class UserProfileController implements Initializable {
      */
     @FXML private VBox preferitiBox;
     /**
-     * Lista per visualizzare i nomi dei ristoranti preferiti.
-     */
-    @FXML private ListView<String> preferitiList;
-    /**
      * Pulsante per eseguire il logout dall'applicazione.
      */
     @FXML private Button logoutButton;
@@ -92,10 +91,27 @@ public class UserProfileController implements Initializable {
      */
     @FXML private Button dashboardButton;
 
-    private final GestioneRecensioni gestioneRecensioni = GestioneRecensioni.getInstance();
-    private final GestionePreferiti gestionePreferiti = com.example.theknife.client.GestionePreferiti.getInstance();
-    private final GestioneRistorante gestioneRistorante = GestioneRistorante.getInstance();
+    //private final GestioneRecensioni gestioneRecensioni = GestioneRecensioni.getInstance();
+    //private final GestionePreferiti gestionePreferiti = com.example.theknife.client.GestionePreferiti.getInstance();
+    //private final GestioneRistorante gestioneRistorante = GestioneRistorante.getInstance();
 
+    @FXML private TableView<Ristorante> preferitiList;
+
+    @FXML private TableColumn<Ristorante, String> ristoranteColumn1;
+
+    @FXML private TableColumn<Ristorante, String> cittaColumn;
+
+    @FXML private TableColumn<Ristorante, String> stelleColumn1;
+
+    @FXML private TableColumn<Ristorante, String> statoColumn;
+
+    @FXML private TableColumn<Ristorante, String> cucinaColumn;
+    
+    //private final GestioneRecensioni gestioneRecensioni = GestioneRecensioni.getInstance();
+    //private final GestionePreferiti gestionePreferiti = com.example.theknife.client.GestionePreferiti.getInstance();
+    //private final GestioneRistorante gestioneRistorante = GestioneRistorante.getInstance();
+
+    private static DBService server;
     /**
      * Applica il foglio di stile CSS principale alla scena per uniformare l'aspetto dell'interfaccia utente.
      * Questo metodo verifica prima se lo stile è già stato applicato per evitare duplicazioni.
@@ -124,6 +140,11 @@ public class UserProfileController implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        try {
+            server = ClientMain.getServer();
+        } catch(RemoteException | NotBoundException e) {
+            e.printStackTrace();
+        }
         // Imposta le informazioni personali dell'utente nelle etichette.
         nomeLabel.setText(SessioneUtente.getNomeCompleto());
         ruoloLabel.setText("Ruolo: " + SessioneUtente.getRuolo());
@@ -140,11 +161,35 @@ public class UserProfileController implements Initializable {
         testoColumn.setReorderable(false);
         dataColumn.setReorderable(false);
 
+        // Configura le colonne della tabella delle recensioni associandole ai campi della classe Recensione.
+        ristoranteColumn1.setCellValueFactory(new PropertyValueFactory<>("nome"));
+        stelleColumn1.setCellValueFactory(new PropertyValueFactory<>("stelle"));
+        cittaColumn.setCellValueFactory(new PropertyValueFactory<>("citta"));
+        statoColumn.setCellValueFactory(new PropertyValueFactory<>("stato"));
+        cucinaColumn.setCellValueFactory(new PropertyValueFactory<>("cucina"));
+
+        // Disabilita il riordino delle colonne
+        ristoranteColumn1.setReorderable(false);
+        stelleColumn1.setReorderable(false);
+        cittaColumn.setReorderable(false);
+        statoColumn.setReorderable(false);
+        cucinaColumn.setReorderable(false);
+
         // Imposta la politica di ridimensionamento per riempire la larghezza della tabella
         recensioniTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        preferitiList.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         // Carica e visualizza le recensioni dell'utente corrente.
-        List<Recensione> recensioniUtente = gestioneRecensioni.getRecensioniUtente(SessioneUtente.getUsernameUtente());
+        List<Recensione> recensioniUtente = null; //gestioneRecensioni.getRecensioniUtente(SessioneUtente.getUsernameUtente());
+        try {
+            recensioniUtente = server.getRecensioniByUsername(SessioneUtente.getUsernameUtente()); //gestioneRecensioni.getRecensioniRistorante(ristorante.getNome());
+        } catch (RemoteException e) {
+            System.err.println("Errore di connessione al server RMI:");
+            e.printStackTrace();
+        } catch (SQLException e) {
+            System.err.println("Errore di query o database sul server:");
+            e.printStackTrace();
+        }
         recensioniTable.setItems(FXCollections.observableArrayList(recensioniUtente));
 
         // Gestisce la visibilità delle sezioni in base al ruolo dell'utente.
@@ -165,7 +210,7 @@ public class UserProfileController implements Initializable {
         // Aggiunge un gestore per gli eventi di doppio click sulle liste.
         preferitiList.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
-                String selectedRistoranteId = preferitiList.getSelectionModel().getSelectedItem();
+                String selectedRistoranteId = preferitiList.getSelectionModel().getSelectedItem().getNumeroTelefono();
                 if (selectedRistoranteId != null) {
                     openRistoranteDetail(selectedRistoranteId);
                 }
@@ -207,9 +252,18 @@ public class UserProfileController implements Initializable {
      * Recupera i preferiti dalla classe di gestione e aggiorna la {@link ListView}.
      */
     private void aggiornaListaPreferiti() {
-        preferitiList.setItems(FXCollections.observableArrayList(
+        /*preferitiList.setItems(FXCollections.observableArrayList(
                 gestionePreferiti.getPreferiti(SessioneUtente.getUsernameUtente())
-        ));
+        ));*/
+        //ObservableList<Ristorante> listaRistoranti = FXCollections.observableArrayList();
+
+        try {
+            preferitiList.setItems(FXCollections.observableArrayList(
+                server.getPreferiti(SessioneUtente.getUsernameUtente())
+            ));
+        } catch(RemoteException | SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -273,37 +327,44 @@ public class UserProfileController implements Initializable {
      *
      * @param nomeRistorante Il nome del ristorante da visualizzare.
      */
-    private void openRistoranteDetail(String nomeRistorante) {
-        System.out.println("DEBUG: Cercando ristorante con nome: '" + nomeRistorante + "'");
+    private void openRistoranteDetail(String numRistorante) {
+        System.out.println("DEBUG: Cercando ristorante con nome: '" + numRistorante + "'");
 
+        Ristorante ristorante = null;
         try {
             // Tentativo 1: Forza il ricaricamento dei ristoranti (se il metodo è disponibile).
-            gestioneRistorante.caricaRistoranti();
-        } catch (Exception e) {
-            System.out.println("DEBUG: Metodo caricaRistoranti() non disponibile: " + e.getMessage());
+            //gestioneRistorante.caricaRistoranti();
+            ristorante = server.getRistorante(numRistorante);
+        } catch (RemoteException | SQLException e) {
+            System.out.println("DEBUG: Metodo non disponibile: " + e.getMessage());
         }
 
-        Ristorante ristorante = gestioneRistorante.getRistorante(nomeRistorante);
+        //Ristorante ristorante = gestioneRistorante.getRistorante(numRistorante);
 
         // Tentativo 2: Se il primo tentativo fallisce, cerca in tutti i ristoranti caricati.
-        if (ristorante == null) {
+        /*if (ristorante == null) {
             System.out.println("DEBUG: getRistorante() ha restituito null. Ricerca in tutti i ristoranti...");
             List<Ristorante> tuttiRistoranti = gestioneRistorante.getTuttiRistoranti();
             System.out.println("DEBUG: Totale ristoranti disponibili: " + tuttiRistoranti.size());
             for (Ristorante r : tuttiRistoranti) {
-                if (r.getNome().equals(nomeRistorante)) {
+                if (r.getNome().equals(numRistorante)) {
                     ristorante = r;
                     System.out.println("DEBUG: Trovato match esatto!");
                     break;
                 }
             }
-        }
+        }*/
 
         // Se il ristorante non viene trovato in nessun modo, mostra un errore e interrompe l'esecuzione.
         if (ristorante == null) {
-            String debugMessage = "Ristorante cercato: '" + nomeRistorante + "'\n";
+            String debugMessage = "Ristorante cercato con numero telefono: '" + numRistorante + "'\n";
             debugMessage += "Username corrente: " + SessioneUtente.getUsernameUtente() + "\n";
-            debugMessage += "Preferiti dell'utente: " + gestionePreferiti.getPreferiti(SessioneUtente.getUsernameUtente());
+            try {
+                debugMessage += "Preferiti dell'utente: " + server.getPreferiti(SessioneUtente.getUsernameUtente());
+            } catch (RemoteException | SQLException e) {
+                e.printStackTrace();
+            }
+            
 
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Errore Debug");
@@ -315,7 +376,7 @@ public class UserProfileController implements Initializable {
 
         // Se il ristorante è stato trovato, carica e visualizza la schermata dei dettagli.
         try {
-            URL resourceUrl = getClass().getResource("/com/example/theknife/ristorante-detail.fxml");
+            URL resourceUrl = getClass().getResource("/com/example/theknife/client/ristorante-detail.fxml");
             if (resourceUrl == null) {
                 throw new IOException("FXML file not found: ristorante-detail.fxml");
             }
@@ -354,7 +415,13 @@ public class UserProfileController implements Initializable {
      */
     public void refreshData() {
         // Aggiorna la tabella delle recensioni.
-        List<Recensione> recensioniUtente = gestioneRecensioni.getRecensioniUtente(SessioneUtente.getUsernameUtente());
+        ArrayList<Recensione> recensioniUtente = null;
+        try {
+            recensioniUtente = server.getRecensioniByUsername(SessioneUtente.getUsernameUtente());
+        } catch(RemoteException | SQLException e) {
+            e.printStackTrace();
+        }
+        
         recensioniTable.setItems(FXCollections.observableArrayList(recensioniUtente));
 
         // Aggiorna la lista dei preferiti.

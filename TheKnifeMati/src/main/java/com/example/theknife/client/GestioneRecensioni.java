@@ -1,6 +1,11 @@
 package com.example.theknife.client;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -113,14 +118,14 @@ public class GestioneRecensioni {
                 String data = parts[4].trim();
                 String risposta = parts.length > 5 ? cleanCsvValue(parts[5]) : "";
 
-                Recensione recensione = new Recensione(stelle, testo, ristoranteId, username);
+                /*Recensione recensione = new Recensione(stelle, testo, ristoranteId, username);
                 recensione.setData(data);
                 if (!risposta.isEmpty()) {
                     recensione.setRisposta(risposta);
                 }
 
                 recensioniMap.computeIfAbsent(ristoranteId, k -> new ArrayList<>()).add(recensione);
-                allRecensioni.add(recensione);
+                allRecensioni.add(recensione);*/
             } catch (NumberFormatException e) {
                 System.err.println("Errore nel parsing della recensione: " + e.getMessage());
             }

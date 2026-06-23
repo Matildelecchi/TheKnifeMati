@@ -5,7 +5,6 @@ import java.net.URL;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
@@ -114,6 +113,15 @@ public class RistorantiController implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        try {
+            server = ClientMain.getServer();
+        } catch (RemoteException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (NotBoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         // Collega le colonne della tabella alle proprietà dell'oggetto Ristorante
         colonnaNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
         colonnaIndirizzo.setCellValueFactory(new PropertyValueFactory<>("indirizzo"));
@@ -156,8 +164,10 @@ public class RistorantiController implements Initializable {
 
         // Adatta l'interfaccia utente in base al ruolo dell'utente
         String ruoloUtente = SessioneUtente.getRuoloUtente();
-        if(!"ristoratore".equals(ruoloUtente) && !"cliente".equals(ruoloUtente)){
+        if(SessioneUtente.isOspite()) {
             profiloButton.setText("Registrati");
+        } else {
+            profiloButton.setText(SessioneUtente.getUsernameUtente());
         }
         if("ristoratore".equals(ruoloUtente))
             profiloButton.setVisible(false);
@@ -186,25 +196,18 @@ public class RistorantiController implements Initializable {
      *
      * @throws RuntimeException se si verifica un errore di I/O o di validazione del CSV.
      */
-    private void caricaDatiCSV() {
-        ArrayList<Ristorante> ris = null;
+    private void caricadatiSQL() {
         try {
-            server = ClientMain.getServer();
-            System.out.println("\n\nciao\n\n");
-            ris = server.getRistoranti("SELECT * FROM RISTORANTI");
-        } catch(RemoteException | NotBoundException | SQLException e) {
+            for(Ristorante r: server.getRistoranti()) {
+                if(r!=null) listaRistoranti.add(r);
+            }
+            if(listaRistoranti == null) {
+                System.out.println("Non è presente alcun ristorante nel Database");
+                return;
+            }
+            System.out.println("Sono presenti ristoranti nel Database");
+        } catch(RemoteException | SQLException e) {
             e.printStackTrace();
-        }
-
-        if(ris==null) {
-            System.out.println("Non è presente alcun ristorante nel Database");
-            return;
-        } 
-
-        System.out.println("Sono presenti ristoranti nel Database");
-
-        for(Ristorante r: ris) {
-            if(r!=null) listaRistoranti.add(r);
         }
         /* 
         String filePath = "data/michelin_my_maps.csv";
@@ -364,7 +367,7 @@ public class RistorantiController implements Initializable {
         ObservableList<Ristorante> risultati = FXCollections.observableArrayList(
                 listaRistoranti.filtered(r -> {
                     boolean matchNome = ricercaR.isEmpty() || r.getNome().toLowerCase().contains(ricercaR);
-                    boolean matchcitta = ricercaL.isEmpty() || r.getcitta().toLowerCase().startsWith(ricercaL);
+                    boolean matchcitta = ricercaL.isEmpty() || r.getCitta().toLowerCase().startsWith(ricercaL);
                     boolean matchCucina = ricercaC.isEmpty() || r.getCucina().toLowerCase().contains(ricercaC);
                     int prezzoCount = r.getPrezzo() == null ? 0 : r.getPrezzo().length();
                     boolean matchPrezzo = (selezioneCount == 0) || (prezzoCount == selezioneCount);
@@ -382,8 +385,20 @@ public class RistorantiController implements Initializable {
      */
     public void refreshData() {
         listaRistoranti.clear();
-        caricaDatiCSV();
+        caricadatiSQL();
         tabellaRistoranti.setItems(listaRistoranti);
+        /*new Thread(() -> {
+            try {
+                var risultato = server.getRistoranti();
+                Platform.runLater(() -> {
+                    listaRistoranti.setAll(risultato);
+                    tabellaRistoranti.setItems(listaRistoranti);
+                });
+            } catch (RemoteException | SQLException e) {
+                e.printStackTrace();
+                Platform.runLater(() -> mostraErrore("Errore nel caricamento dei ristoranti", e));
+            }
+        }).start();*/
     }
 
     /**

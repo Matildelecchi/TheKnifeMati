@@ -1,17 +1,14 @@
 package com.example.theknife.client;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.List;
-import java.rmi.*;
 
 import com.example.theknife.common.DBService;
 import com.example.theknife.common.Utente;

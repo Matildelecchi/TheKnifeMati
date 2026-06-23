@@ -2,11 +2,6 @@ package com.example.theknife.common;
 
 import java.io.Serializable;
 
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-
 /**
  * Rappresenta una recensione per un ristorante.
  * <p>
@@ -34,12 +29,15 @@ import javafx.beans.property.StringProperty;
 public class Recensione  implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private final IntegerProperty stelle;
-    private final StringProperty testo;
-    private final StringProperty ristoranteId;
-    private final StringProperty username;
-    private final StringProperty data;
-    private final StringProperty risposta;
+    private int stelle;
+    private String testo;
+    private String ristoranteTel;
+    private String username;
+    private String data;
+    private String ora;
+    private String risposta;
+    private int idRec;
+    private String titolo;
 
     /**
      * Costruttore per creare una nuova recensione.
@@ -49,49 +47,64 @@ public class Recensione  implements Serializable {
      * @param ristoranteId identificativo del ristorante recensito
      * @param username username dell'utente che scrive la recensione
      */
-    public Recensione(int stelle, String testo, String ristoranteId, String username) {
-        this.stelle = new SimpleIntegerProperty(stelle);
-        this.testo = new SimpleStringProperty(testo);
-        this.ristoranteId = new SimpleStringProperty(ristoranteId);
-        this.username = new SimpleStringProperty(username);
-        this.data = new SimpleStringProperty(java.time.LocalDateTime.now().format(
-            java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-        this.risposta = new SimpleStringProperty("");
+    public Recensione(int id_rec,String titolo, String testo,int stelle, String data_rec, String ora, String num_tel, String username) {
+        this.stelle = stelle;
+        this.testo = testo;
+        this.ristoranteTel = num_tel;
+        this.username = username;
+        /*this.data = new SimpleStringProperty(java.time.LocalDateTime.now().format(
+            java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));*/
+        this.data =  data_rec;
+        this.ora =  ora;
+
+        this.risposta = "";
+        this.idRec = id_rec;
+        this.titolo = titolo;
     }
 
     // ------------------ Value Getters ------------------
 
     /** Restituisce il numero di stelle della recensione */
-    public int getStelle() { return stelle.get(); }
+    public int getStelle() { return stelle; }
+
+    public String getOra() { return ora; }
+    public int getIdRec() { return idRec; }
+    public String getTitolo() { return titolo; }
 
     /** Restituisce il testo della recensione */
-    public String getTesto() { return testo.get(); }
+    public String getTesto() { return testo; }
 
     /** Restituisce l'ID del ristorante recensito */
-    public String getRistoranteId() { return ristoranteId.get(); }
+    public String getRistoranteId() { return ristoranteTel; }
 
     /** Restituisce l'username dell'utente che ha scritto la recensione */
-    public String getUsername() { return username.get(); }
+    public String getUsername() { return username; }
 
     /** Restituisce la data di creazione della recensione */
-    public String getData() { return data.get(); }
+    public String getData() { return data; }
 
     /** Restituisce la risposta del ristorante */
-    public String getRisposta() { return risposta.get(); }
+    public String getRisposta() { 
+        return risposta; 
+    }
 
     // ------------------ Value Setters ------------------
 
     /** Imposta il numero di stelle della recensione */
-    public void setStelle(int value) { stelle.set(value); }
+    public void setStelle(int value) { stelle = value; }
 
     /** Imposta il testo della recensione */
-    public void setTesto(String value) { testo.set(value); }
+    public void setTesto(String value) { testo = value; }
 
     /** Imposta la data della recensione */
-    public void setData(String value) { data.set(value); }
+    public void setData(String value) { data = value; }
 
     /** Imposta la risposta del ristorante */
-    public void setRisposta(String value) { risposta.set(value); }
+    public void setRisposta(String value) { risposta = value; }
+
+    public void setOra(String value) {ora = value; }
+    public void setIdRec(int value) {idRec = value; }
+    public void setTitolo(String value) {titolo = value; }
 
     /**
      * Rappresentazione testuale della recensione.

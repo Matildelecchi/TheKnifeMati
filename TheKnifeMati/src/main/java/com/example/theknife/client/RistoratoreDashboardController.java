@@ -2,12 +2,16 @@ package com.example.theknife.client;
 
 import java.io.IOException;
 import java.net.URL;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.ResourceBundle;
 
+import com.example.theknife.common.DBService;
 import com.example.theknife.common.Recensione;
 import com.example.theknife.common.Ristorante;
 
@@ -112,10 +116,11 @@ public class RistoratoreDashboardController implements Initializable {
      */
     @FXML private ListView<Recensione> recensioniList;
 
-    private final GestioneRistorante gestioneRistorante = GestioneRistorante.getInstance();
+    //private final GestioneRistorante gestioneRistorante = GestioneRistorante.getInstance();
     private final GestionePossessoRistorante ownershipService = GestionePossessoRistorante.getInstance();
-    private final GestioneRecensioni gestioneRecensioni = GestioneRecensioni.getInstance();
+    //private final GestioneRecensioni gestioneRecensioni = GestioneRecensioni.getInstance();
     private Ristorante selectedRistorante;
+    private static DBService server;
 
     /**
      * Inizializza il controller della dashboard del ristoratore.
@@ -128,7 +133,14 @@ public class RistoratoreDashboardController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         // Inizializza i dati dei servizi di gestione
-        gestioneRistorante.caricaRistoranti();
+        //gestioneRistorante.caricaRistoranti();
+        try {
+            server = ClientMain.getServer();
+            System.out.println("server = " + server);
+        } catch(RemoteException | NotBoundException e) {
+            System.out.println("errore con il server");
+            e.printStackTrace();
+        }
         ownershipService.initialize();
         // Configura le viste (tabelle, liste)
         setupRistorantiTable();
@@ -149,14 +161,20 @@ public class RistoratoreDashboardController implements Initializable {
     public void refreshData() {
         System.out.println("Debug: Inizio refreshData");
 
-        gestioneRistorante.caricaRistoranti();
+        //gestioneRistorante.caricaRistoranti();
         ownershipService.refreshOwnershipData();
 
         loadRistoranti();
         System.out.println("Debug: Ristoranti ricaricati");
 
         if (selectedRistorante != null) {
-            selectedRistorante = gestioneRistorante.getRistorante(selectedRistorante.getNome());
+            try {
+                //selectedRistorante = gestioneRistorante.getRistorante(selectedRistorante.getNome());
+                selectedRistorante = server.getRistorante(selectedRistorante.getNumeroTelefono());
+            } catch(RemoteException | SQLException e) {
+                System.out.println("errore con il server");
+                e.printStackTrace();
+            }
             if (selectedRistorante != null) {
                 updateStatistiche();
                 loadRecensioni();
@@ -229,7 +247,13 @@ public class RistoratoreDashboardController implements Initializable {
 
         ristorantiTable.getItems().clear();
 
-        List<String> ownedRestaurants = ownershipService.getOwnedRestaurants(currentUser);
+        ArrayList<Ristorante> ownedRestaurants = null;//ownershipService.getOwnedRestaurants(currentUser);
+        try {
+            ownedRestaurants = server.getRistorantiByUsername(currentUser);
+        } catch(RemoteException | SQLException e) {
+            System.out.println("errore con il server");
+            e.printStackTrace();
+        }
 
         if (ownedRestaurants.isEmpty()) {
             System.out.println("Nessun ristorante trovato per l'utente: " + currentUser);
@@ -238,7 +262,7 @@ public class RistoratoreDashboardController implements Initializable {
             return;
         }
 
-        List<Ristorante> ristoranti = ownedRestaurants.stream()
+        /*ArrayList<Ristorante> ristoranti = ownedRestaurants.stream()
                 .map(nome -> {
                     Ristorante r = gestioneRistorante.getRistorante(nome);
                     if (r == null) {
@@ -247,16 +271,16 @@ public class RistoratoreDashboardController implements Initializable {
                     return r;
                 })
                 .filter(Objects::nonNull)
-                .toList();
+                .toList();*/
 
-        ristorantiTable.setItems(FXCollections.observableArrayList(ristoranti));
+        ristorantiTable.setItems(FXCollections.observableArrayList(ownedRestaurants));
 
-        if (ristoranti.isEmpty()) {
+        if (ownedRestaurants.isEmpty()) {
             detailsContainer.setVisible(false);
             selectedRistorante = null;
             System.out.println("Nessun ristorante valido trovato per l'utente: " + currentUser);
         } else {
-            System.out.println("Caricati " + ristoranti.size() + " ristoranti per l'utente " + currentUser);
+            System.out.println("Caricati " + ownedRestaurants.size() + " ristoranti per l'utente " + currentUser);
         }
     }
 
@@ -292,8 +316,13 @@ public class RistoratoreDashboardController implements Initializable {
     private void updateStatistiche() {
         if (selectedRistorante == null) return;
 
-        List<Recensione> recensioni = gestioneRecensioni.getRecensioniRistorante(selectedRistorante.getNome());
-
+        ArrayList<Recensione> recensioni = null;//gestioneRecensioni.getRecensioniRistorante(selectedRistorante.getNome());
+        try {
+            recensioni = server.getRecensioni(selectedRistorante.getNumeroTelefono());
+        } catch(RemoteException | SQLException e) {
+            System.out.println("errore con il server");
+            e.printStackTrace();
+        }
         double media = recensioni.stream()
                 .mapToInt(Recensione::getStelle)
                 .average()
@@ -318,14 +347,21 @@ public class RistoratoreDashboardController implements Initializable {
     private void loadRecensioni() {
         if (selectedRistorante == null) return;
 
-        List<Recensione> recensioni = gestioneRecensioni.getRecensioniRistorante(selectedRistorante.getNome());
+        ArrayList<Recensione> recensioni = null;//gestioneRecensioni.getRecensioniRistorante(selectedRistorante.getNome());
 
+        try {
+            recensioni = server.getRecensioni(selectedRistorante.getNumeroTelefono());
+        } catch(RemoteException | SQLException e) {
+            System.out.println("errore con il server");
+            e.printStackTrace();
+        }
         recensioni.sort((r1, r2) -> r2.getData().compareTo(r1.getData()));
+        List<Recensione> tmp = recensioni;
         if (recensioni.size() > 5) {
-            recensioni = recensioni.subList(0, 5);
+            tmp = recensioni.subList(0, 5);
         }
 
-        recensioniList.setItems(FXCollections.observableArrayList(recensioni));
+        recensioniList.setItems(FXCollections.observableArrayList(tmp));
     }
 
     /**
@@ -363,7 +399,13 @@ public class RistoratoreDashboardController implements Initializable {
             String risposta = rispostaArea.getText().trim();
             if (!risposta.isEmpty()) {
                 recensione.setRisposta(risposta);
-                gestioneRecensioni.salvaRispostaRecensione(recensione);
+                try {
+                    server.saveRisposta(recensione.getIdRec(), risposta);
+                } catch(RemoteException | SQLException ex) {
+                    System.out.println("errore con il server");
+                    ex.printStackTrace();
+                }
+                //gestioneRecensioni.salvaRispostaRecensione(recensione);
                 loadRecensioni();
                 dialogStage.close();
 
@@ -440,7 +482,7 @@ public class RistoratoreDashboardController implements Initializable {
 
             controller.setAggiornaDatabaseRistorantiCallback(() -> {
                 System.out.println("Debug: Inizia aggiornamento database");
-                gestioneRistorante.caricaRistoranti();
+                //gestioneRistorante.caricaRistoranti();
             });
 
             controller.setTornaAllaDashboardCallback(() -> {
@@ -516,7 +558,7 @@ public class RistoratoreDashboardController implements Initializable {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("recensioni.fxml"));
             Parent recensioniRoot = loader.load();
             RecensioniController controller = loader.getController();
-            controller.setRistoranteId(selectedRistorante.getNome());
+            controller.setRistoranteTel(selectedRistorante.getNome());
             controller.setParentController(this);
             Parent rootToRestore = ristorantiTable.getScene().getRoot();
             controller.setRootToRestore(rootToRestore);

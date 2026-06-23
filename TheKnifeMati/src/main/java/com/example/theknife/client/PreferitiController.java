@@ -82,7 +82,7 @@ public class PreferitiController implements Initializable {
                     // Crea una label con le informazioni del ristorante
                     String info = String.format("%s - %s (%s)", 
                         item.getNome(), 
-                        item.getcitta(), 
+                        item.getCitta(), 
                         item.getCucina()
                     );
                     

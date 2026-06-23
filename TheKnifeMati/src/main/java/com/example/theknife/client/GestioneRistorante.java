@@ -1,7 +1,5 @@
 package com.example.theknife.client;
 
-import java.rmi.RemoteException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -41,9 +39,7 @@ public class GestioneRistorante {
         
         ArrayList<Ristorante> remoteRistoranti = null;
         try {
-            remoteRistoranti = RMIService.getService().getRistoranti(
-                    "SELECT * FROM ristoranti"
-            );
+            remoteRistoranti = RMIService.getService().getRistoranti();
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

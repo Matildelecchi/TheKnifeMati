@@ -1,11 +1,14 @@
 package com.example.theknife.client;
 
-import java.io.IOException;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import com.example.theknife.common.DBService;
 import com.example.theknife.common.Recensione;
 
 import javafx.collections.FXCollections;
@@ -66,15 +69,16 @@ import javafx.scene.layout.VBox;
             @FXML private Label totaleRecensioniLabel;
             @FXML private Button modificaRispostaButton;
 
-            private final GestioneRecensioni gestioneRecensioni = GestioneRecensioni.getInstance();
+            //private final GestioneRecensioni gestioneRecensioni = GestioneRecensioni.getInstance();
             private final GestionePossessoRistorante ownershipService = GestionePossessoRistorante.getInstance();
-            private String ristoranteId;
+            private String numTelefono;
             private ObservableList<Recensione> masterRecensioniList;
             private FilteredList<Recensione> filteredList;
             private RistoratoreDashboardController parentController;
             private Parent rootToRestore;
             private Runnable tornaAlMenuPrincipaleCallback;
 
+            private static DBService server;
 
             /**
              * Imposta il controller della dashboard del ristoratore come parent.
@@ -106,6 +110,14 @@ import javafx.scene.layout.VBox;
              */
             @FXML
             public void initialize() {
+                try {
+                    server = ClientMain.getServer();
+                    System.out.println("server = "+server);
+                } catch(RemoteException | NotBoundException e) {
+                    System.out.println("errore con il server");
+                    e.printStackTrace();
+                }
+                
                 setupUI();
                 setupTable();
                 setupListeners();
@@ -133,10 +145,10 @@ import javafx.scene.layout.VBox;
 
                 // Verifica se il ristoratore possiede questo ristorante
                 boolean isProprietario = false;
-                if (isRistoratore && ristoranteId != null) {
+                if (isRistoratore && numTelefono != null) {
                     String currentUser = SessioneUtente.getUsernameUtente();
                     List<String> ownedRestaurants = ownershipService.getOwnedRestaurants(currentUser);
-                    isProprietario = ownedRestaurants.contains(ristoranteId);
+                    isProprietario = ownedRestaurants.contains(numTelefono);
                 }
 
                 boolean puo_recensire = isUtenteLoggato && (!isRistoratore || !isProprietario);
@@ -187,9 +199,9 @@ import javafx.scene.layout.VBox;
 
             // Verifica se il ristoratore possiede questo ristorante
             boolean isProprietario = false;
-            if (isRistoratore && ristoranteId != null && currentUser != null) {
+            if (isRistoratore && numTelefono != null && currentUser != null) {
                 List<String> ownedRestaurants = ownershipService.getOwnedRestaurants(currentUser);
-                isProprietario = ownedRestaurants.contains(ristoranteId);
+                isProprietario = ownedRestaurants.contains(numTelefono);
             }
 
             boolean puo_recensire = SessioneUtente.isUtenteLoggato() && (!isRistoratore || !isProprietario);
@@ -239,8 +251,14 @@ import javafx.scene.layout.VBox;
      * Aggiorna la lista delle recensioni e il grafico a torta.
      */
     public void refreshData() {
-        if (ristoranteId != null) {
-            masterRecensioniList.setAll(gestioneRecensioni.getRecensioniRistorante(ristoranteId));
+        if (numTelefono != null) {
+            try {
+                masterRecensioniList.setAll(server.getRecensioni(numTelefono));
+            } catch(RemoteException | SQLException e) {
+                System.out.println("errore con il server");
+                e.printStackTrace();
+            }
+            //masterRecensioniList.setAll(server.getRecensioni(numTelefono));
             aggiornaPieChart();
             pulisciCampi();
         }
@@ -251,8 +269,8 @@ import javafx.scene.layout.VBox;
      *
      * @param id ID del ristorante
      */
-    public void setRistoranteId(String id) {
-        this.ristoranteId = id;
+    public void setRistoranteTel(String tel) {
+        this.numTelefono = tel;
         refreshData();
         aggiornaPieChart();
 
@@ -319,13 +337,18 @@ import javafx.scene.layout.VBox;
             return;
         }
 
-        Recensione recensione = new Recensione(
+        /*Recensione recensione = new Recensione(
                 (int) stelleSlider.getValue(),
                 recensioneTextArea.getText().trim(),
-                ristoranteId,
+                numTelefono,
                 SessioneUtente.getUsernameUtente()
         );
-        gestioneRecensioni.aggiungiRecensione(recensione);
+        gestioneRecensioni.aggiungiRecensione(recensione);*/
+        try {
+            server.saveRecensione("", recensioneTextArea.getText().trim(), (int) stelleSlider.getValue(), numTelefono, SessioneUtente.getUsernameUtente());
+        } catch(SQLException | RemoteException e) {
+            e.printStackTrace();
+        }
         refreshData();
         notificaAggiornamentoRecensioni();
     }
@@ -345,12 +368,17 @@ import javafx.scene.layout.VBox;
             return;
         }
 
-        gestioneRecensioni.modificaRecensione(
+        /*gestioneRecensioni.modificaRecensione(
                 selected.getUsername(),
-                ristoranteId,
+                numTelefono,
                 recensioneTextArea.getText(),
                 (int) stelleSlider.getValue()
-        );
+        );*/
+        try {
+            server.modifyRecensione(selected.getIdRec(), selected.getTitolo(), recensioneTextArea.getText(), (int) stelleSlider.getValue());
+        } catch(SQLException | RemoteException e) {
+            e.printStackTrace();
+        }
         refreshData();
         notificaAggiornamentoRecensioni();
     }
@@ -370,7 +398,12 @@ import javafx.scene.layout.VBox;
             return;
         }
 
-        gestioneRecensioni.eliminaRecensione(selected.getUsername(), ristoranteId);
+        //gestioneRecensioni.eliminaRecensione(selected.getUsername(), numTelefono);
+        try {
+            server.removeRecensione(selected.getIdRec());
+        } catch(SQLException | RemoteException e) {
+            e.printStackTrace();
+        }
         refreshData();
         notificaAggiornamentoRecensioni();
     }
@@ -391,7 +424,12 @@ import javafx.scene.layout.VBox;
         }
 
         selected.setRisposta(rispostaTextArea.getText().trim());
-        gestioneRecensioni.salvaRispostaRecensione(selected);
+        //gestioneRecensioni.salvaRispostaRecensione(selected);
+        try {
+            server.saveRisposta(selected.getIdRec(), selected.getRisposta());
+        } catch(SQLException | RemoteException e) {
+            e.printStackTrace();
+        }
         refreshData();
         notificaAggiornamentoRecensioni();
     }
@@ -442,7 +480,7 @@ import javafx.scene.layout.VBox;
         // Verifica che il ristoratore sia proprietario del ristorante
         String currentUser = SessioneUtente.getUsernameUtente();
         List<String> ownedRestaurants = ownershipService.getOwnedRestaurants(currentUser);
-        if (!ownedRestaurants.contains(ristoranteId)) {
+        if (!ownedRestaurants.contains(numTelefono)) {
             mostraErrore("Errore", "Puoi modificare le risposte solo nei tuoi ristoranti.");
             return;
         }
@@ -454,7 +492,12 @@ import javafx.scene.layout.VBox;
 
         // Aggiorna la risposta
         selected.setRisposta(rispostaTextArea.getText().trim());
-        gestioneRecensioni.salvaRispostaRecensione(selected);
+        //gestioneRecensioni.salvaRispostaRecensione(selected);
+        try {
+            server.modifyRisposta(selected.getIdRec(), selected.getRisposta());
+        } catch(SQLException | RemoteException e) {
+            e.printStackTrace();
+        }
         refreshData();
         notificaAggiornamentoRecensioni();
 

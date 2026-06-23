@@ -13,7 +13,7 @@ public class ClientMain
     private static DBService stub = null;
     static int PORT = 1234;
 
-    public ClientMain() {
+    public static void main(String[] args) {
 
         try {
             // Getting the registry
@@ -25,7 +25,7 @@ public class ClientMain
             // Calling the remote method using the obtained object
             System.out.println(stub.getCurrentDateTime());
             //System.out.println("\n"+stub.getCurrentDateTime()+"\n");
-            //App.main(args);
+            App.main(args);
 
         } catch (Exception e) {
             System.err.println("Client exception: " + e.toString());

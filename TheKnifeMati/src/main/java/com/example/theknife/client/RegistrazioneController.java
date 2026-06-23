@@ -1,10 +1,7 @@
 package com.example.theknife.client;
 
-import java.io.*;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.security.MessageDigest;
@@ -184,7 +181,7 @@ public class RegistrazioneController {
             // Calcola le dimensioni della finestra
             Rectangle2D limitiSchermo = Screen.getPrimary().getVisualBounds();
             double larghezza = Math.min(600, limitiSchermo.getWidth() * 0.6);
-            double altezza = Math.min(500, limitiSchermo.getHeight() * 0.7);
+            double altezza = Math.min(500, limitiSchermo.getHeight() * 0.7); 
 
             // Crea la scena
             Scene scena = new Scene(radice, larghezza, altezza);

@@ -6,9 +6,14 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import com.example.theknife.common.DBService;
 import com.example.theknife.common.Recensione;
 import com.example.theknife.common.Ristorante;
 
@@ -104,6 +109,7 @@ public class RistoranteDetailController implements Initializable {
     private Runnable tornaAlMenuPrincipaleCallback;
     /** Il nodo radice della scena precedente da ripristinare per la navigazione all'indietro. */
     private Parent rootToRestore;
+    private DBService server;
 
     /**
      * Imposta i servizi host per aprire link esterni.
@@ -146,6 +152,13 @@ public class RistoranteDetailController implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        try {
+            server = ClientMain.getServer();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        } catch (NotBoundException e) {
+            e.printStackTrace();
+        }
         // Inizializzazione dei componenti
         setupTextAreas();
         setupPosizioneButton();
@@ -264,7 +277,7 @@ public class RistoranteDetailController implements Initializable {
             System.out.println("=== DEBUG RISTORANTE ===");
             System.out.println("Nome: " + ristorante.getNome());
             System.out.println("Indirizzo: " + ristorante.getIndirizzo());
-            System.out.println("citta: " + ristorante.getcitta());
+            System.out.println("citta: " + ristorante.getCitta());
             System.out.println("Cucina: " + ristorante.getCucina());
             System.out.println("Prezzo: " + ristorante.getPrezzo());
             System.out.println("Telefono: " + ristorante.getNumeroTelefono());
@@ -310,7 +323,7 @@ public class RistoranteDetailController implements Initializable {
                 }
 
                 if (cittaLabel != null) {
-                    cittaLabel.setText(ristorante.getcitta() != null ? ristorante.getcitta() : "Località non disponibile");
+                    cittaLabel.setText(ristorante.getCitta() != null ? ristorante.getCitta() : "Località non disponibile");
                 }
 
                 if (cucinaLabel != null) {
@@ -408,7 +421,7 @@ public class RistoranteDetailController implements Initializable {
         if (ristorante == null) return false;
 
         String indirizzo = ristorante.getIndirizzo();
-        String citta = ristorante.getcitta();
+        String citta = ristorante.getCitta();
 
         return (indirizzo != null && !indirizzo.trim().isEmpty()) ||
                 (citta != null && !citta.trim().isEmpty());
@@ -434,7 +447,7 @@ public class RistoranteDetailController implements Initializable {
         }
 
         // Aggiungi la località se disponibile
-        String citta = ristorante.getcitta();
+        String citta = ristorante.getCitta();
         if (citta != null && !citta.trim().isEmpty()) {
             address.append(citta.trim());
         }
@@ -604,7 +617,7 @@ public class RistoranteDetailController implements Initializable {
      * Aggiunge un protocollo HTTPS se mancante e tenta di aprire l'URL esterno.
      */
     @FXML
-    private void handleSitoWebClick1() {
+    private void handleSitoWebClick() {
         if (ristorante == null || ristorante.getSitoWeb() == null ||
                 ristorante.getSitoWeb().trim().isEmpty()) {
             System.out.println("Nessun sito web disponibile");
@@ -682,10 +695,10 @@ public class RistoranteDetailController implements Initializable {
     @FXML
     private void handleMostraRecensioni() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/theknife/recensioni.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/theknife/client/recensioni.fxml"));
             Parent recensioniRoot = loader.load();
             RecensioniController controller = loader.getController();
-            controller.setRistoranteId(ristorante.getNome());
+            controller.setRistoranteTel(ristorante.getNumeroTelefono());
             // Passa il root di ritorno
             Parent rootToRestore = nomeLabel.getScene().getRoot();
             controller.setRootToRestore(rootToRestore);
@@ -738,15 +751,21 @@ public class RistoranteDetailController implements Initializable {
         if (ristorante == null || recensioniRecentList == null) return;
 
         // Load only the 3 most recent reviews
-        List<Recensione> listaRecensioni = gestioneRecensioni.getRecensioniRistorante(ristorante.getNome());
+        ArrayList<Recensione> listaRecensioni = null;//gestioneRecensioni.getRecensioniRistorante(ristorante.getNome());
+        try {
+            listaRecensioni = server.getRecensioni(ristorante.getNumeroTelefono());
+        } catch (RemoteException | SQLException e) {
+            e.printStackTrace();
+        } 
         ObservableList<Recensione> recensioni = FXCollections.observableArrayList(listaRecensioni);
         recensioni.sort((r1, r2) -> r2.getData().compareTo(r1.getData())); // Sort by date descending
 
+        List<Recensione> tmp = listaRecensioni;
         if (recensioni.size() > 3) {
-            recensioni = FXCollections.observableArrayList(recensioni.subList(0, 3));
+            tmp = recensioni.subList(0, 3);
         }
 
-        recensioniRecentList.setItems(recensioni);
+        recensioniRecentList.setItems(FXCollections.observableArrayList(tmp));
     }
 
     /**
