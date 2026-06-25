@@ -10,7 +10,6 @@ public interface DBService extends Remote {
     String getCurrentDateTime() throws RemoteException;
     ArrayList<Utente> getUtenti(String query) throws RemoteException, SQLException;
     ArrayList<String> getOwnership(String query) throws RemoteException, SQLException;
-    boolean saveRistorante(String string, Ristorante ristorante) throws RemoteException ;
     boolean saveRistorante(String string, Ristorante ristorante) throws RemoteException, SQLException;
     boolean saveOwnership(String string, String username, String nome) throws RemoteException ;
     Boolean setUtente(Utente utente) throws RemoteException ;
