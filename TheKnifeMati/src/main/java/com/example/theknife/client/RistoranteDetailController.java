@@ -732,14 +732,17 @@ public class RistoranteDetailController implements Initializable {
         if (ristorante == null) return;
 
         String username = SessioneUtente.getUsernameUtente();
-        String ristoranteId = ristorante.getNome();
-
-        if (gestionePreferiti.isPreferito(username, ristoranteId)) {
-            gestionePreferiti.rimuoviPreferito(username, ristoranteId);
-            preferitoButton.setText("🤍 Aggiungi ai preferiti");
-        } else {
-            gestionePreferiti.aggiungiPreferito(username, ristoranteId);
-            preferitoButton.setText("❤️ Rimuovi dai preferiti");
+        String ristoranteTel = ristorante.getNumeroTelefono();
+        try {
+            if (server.isPreferito(username, ristoranteTel)) {
+                server.removePreferito(username, ristoranteTel);
+                preferitoButton.setText("🤍 Aggiungi ai preferiti");
+            } else {
+                server.savePreferito(username, ristoranteTel);
+                preferitoButton.setText("❤️ Rimuovi dai preferiti");
+            }
+        } catch(RemoteException | SQLException e) {
+            e.printStackTrace();
         }
     }
 

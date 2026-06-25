@@ -285,9 +285,71 @@ public class ServerMain implements DBService {
         return results;
     }
 
+    @Override
+    public boolean savePreferito(String username, String num_tel) throws RemoteException, SQLException {
+        if (username == null || username.trim().isEmpty() || num_tel == null || num_tel.trim().isEmpty()) {
+            return false;
+        }
+        
+        String query = "INSERT INTO preferiti(username, num_tel) VALUES(?, ?);";
+        //query = query.replace("?",""+id_rec+"");
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setString(1, username);
+            ps.setString(2, num_tel);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("Errore DB savePreferiti: " + e.getMessage());
+            //throw e;
+        }
+        return false;
+    }
 
     @Override
-    public boolean saveRistorante(String string, Ristorante ristorante) throws RemoteException {
+    public boolean removePreferito(String username, String num_tel) throws RemoteException, SQLException {
+        if (username == null || username.trim().isEmpty() || num_tel == null || num_tel.trim().isEmpty()) {
+            return false;
+        }
+        
+        String query = "DELETE FROM preferiti WHERE username = ? AND num_tel = ?;";
+        //query = query.replace("?",""+id_rec+"");
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setString(1, username);
+            ps.setString(2, num_tel);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("Errore DB removePreferiti: " + e.getMessage());
+            //throw e;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean isPreferito(String username, String num_tel) throws RemoteException, SQLException {
+        if (username == null || username.trim().isEmpty() || num_tel == null || num_tel.trim().isEmpty()) {
+            return false;
+        }
+        String query = "SELECT * from preferiti where username = ? and num_tel = ?";
+        //query = query.replace("?",""+username+"");
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setString(1, username);
+            ps.setString(2,num_tel);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                return true;
+            }
+            rs.close();
+        } catch (SQLException e) {
+            System.err.println("Errore DB getPreferiti: " + e.getMessage());
+            throw e;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean saveRistorante(String string, Ristorante ristorante) throws RemoteException, SQLException {
         if (string == null || string.trim().isEmpty() || ristorante == null) {
             return false;
         }

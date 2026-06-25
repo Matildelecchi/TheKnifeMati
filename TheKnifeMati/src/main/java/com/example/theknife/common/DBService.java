@@ -11,6 +11,7 @@ public interface DBService extends Remote {
     ArrayList<Utente> getUtenti(String query) throws RemoteException, SQLException;
     ArrayList<String> getOwnership(String query) throws RemoteException, SQLException;
     boolean saveRistorante(String string, Ristorante ristorante) throws RemoteException ;
+    boolean saveRistorante(String string, Ristorante ristorante) throws RemoteException, SQLException;
     boolean saveOwnership(String string, String username, String nome) throws RemoteException ;
     Boolean setUtente(Utente utente) throws RemoteException ;
     Boolean setRistorante(Ristorante ristorante,String utente) throws RemoteException ;
@@ -30,5 +31,8 @@ public interface DBService extends Remote {
     boolean removeRecensione(int id_rec) throws RemoteException, SQLException;
     double getStelleByTel(String num_tel) throws RemoteException, SQLException;
     ArrayList<Ristorante> getRistorantiByUsername(String username) throws RemoteException, SQLException;
+    boolean isPreferito(String username, String num_tel) throws RemoteException, SQLException;
+    boolean removePreferito(String username, String num_tel) throws RemoteException, SQLException;
+    boolean savePreferito(String username, String num_tel) throws RemoteException, SQLException;
 }
 
