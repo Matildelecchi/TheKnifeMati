@@ -283,15 +283,15 @@ public class RistorantiController implements Initializable {
             RistoranteDetailController controller = loader.getController();
             controller.setRistorante(ristorante);
 
+            Scene scene = tabellaRistoranti.getScene();
             Parent rootToRestore = tabellaRistoranti.getScene().getRoot();
             controller.setRootToRestore(rootToRestore);
             controller.setTornaAlMenuPrincipaleCallback(() -> {
-                Scene scene = root.getScene();
+                //Scene scene = root.getScene();
                 scene.setRoot(rootToRestore);
                 this.refreshData();
             });
 
-            Scene scene = tabellaRistoranti.getScene();
             scene.setRoot(root);
         } catch (IOException e) {
             mostraErrore("Errore nell'apertura della finestra dei dettagli del ristorante.", e);

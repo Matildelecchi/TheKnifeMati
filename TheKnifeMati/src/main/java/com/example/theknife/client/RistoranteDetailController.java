@@ -100,9 +100,9 @@ public class RistoranteDetailController implements Initializable {
     /** Servizi host forniti dal framework JavaFX per l'apertura di link esterni. */
     private HostServices hostServices;
     /** Istanza singleton per la gestione delle operazioni sui preferiti. */
-    private final GestionePreferiti gestionePreferiti = com.example.theknife.client.GestionePreferiti.getInstance();
+    //private final GestionePreferiti gestionePreferiti = com.example.theknife.client.GestionePreferiti.getInstance();
     /** Istanza singleton per la gestione delle operazioni sulle recensioni. */
-    private final GestioneRecensioni gestioneRecensioni = GestioneRecensioni.getInstance();
+    //private final GestioneRecensioni gestioneRecensioni = GestioneRecensioni.getInstance();
     /** Callback opzionale per tornare al menu principale. */
     private Runnable returnToMenuCallback;
     /** Callback per tornare alla schermata precedente. */
@@ -289,12 +289,16 @@ public class RistoranteDetailController implements Initializable {
             System.out.println("========================");
         }
 
-        if (preferitoButton != null && SessioneUtente.getUsernameUtente() != null) {
-            boolean isPreferito = gestionePreferiti.isPreferito(
+        try {
+            if (preferitoButton != null && SessioneUtente.getUsernameUtente() != null) {
+            boolean isPreferito = server.isPreferito(
                     SessioneUtente.getUsernameUtente(),
-                    ristorante.getNome()
+                    ristorante.getNumeroTelefono()
             );
             preferitoButton.setText(isPreferito ? "❤️ Rimuovi dai preferiti" : "🤍 Aggiungi ai preferiti");
+        }
+        } catch(SQLException | RemoteException e) {
+            e.printStackTrace();
         }
 
         updateUI();

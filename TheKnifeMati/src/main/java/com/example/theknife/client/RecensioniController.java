@@ -26,6 +26,7 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
 
@@ -68,6 +69,7 @@ import javafx.scene.layout.VBox;
             @FXML private TextArea rispostaTextArea;
             @FXML private Label totaleRecensioniLabel;
             @FXML private Button modificaRispostaButton;
+            @FXML private TextField titoloText;
 
             //private final GestioneRecensioni gestioneRecensioni = GestioneRecensioni.getInstance();
             private final GestionePossessoRistorante ownershipService = GestionePossessoRistorante.getInstance();
@@ -224,9 +226,11 @@ import javafx.scene.layout.VBox;
                 if (isAutore && puo_recensire) {
                     recensioneTextArea.setText(newVal.getTesto());
                     stelleSlider.setValue(newVal.getStelle());
+                    titoloText.setText(newVal.getTitolo());
                 } else {
                     recensioneTextArea.clear();
                     stelleSlider.setValue(3);
+                    titoloText.setText("");
                 }
 
                 // Precompila la risposta se il ristoratore proprietario ha già risposto
@@ -331,6 +335,10 @@ import javafx.scene.layout.VBox;
             return;
         }
 
+        if (titoloText.getText().trim().isEmpty()) {
+            mostraErrore("Errore", "Il titolo della recensione non può essere vuoto.");
+            return;
+        }
         // Controllo se l'utente ha già recensito questo ristorante
         if (masterRecensioniList.stream().anyMatch(r -> Objects.equals(r.getUsername(), SessioneUtente.getUsernameUtente()))) {
             mostraErrore("Errore", "Hai già recensito questo ristorante. Puoi modificare o eliminare la tua recensione esistente.");
@@ -345,7 +353,7 @@ import javafx.scene.layout.VBox;
         );
         gestioneRecensioni.aggiungiRecensione(recensione);*/
         try {
-            server.saveRecensione("", recensioneTextArea.getText().trim(), (int) stelleSlider.getValue(), numTelefono, SessioneUtente.getUsernameUtente());
+            server.saveRecensione(titoloText.getText().trim(), recensioneTextArea.getText().trim(), (int) stelleSlider.getValue(), numTelefono, SessioneUtente.getUsernameUtente());
         } catch(SQLException | RemoteException e) {
             e.printStackTrace();
         }
@@ -438,6 +446,7 @@ import javafx.scene.layout.VBox;
      * Pulisce i campi di testo e resetta la selezione della tabella.
      */
     private void pulisciCampi() {
+        titoloText.setText("");
         recensioneTextArea.clear();
         rispostaTextArea.clear();
         stelleSlider.setValue(3);
