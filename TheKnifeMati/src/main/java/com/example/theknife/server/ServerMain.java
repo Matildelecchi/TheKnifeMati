@@ -104,7 +104,7 @@ public class ServerMain implements DBService {
         ArrayList<Ristorante> results = new ArrayList<>();
         //System.out.println(stato);
         String query;
-        if (citta == null && citta.trim().isEmpty()) {
+        if (citta == null || citta.trim().isEmpty()) {
             query = "SELECT * FROM ristoranti";
         } else {
             query = "SELECT * FROM ristoranti ORDER BY CASE " +
@@ -448,7 +448,7 @@ public class ServerMain implements DBService {
         //System.out.println(ristorante);
 
         // Aggiunta della foreign key 'username' che punta alla tabella 'utenti'
-        String insertQuery = "INSERT INTO ristoranti (nome, indirizzo, citta, prezzo, cucina, num_tel, sito, sitoWeb, premi, stellaVerde, servizi, descrizione, proprietario, stato) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String insertQuery = "INSERT INTO ristoranti (nome, indirizzo, citta, prezzo, cucina, num_tel, sito, sitoPremio, premi, stelle, servizi, descrizione, proprietario, stato) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(insertQuery)) {
@@ -460,13 +460,14 @@ public class ServerMain implements DBService {
             ps.setString(5, ristorante.getCucina());
             ps.setString(6, ristorante.getNumeroTelefono());
             ps.setString(7, ristorante.getSitoWeb());
-            ps.setString(8, ristorante.getPremio());
-            ps.setDouble(9, ristorante.getStelle());
-            ps.setString(10, ristorante.getServizi());
-            ps.setString(11, ristorante.getDescrizione());
+            ps.setString(8, ristorante.getUrl());
+            ps.setString(9, ristorante.getPremio());
+            ps.setDouble(10, ristorante.getStellaVerde());
+            ps.setString(11, ristorante.getServizi());
+            ps.setString(12, ristorante.getDescrizione());
             // Imposta la foreign key verso l'utente proprietario (username)
-            ps.setString(12, utente);
-            ps.setString(13, ristorante.getStato());
+            ps.setString(13, utente);
+            ps.setString(14, ristorante.getStato());
 
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {

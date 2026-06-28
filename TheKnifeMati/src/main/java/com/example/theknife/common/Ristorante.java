@@ -254,6 +254,9 @@ public class Ristorante implements Serializable {
     }
 
     public double getStelle() {
+        return stelle;
+    }
+    public double getStelleByTel() {
         DBService server;
         double val = 0;
         try {
@@ -266,6 +269,7 @@ public class Ristorante implements Serializable {
         }
         return val;
     }
+
 
     public String getStato() {
         return stato;
