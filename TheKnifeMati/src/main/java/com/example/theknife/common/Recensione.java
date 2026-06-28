@@ -75,7 +75,7 @@ public class Recensione  implements Serializable {
     public String getTesto() { return testo; }
 
     /** Restituisce l'ID del ristorante recensito */
-    public String getRistoranteId() { return ristoranteTel; }
+    public String getRistoranteTel() { return ristoranteTel; }
 
     /** Restituisce l'username dell'utente che ha scritto la recensione */
     public String getUsername() { return username; }
@@ -114,6 +114,6 @@ public class Recensione  implements Serializable {
     @Override
     public String toString() {
         return String.format("Recensione{stelle=%d, testo='%s', ristorante='%s', utente='%s', data='%s'}",
-                getStelle(), getTesto(), getRistoranteId(), getUsername(), getData());
+                getStelle(), getTesto(), getRistoranteTel(), getUsername(), getData());
     }
 }

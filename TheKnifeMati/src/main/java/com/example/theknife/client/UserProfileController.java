@@ -13,6 +13,7 @@ import com.example.theknife.common.DBService;
 import com.example.theknife.common.Recensione;
 import com.example.theknife.common.Ristorante;
 
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -74,6 +75,8 @@ public class UserProfileController implements Initializable {
      * Colonna della tabella delle recensioni per la data della recensione.
      */
     @FXML private TableColumn<Recensione, String> dataColumn;
+
+    @FXML private TableColumn<Recensione, String> titoloColumn;
     /**
      * Contenitore per la sezione dei ristoranti preferiti, visibile solo per i clienti.
      */
@@ -150,7 +153,21 @@ public class UserProfileController implements Initializable {
         ruoloLabel.setText("Ruolo: " + SessioneUtente.getRuolo());
 
         // Configura le colonne della tabella delle recensioni associandole ai campi della classe Recensione.
-        ristoranteColumn.setCellValueFactory(new PropertyValueFactory<>("ristoranteId"));
+        //ristoranteColumn.setCellValueFactory(new PropertyValueFactory<>("num_tel"));
+        ristoranteColumn.setCellValueFactory(cellData -> {
+            String numTel = cellData.getValue().getRistoranteTel();
+            String nome = numTel;
+            try {
+                Ristorante r = server.getRistorante(numTel);
+                if (r != null) {
+                    nome = r.getNome();
+                }
+            } catch (RemoteException | SQLException e) {
+                e.printStackTrace();
+            }
+            return new SimpleStringProperty(nome);
+        });
+        titoloColumn.setCellValueFactory(new PropertyValueFactory<>("titolo"));
         stelleColumn.setCellValueFactory(new PropertyValueFactory<>("stelle"));
         testoColumn.setCellValueFactory(new PropertyValueFactory<>("testo"));
         dataColumn.setCellValueFactory(new PropertyValueFactory<>("data"));
@@ -160,6 +177,7 @@ public class UserProfileController implements Initializable {
         stelleColumn.setReorderable(false);
         testoColumn.setReorderable(false);
         dataColumn.setReorderable(false);
+        titoloColumn.setReorderable(false);
 
         // Configura le colonne della tabella delle recensioni associandole ai campi della classe Recensione.
         ristoranteColumn1.setCellValueFactory(new PropertyValueFactory<>("nome"));
@@ -196,12 +214,13 @@ public class UserProfileController implements Initializable {
         boolean isCliente = SessioneUtente.isCliente();
         boolean isRistoratore = SessioneUtente.isRistoratore();
 
-        preferitiBox.setVisible(isCliente);
+        //preferitiBox.setVisible(isCliente);
         dashboardButton.setVisible(isRistoratore);
 
-        if (isCliente) {
+        /*if (isCliente) {
             aggiornaListaPreferiti();
-        }
+        }*/
+        aggiornaListaPreferiti();
 
         // Imposta i gestori degli eventi per i pulsanti.
         logoutButton.setOnAction(event -> handleLogout());
@@ -210,9 +229,9 @@ public class UserProfileController implements Initializable {
         // Aggiunge un gestore per gli eventi di doppio click sulle liste.
         preferitiList.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
-                String selectedRistoranteId = preferitiList.getSelectionModel().getSelectedItem().getNumeroTelefono();
-                if (selectedRistoranteId != null) {
-                    openRistoranteDetail(selectedRistoranteId);
+                String selectedRistoranteTel = preferitiList.getSelectionModel().getSelectedItem().getNumeroTelefono();
+                if (selectedRistoranteTel != null) {
+                    openRistoranteDetail(selectedRistoranteTel);
                 }
             }
         });
@@ -221,7 +240,7 @@ public class UserProfileController implements Initializable {
             if (event.getClickCount() == 2) {
                 Recensione selectedRecensione = recensioniTable.getSelectionModel().getSelectedItem();
                 if (selectedRecensione != null) {
-                    openRistoranteDetail(selectedRecensione.getRistoranteId());
+                    openRistoranteDetail(selectedRecensione.getRistoranteTel());
                 }
             }
         });

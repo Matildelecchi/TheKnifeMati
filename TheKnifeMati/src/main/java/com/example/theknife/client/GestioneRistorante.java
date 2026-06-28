@@ -39,7 +39,7 @@ public class GestioneRistorante {
         
         ArrayList<Ristorante> remoteRistoranti = null;
         try {
-            remoteRistoranti = RMIService.getService().getRistoranti();
+            remoteRistoranti = RMIService.getService().getRistoranti("","");
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

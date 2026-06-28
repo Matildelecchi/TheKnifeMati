@@ -178,7 +178,7 @@ public class RistorantiController implements Initializable {
         dashboardButton.setManaged("ristoratore".equals(ruoloUtente));
 
         if("ristoratore".equals(ruoloUtente) || "cliente".equals(ruoloUtente)){
-            campoRicerca1.setText(SessioneUtente.getDomicilio());
+            campoRicerca1.setText(SessioneUtente.getCitta());
         }
         this.onCercaClick(null);
 
@@ -198,7 +198,9 @@ public class RistorantiController implements Initializable {
      */
     private void caricadatiSQL() {
         try {
-            for(Ristorante r: server.getRistoranti()) {
+            String citta = (SessioneUtente.isOspite()) ? "" : SessioneUtente.getCitta();
+            String stato = (SessioneUtente.isOspite()) ? "" : SessioneUtente.getStato();
+            for(Ristorante r: server.getRistoranti(citta,stato)) {
                 if(r!=null) listaRistoranti.add(r);
             }
             if(listaRistoranti == null) {

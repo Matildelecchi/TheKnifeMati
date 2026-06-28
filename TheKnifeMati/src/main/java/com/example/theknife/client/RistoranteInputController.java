@@ -1,17 +1,15 @@
 package com.example.theknife.client;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.sql.SQLException;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 import com.example.theknife.common.DBService;
 import com.example.theknife.common.Ristorante;
-import com.opencsv.CSVWriter;
 
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -24,7 +22,6 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
 
 /**
  * Controller per la gestione dell'interfaccia di inserimento di un nuovo ristorante.
@@ -175,10 +172,18 @@ public class RistoranteInputController implements Initializable {
             double longitudine = longitudineField.getText().isEmpty() ? 0.0 : Double.parseDouble(longitudineField.getText());
             double latitudine = latitudineField.getText().isEmpty() ? 0.0 : Double.parseDouble(latitudineField.getText());
 
+            String tel = telefonoField.getText().trim();
             String nome = nomeField.getText().trim();
-            if (gestioneRistorante.getRistorante(nome) != null) {
-                mostraErrore("Errore", "Esiste già un ristorante con questo nome. Scegli un nome diverso.");
-                return;
+            try {
+                Ristorante r = server.getRistorante(tel);
+                if(r != null) {
+                    if (r.getNumeroTelefono() != null) {
+                        mostraErrore("Errore", "Esiste già un ristorante con questo numero di telefono. Scegli un numero di telefono diverso.");
+                        return;
+                    }
+                }
+            } catch(RemoteException | SQLException e) {
+                e.printStackTrace();
             }
 
             String cucine = cucinaListView.getSelectionModel().getSelectedItems()
@@ -224,7 +229,7 @@ public class RistoranteInputController implements Initializable {
             System.out.println("Debug: Salvataggio ristorante completato");
 
             // Aggiorna i servizi dopo il salvataggio
-            gestioneRistorante.caricaRistoranti();
+            //gestioneRistorante.caricaRistoranti();
             GestionePossessoRistorante.getInstance().refreshOwnershipData();
 
             // Esegue il callback per tornare alla dashboard

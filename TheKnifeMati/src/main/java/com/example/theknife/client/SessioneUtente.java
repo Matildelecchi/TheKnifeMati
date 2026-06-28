@@ -34,9 +34,9 @@ public class SessioneUtente {
      */
     private String cognome;
     /**
-     * Il domicilio dell'utente corrente.
+     * Il citta dell'utente corrente.
      */
-    private String domicilio;
+    private String citta;
     /**
      * Lo username dell'utente corrente.
      */
@@ -45,6 +45,8 @@ public class SessioneUtente {
      * Il ruolo dell'utente corrente (es. "cliente", "ristoratore", "ospite").
      */
     private String ruolo;
+
+    private String stato;
     /**
      * Flag che indica se un utente è attualmente loggato.
      */
@@ -83,16 +85,17 @@ public class SessioneUtente {
      * @param username Lo username univoco dell'utente.
      * @param ruolo    Il ruolo dell'utente ("cliente", "ristoratore", "ospite").
      */
-    public static void impostaUtenteCorrente(String nome, String cognome, String username, String ruolo, String domicilio) {
+    public static void impostaUtenteCorrente(String nome, String cognome, String username, String ruolo, String citta, String stato) {
         SessioneUtente sessione = getIstanza();
         sessione.nome = nome;
         sessione.cognome = cognome;
         sessione.username = username;
         sessione.ruolo = ruolo;
-        sessione.domicilio = domicilio;
+        sessione.citta = citta;
         sessione.isLoggato = true;
+        sessione.stato = stato;
 
-        System.out.println("DEBUG: Sessione utente impostata - " + nome + " " + cognome + " (" + ruolo + ") " + domicilio);
+        System.out.println("DEBUG: Sessione utente impostata - " + nome + " " + cognome + " (" + ruolo + ") " + citta+ " "+stato);
     }
 
     /**
@@ -124,6 +127,10 @@ public class SessioneUtente {
         return getIstanza().ruolo;
     }
 
+    public static String getStato() {
+        return getIstanza().stato;
+    }
+
     /**
      * Restituisce il nome completo dell'utente corrente.
      *
@@ -148,13 +155,13 @@ public class SessioneUtente {
     }
 
     /**
-     * Restituisce il domicilio dell'utente corrente.
+     * Restituisce il citta dell'utente corrente.
      *
-     * @return Il domicilio dell'utente.
+     * @return Il citta dell'utente.
      */
-    public static String getDomicilio() {
+    public static String getCitta() {
         SessioneUtente sessione = getIstanza();
-        return sessione.domicilio;  // Correzione: uso sessione.domicilio invece di this.domicilio
+        return sessione.citta;  // Correzione: uso sessione.citta invece di this.citta
     }
     /**
      * Verifica se l'utente corrente ha il ruolo di "cliente".

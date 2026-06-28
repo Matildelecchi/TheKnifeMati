@@ -100,15 +100,28 @@ public class ServerMain implements DBService {
         return ""+ LocalDateTime.now();
     }
     @Override
-    public ArrayList<Ristorante> getRistoranti() throws RemoteException, SQLException {
+    public ArrayList<Ristorante> getRistoranti(String citta,String stato) throws RemoteException, SQLException {
         ArrayList<Ristorante> results = new ArrayList<>();
-
-        String query = "SELECT * FROM ristoranti";
+        //System.out.println(stato);
+        String query;
+        if (citta == null && citta.trim().isEmpty()) {
+            query = "SELECT * FROM ristoranti";
+        } else {
+            query = "SELECT * FROM ristoranti ORDER BY CASE " +
+                    "WHEN stato = ? THEN 0 " +
+                    "WHEN citta = ? THEN 1 ELSE 2 END";
+                    //"WHEN stato = ? THEN 0"
+        }
+        //String query = "SELECT * FROM ristoranti";
 
         try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(query);
-             ResultSet rs = ps.executeQuery()) {
-
+             PreparedStatement ps = conn.prepareStatement(query)) {
+            
+            if (citta != null && !citta.trim().isEmpty()) {
+                ps.setString(1,stato);
+                ps.setString(2,citta);
+            } 
+            ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 Ristorante ristorante = new Ristorante(
                         rs.getString("num_tel"),
@@ -131,6 +144,7 @@ public class ServerMain implements DBService {
                 //System.out.println(ristorante);
                 results.add(ristorante);
             }
+            rs.close();
 
         } catch (SQLException e) {
             System.err.println("Errore DB getRistoranti: " + e.getMessage());
@@ -337,7 +351,8 @@ public class ServerMain implements DBService {
             ps.setString(1, username);
             ps.setString(2,num_tel);
             ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
+            if (rs.next()) {
+                rs.close();
                 return true;
             }
             rs.close();
@@ -365,7 +380,7 @@ public class ServerMain implements DBService {
             
             ps.setString(7, ristorante.getSitoWeb());
             ps.setString(8, ristorante.getPremio());
-            ps.setDouble(9, ristorante.getStellaVerde());
+            ps.setDouble(9, ristorante.getStelle());
             ps.setString(10, ristorante.getServizi());
             ps.setString(11, ristorante.getDescrizione());
             ps.setString(12, ristorante.getStato());
@@ -430,6 +445,7 @@ public class ServerMain implements DBService {
         if (ristorante == null) {
             return false;
         }
+        //System.out.println(ristorante);
 
         // Aggiunta della foreign key 'username' che punta alla tabella 'utenti'
         String insertQuery = "INSERT INTO ristoranti (nome, indirizzo, citta, prezzo, cucina, num_tel, sito, sitoWeb, premi, stellaVerde, servizi, descrizione, proprietario, stato) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -445,7 +461,7 @@ public class ServerMain implements DBService {
             ps.setString(6, ristorante.getNumeroTelefono());
             ps.setString(7, ristorante.getSitoWeb());
             ps.setString(8, ristorante.getPremio());
-            ps.setDouble(9, ristorante.getStellaVerde());
+            ps.setDouble(9, ristorante.getStelle());
             ps.setString(10, ristorante.getServizi());
             ps.setString(11, ristorante.getDescrizione());
             // Imposta la foreign key verso l'utente proprietario (username)
@@ -498,7 +514,7 @@ public class ServerMain implements DBService {
             rs.close();
             
         } catch (SQLException e) {
-            System.err.println("Errore DB getRistoranti: " + e.getMessage());
+            System.err.println("Errore DB getRistorante: " + e.getMessage());
             throw e;
         }
         return results;
@@ -543,7 +559,7 @@ public class ServerMain implements DBService {
             rs.close();
 
         } catch (SQLException e) {
-            System.err.println("Errore DB getRistoranti: " + e.getMessage());
+            System.err.println("Errore DB getRistorantiByUsername: " + e.getMessage());
             throw e;
         }
 
@@ -587,7 +603,6 @@ public class ServerMain implements DBService {
     }
 
 
-    @Override
     public boolean existRisposta(int id_rec) throws RemoteException, SQLException {
         //ArrayList<String> results = new ArrayList<>();
         if (id_rec <= 0) {
@@ -708,22 +723,21 @@ public class ServerMain implements DBService {
     @Override
     public boolean saveRecensione(String titolo, String testo, double stelle, String num_tel, String username) throws RemoteException, SQLException {
         //ArrayList results = new ArrayList<>();
-        int id_rec = nextRecensioneId();
+        //int id_rec = nextRecensioneId();
         /*if (id_rec <= 0 || existRecensione(id_rec)) {
             // TODO: implement SQL query execution for recensioni
             return false;
         }*/
-        String query = "INSERT INTO recensioni(id_rec, titolo,testo,stelle,num_tel,username)" +
-                       "VALUES(?,?,?,?,?,?);";
+        String query = "INSERT INTO recensioni(titolo,testo,stelle,num_tel,username)" +
+                       "VALUES(?,?,?,?,?);";
         //query = query.replace("?",""+id_rec+"");
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(query)) {
-            ps.setInt(1, id_rec);
-            ps.setString(2, titolo);
-            ps.setString(3, testo);
-            ps.setDouble(4, stelle);
-            ps.setString(5, num_tel);
-            ps.setString(6, username);
+            ps.setString(1, titolo);
+            ps.setString(2, testo);
+            ps.setDouble(3, stelle);
+            ps.setString(4, num_tel);
+            ps.setString(5, username);
 
             //ps.executeUpdate();
             //return true;
@@ -735,7 +749,7 @@ public class ServerMain implements DBService {
         //return false;
     }
 
-    public int nextRecensioneId() {
+    /*public int nextRecensioneId() {
         String query = "SELECT COALESCE(MAX(id_rec), 0) + 1 AS next_id FROM recensioni";
         try (Connection conn = getConnection();
             PreparedStatement ps = conn.prepareStatement(query);
@@ -747,11 +761,10 @@ public class ServerMain implements DBService {
             System.err.println("Errore DB nextRecensioneId: " + e.getMessage());
         }
         return 1;
-    }
+    }*/
 
-    @Override
     public boolean existRecensione(int id_rec) throws RemoteException, SQLException {
-        String query = "SELECT 1 from recensioni where id_rec = ?";
+        String query = "SELECT * from recensioni where id_rec = ?";
         //query = query.replace("?",""+id_rec+"");
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(query)) {
@@ -776,7 +789,7 @@ public class ServerMain implements DBService {
             // TODO: implement SQL query execution for recensioni
             return false;
         }
-        String query = "UPDATE risposte SET testo = ?, titolo = ?, stelle = ? WHERE id_rec = ?;";
+        String query = "UPDATE recensioni SET testo = ?, titolo = ?, stelle = ? WHERE id_rec = ?;";
         //query = query.replace("?",""+id_rec+"");
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(query)) {
@@ -786,7 +799,7 @@ public class ServerMain implements DBService {
             ps.setInt(4,id_rec);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            System.err.println("Errore DB modifyRecensioneId: " + e.getMessage());
+            System.err.println("Errore DB modifyRecensione: " + e.getMessage());
             throw e;
         }
         //return true;
@@ -807,7 +820,7 @@ public class ServerMain implements DBService {
             ps.setInt(1, id_rec);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            System.err.println("Errore DB removeRecensioneId: " + e.getMessage());
+            System.err.println("Errore DB removeRecensione: " + e.getMessage());
             throw e;
         }
         //return false;
@@ -836,6 +849,7 @@ public class ServerMain implements DBService {
             System.err.println("Errore DB getStelle: " + e.getMessage());
             throw e;
         }
+        if(num==0) return 0; //oppure deafult 3
         return val / num;
     }
 }

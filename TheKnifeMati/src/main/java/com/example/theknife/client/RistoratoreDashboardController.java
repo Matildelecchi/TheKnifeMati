@@ -558,7 +558,7 @@ public class RistoratoreDashboardController implements Initializable {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("recensioni.fxml"));
             Parent recensioniRoot = loader.load();
             RecensioniController controller = loader.getController();
-            controller.setRistoranteTel(selectedRistorante.getNome());
+            controller.setRistoranteTel(selectedRistorante.getNumeroTelefono());
             controller.setParentController(this);
             Parent rootToRestore = ristorantiTable.getScene().getRoot();
             controller.setRootToRestore(rootToRestore);

@@ -30,8 +30,9 @@
     <TableView fx:id="recensioniTable" VBox.vgrow="ALWAYS">
       <columns>
         <TableColumn fx:id="ristoranteColumn" prefWidth="200" text="Ristorante"/>
+        <TableColumn fx:id="titoloColumn" prefWidth="100" text="Titolo"/>
         <TableColumn fx:id="stelleColumn" prefWidth="60" text="Stelle"/>
-        <TableColumn fx:id="testoColumn" prefWidth="300" text="Testo"/>
+        <TableColumn fx:id="testoColumn" prefWidth="250" text="Testo"/>
         <TableColumn fx:id="dataColumn" prefWidth="100" text="Data"/>
       </columns>
     </TableView>

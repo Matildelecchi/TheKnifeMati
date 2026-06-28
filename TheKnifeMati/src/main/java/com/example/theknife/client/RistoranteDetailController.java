@@ -230,7 +230,7 @@ public class RistoranteDetailController implements Initializable {
      */
     private void setupPreferitoButton() {
         if (preferitoButton != null) {
-            preferitoButton.setVisible(SessioneUtente.isCliente());
+            preferitoButton.setVisible(!SessioneUtente.isOspite());
         }
     }
 

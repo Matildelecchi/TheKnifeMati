@@ -152,7 +152,7 @@ public class GestioneRecensioni {
             recensioniMap.values().stream()
                     .flatMap(List::stream)
                     .forEach(r -> writer.printf("%s,%s,%d,\"%s\",%s,\"%s\"%n",
-                            r.getUsername(), r.getRistoranteId(), r.getStelle(),
+                            r.getUsername(), r.getRistoranteTel(), r.getStelle(),
                             r.getTesto(), r.getData(), r.getRisposta()));
 
         } catch (IOException e) {
@@ -167,7 +167,7 @@ public class GestioneRecensioni {
      */
     public void aggiungiRecensione(Recensione recensione) {
         recensione.setData(LocalDateTime.now().format(DATE_FORMATTER));
-        recensioniMap.computeIfAbsent(recensione.getRistoranteId(), k -> new ArrayList<>()).add(recensione);
+        recensioniMap.computeIfAbsent(recensione.getRistoranteTel(), k -> new ArrayList<>()).add(recensione);
         allRecensioni.add(recensione);
         salvaRecensioni();
     }
@@ -184,7 +184,7 @@ public class GestioneRecensioni {
         List<Recensione> recensioni = recensioniMap.get(ristoranteId);
         if (recensioni != null) {
             recensioni.stream()
-                    .filter(r -> r.getUsername().equals(username) && r.getRistoranteId().equals(ristoranteId))
+                    .filter(r -> r.getUsername().equals(username) && r.getRistoranteTel().equals(ristoranteId))
                     .findFirst()
                     .ifPresent(r -> {
                         r.setTesto(nuovoTesto);
@@ -204,8 +204,8 @@ public class GestioneRecensioni {
     public void eliminaRecensione(String username, String ristoranteId) {
         List<Recensione> recensioni = recensioniMap.get(ristoranteId);
         if (recensioni != null) {
-            recensioni.removeIf(r -> r.getUsername().equals(username) && r.getRistoranteId().equals(ristoranteId));
-            allRecensioni.removeIf(r -> r.getUsername().equals(username) && r.getRistoranteId().equals(ristoranteId));
+            recensioni.removeIf(r -> r.getUsername().equals(username) && r.getRistoranteTel().equals(ristoranteId));
+            allRecensioni.removeIf(r -> r.getUsername().equals(username) && r.getRistoranteTel().equals(ristoranteId));
             salvaRecensioni();
         }
     }
