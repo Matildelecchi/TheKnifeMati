@@ -72,6 +72,9 @@ public class RegistrazioneController {
     private TextField campoLuogoDomicilio;
 
     @FXML
+    private TextField campoEmail;
+
+    @FXML
     private ComboBox<String> comboRuolo;
 
     private Runnable onUserRegistered;
@@ -116,6 +119,7 @@ public class RegistrazioneController {
 
             String nome = campoNome.getText().trim();
             String cognome = campoCognome.getText().trim();
+            String email = campoEmail.getText().trim();
             String username = campoUsername.getText().trim();
             String password = campoPassword.getText();
             LocalDate dataNascita = campoDataNascita.getValue();
@@ -138,7 +142,7 @@ public class RegistrazioneController {
 
             // Crea il nuovo utente
             Utente nuovoUtente = new Utente(
-                    username, nome, cognome,"email", passwordCifrata,luogoDomicilio,
+                    username, nome, cognome, email, passwordCifrata,luogoDomicilio,
                     "stato","citta",
                     dataNascita.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
                     ruolo
