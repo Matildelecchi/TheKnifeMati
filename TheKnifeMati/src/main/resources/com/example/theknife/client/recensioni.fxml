@@ -14,53 +14,54 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox spacing="10" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/25" fx:controller="com.example.theknife.client.RecensioniController">
+<VBox spacing="10" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.theknife.client.RecensioniController">
   <padding>
-    <Insets bottom="10" left="10" right="10" top="10"/>
+    <Insets bottom="10" left="10" right="10" top="10" />
   </padding>
   <HBox alignment="CENTER_RIGHT" spacing="10">
-    <Button fx:id="tornaAlMenuButton" onAction="#handleTornaAlMenuPrincipale" styleClass="secondary-button" text="← Torna al Ristorante"/>
-    <Label fx:id="totaleRecensioniLabel" style="-fx-font-weight: bold; -fx-padding: 0 10 0 10;"/>
+    <Button fx:id="tornaAlMenuButton" onAction="#handleTornaAlMenuPrincipale" styleClass="secondary-button" text="← Torna al Ristorante" />
+    <Label fx:id="totaleRecensioniLabel" style="-fx-font-weight: bold; -fx-padding: 0 10 0 10;" />
   </HBox>
   <HBox alignment="CENTER_LEFT" spacing="20">
-    <Label text="Filtra per stelle:"/>
-    <ComboBox fx:id="comboBox" promptText="Tutte le stelle"/>
+    <Label text="Filtra per stelle:" />
+    <ComboBox fx:id="comboBox" promptText="Tutte le stelle" />
   </HBox>
   <SplitPane dividerPositions="0.6" VBox.vgrow="ALWAYS">
     <VBox spacing="10">
       <TableView fx:id="tableView" VBox.vgrow="ALWAYS">
         <columns>
-          <TableColumn fx:id="colStelle" prefWidth="60" text="Stelle"/>
-          <TableColumn fx:id="colTesto" prefWidth="200" text="Recensione"/>
-          <TableColumn fx:id="colUtente" prefWidth="100" text="Utente"/>
-          <TableColumn fx:id="colData" prefWidth="100" text="Data"/>
-          <TableColumn fx:id="colRisposta" prefWidth="150" text="Risposta"/>
+          <TableColumn fx:id="colStelle" prefWidth="60" text="Stelle" />
+          <TableColumn fx:id="colTesto" prefWidth="200" text="Recensione" />
+          <TableColumn fx:id="colUtente" prefWidth="100" text="Utente" />
+          <TableColumn fx:id="colData" prefWidth="100" text="Data" />
+          <TableColumn fx:id="colRisposta" prefWidth="150" text="Risposta" />
         </columns>
       </TableView>
       <VBox spacing="5">
-        <Label text="La tua recensione:"/>
-        <TextArea fx:id="recensioneTextArea" prefRowCount="3" wrapText="true"/>
+        <Label text="La tua recensione:" />
+        <TextArea fx:id="recensioneTextArea" prefRowCount="3" wrapText="true" />
         <HBox alignment="CENTER_LEFT" spacing="10">
-          <Label text="Stelle:"/>
-          <Slider fx:id="stelleSlider" blockIncrement="1" majorTickUnit="1" max="5" min="1" minorTickCount="0" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="3"/>
-          <Label alignment="CENTER_RIGHT" prefHeight="18.0" prefWidth="138.0" text="Titolo: "/>
-          <TextField fx:id="titoloText"/>
+          <Label text="Stelle:" />
+          <Slider fx:id="stelleSlider" blockIncrement="1" majorTickUnit="1" max="5" min="1" minorTickCount="0" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="3" />
+          <Label alignment="CENTER_RIGHT" prefHeight="18.0" prefWidth="138.0" text="Titolo: " />
+          <TextField fx:id="titoloText" />
         </HBox>
         <HBox spacing="10">
-          <Button fx:id="inviaButton" onAction="#handleInvia" text="Invia Recensione"/>
-          <Button fx:id="modificaButton" onAction="#handleModifica" text="Modifica"/>
-          <Button fx:id="eliminaButton" onAction="#handleElimina" text="Elimina"/>
+          <Button fx:id="inviaButton" onAction="#handleInvia" text="Invia Recensione" />
+          <Button fx:id="modificaButton" onAction="#handleModifica" text="Modifica" />
+          <Button fx:id="eliminaButton" onAction="#handleElimina" text="Elimina" />
+               <Button fx:id="indietroButton" onAction="#handleIndietro" text="Indietro" />
         </HBox>
       </VBox>
       <VBox fx:id="rispostaBox" spacing="5">
-        <Label text="Risposta del ristoratore:"/>
-        <TextArea fx:id="rispostaTextArea" prefRowCount="2" wrapText="true"/>
+        <Label text="Risposta del ristoratore:" />
+        <TextArea fx:id="rispostaTextArea" prefRowCount="2" wrapText="true" />
         <HBox spacing="10">
-          <Button fx:id="rispondiButton" onAction="#handleRispondi" text="Invia Risposta"/>
-          <Button fx:id="modificaRispostaButton" onAction="#handleModificaRisposta" text="Modifica Risposta"/>
+          <Button fx:id="rispondiButton" onAction="#handleRispondi" text="Invia Risposta" />
+          <Button fx:id="modificaRispostaButton" onAction="#handleModificaRisposta" text="Modifica Risposta" />
         </HBox>
       </VBox>
     </VBox>
-    <PieChart fx:id="pieChart" title="Distribuzione Stelle"/>
+    <PieChart fx:id="pieChart" title="Distribuzione Stelle" />
   </SplitPane>
 </VBox>

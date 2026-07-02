@@ -108,8 +108,8 @@ public class ServerMain implements DBService {
             query = "SELECT * FROM ristoranti";
         } else {
             query = "SELECT * FROM ristoranti ORDER BY CASE " +
-                    "WHEN stato = ? THEN 0 " +
-                    "WHEN citta = ? THEN 1 ELSE 2 END";
+                    "WHEN citta = ? THEN 0 " +
+                    "WHEN stato = ? THEN 1 ELSE 2 END";
                     //"WHEN stato = ? THEN 0"
         }
         //String query = "SELECT * FROM ristoranti";
@@ -118,8 +118,8 @@ public class ServerMain implements DBService {
              PreparedStatement ps = conn.prepareStatement(query)) {
             
             if (citta != null && !citta.trim().isEmpty()) {
-                ps.setString(1,stato);
-                ps.setString(2,citta);
+                ps.setString(1,citta);
+                ps.setString(2,stato);
             } 
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {

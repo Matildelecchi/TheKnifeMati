@@ -124,7 +124,7 @@ public class RegistrazioneController {
 
             //cmabiare
 
-            boolean ruolo = (comboRuolo.getValue().toLowerCase().equals("Ristoratore")) ? false : true;
+            boolean ruolo = (comboRuolo.getValue().toLowerCase().equals("ristoratore")) ? true : false;
 
             // Verifica che l'username non esista già
             if (verificaUsernameEsistente(username)) {

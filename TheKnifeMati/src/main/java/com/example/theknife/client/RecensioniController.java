@@ -65,6 +65,7 @@ import javafx.scene.layout.VBox;
             @FXML private Button modificaButton;
             @FXML private Button eliminaButton;
             @FXML private Button rispondiButton;
+            @FXML private Button indietroButton;
             @FXML private VBox rispostaBox;
             @FXML private TextArea rispostaTextArea;
             @FXML private Label totaleRecensioniLabel;
@@ -159,6 +160,7 @@ import javafx.scene.layout.VBox;
                 inviaButton.setVisible(puo_recensire);
                 modificaButton.setVisible(false);
                 eliminaButton.setVisible(false);
+                indietroButton.setVisible(false);
                 rispondiButton.setVisible(isRistoratore && isProprietario);
                 modificaRispostaButton.setVisible(false); // Inizialmente nascosto
                 rispostaBox.setVisible(isRistoratore && isProprietario);
@@ -223,7 +225,21 @@ import javafx.scene.layout.VBox;
                 rispostaBox.setVisible(isRistoratore && isProprietario);
 
                 // Precompila i campi se è l'autore della recensione
+                recensioneTextArea.setText(newVal.getTesto());
+                stelleSlider.setValue(newVal.getStelle());
+                titoloText.setText(newVal.getTitolo());
                 if (isAutore && puo_recensire) {
+                    recensioneTextArea.setDisable(false);
+                    stelleSlider.setDisable(false);
+                    titoloText.setDisable(false);
+                    indietroButton.setVisible(false);
+                } else {
+                    recensioneTextArea.setDisable(true);
+                    stelleSlider.setDisable(true);
+                    titoloText.setDisable(true);
+                    indietroButton.setVisible(true);
+                }
+                /*if (isAutore && puo_recensire) {
                     recensioneTextArea.setText(newVal.getTesto());
                     stelleSlider.setValue(newVal.getStelle());
                     titoloText.setText(newVal.getTitolo());
@@ -231,7 +247,7 @@ import javafx.scene.layout.VBox;
                     recensioneTextArea.clear();
                     stelleSlider.setValue(3);
                     titoloText.setText("");
-                }
+                }*/
 
                 // Precompila la risposta se il ristoratore proprietario ha già risposto
                 if (isRistoratore && isProprietario && hasRisposta) {
@@ -295,6 +311,15 @@ import javafx.scene.layout.VBox;
                 scene.setRoot(rootToRestore);
             }
         }
+    }
+
+    @FXML
+    private void handleIndietro() {
+        pulisciCampi();
+        recensioneTextArea.setDisable(false);
+        stelleSlider.setDisable(false);
+        titoloText.setDisable(false);
+        indietroButton.setVisible(false);
     }
 
     /**
@@ -375,7 +400,7 @@ import javafx.scene.layout.VBox;
             mostraErrore("Errore", "Puoi modificare solo le tue recensioni.");
             return;
         }
-
+        
         /*gestioneRecensioni.modificaRecensione(
                 selected.getUsername(),
                 numTelefono,
@@ -383,7 +408,7 @@ import javafx.scene.layout.VBox;
                 (int) stelleSlider.getValue()
         );*/
         try {
-            server.modifyRecensione(selected.getIdRec(), selected.getTitolo(), recensioneTextArea.getText(), (int) stelleSlider.getValue());
+            server.modifyRecensione(selected.getIdRec(), titoloText.getText(), recensioneTextArea.getText(), (int) stelleSlider.getValue());
         } catch(SQLException | RemoteException e) {
             e.printStackTrace();
         }
