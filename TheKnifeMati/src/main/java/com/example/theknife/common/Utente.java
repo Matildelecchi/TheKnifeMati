@@ -276,8 +276,8 @@ public class Utente  implements Serializable {
      */
     @Override
     public String toString() {
-        return String.format("Utente{nome='%s', cognome='%s', username='%s', ,  email='%s', stato='%s', ruolo='%s', luogo='%s'}",
-                nome, cognome, username, ruolo, luogoDomicilio);
+        return String.format("Utente{nome='%s', cognome='%s', username='%s',  email='%s', stato='%s', ruolo='%s', luogo='%s'}",
+                nome, cognome, username, email, stato, ruolo, luogoDomicilio);
     }
 
     /**
