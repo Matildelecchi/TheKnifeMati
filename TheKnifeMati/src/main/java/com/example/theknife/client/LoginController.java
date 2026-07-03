@@ -84,7 +84,9 @@ public class LoginController {
                         utenteAutenticato.getUsername(),
                         utenteAutenticato.isRuolo(),
                         utenteAutenticato.getCitta(),
-                        utenteAutenticato.getStato()
+                        utenteAutenticato.getStato(),
+                        utenteAutenticato.getEmail()
+
                 );
 
                 if (onLoginSuccess != null) {

@@ -239,7 +239,7 @@ public class RistoratoreDashboardController implements Initializable {
      * il dialogo di risposta.
      */
     private void setupRecensioniList() {
-        recensioniList.setCellFactory(__ -> new javafx.scene.control.ListCell<>() {
+        recensioniList.setCellFactory(list -> new javafx.scene.control.ListCell<>() {
             @Override
             protected void updateItem(Recensione item, boolean empty) {
                 super.updateItem(item, empty);

@@ -71,7 +71,7 @@ public class PreferitiController implements Initializable {
         });
 
         // Configura la ListView
-        preferitiListView.setCellFactory(__ -> new ListCell<>() {
+        preferitiListView.setCellFactory(list -> new ListCell<>() {
             @Override
             protected void updateItem(Ristorante item, boolean empty) {
                 super.updateItem(item, empty);

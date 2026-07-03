@@ -168,7 +168,7 @@ public class RistoranteDetailController implements Initializable {
         initializeDefaultValues();
 
         // Setup recensioni list cell factory
-        recensioniRecentList.setCellFactory(_ -> new ListCell<>() {
+        recensioniRecentList.setCellFactory(cell-> new ListCell<>() {
             /**
              * Aggiorna la cella con i dati di una recensione.
              * @param item L'oggetto {@link Recensione} da visualizzare.
