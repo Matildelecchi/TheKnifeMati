@@ -32,6 +32,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -115,6 +116,39 @@ public class RistoratoreDashboardController implements Initializable {
      * Lista che visualizza le recensioni più recenti.
      */
     @FXML private ListView<Recensione> recensioniList;
+    /**
+     * Per disegnare dinamicamente le stelle in base alla media.
+     */
+    @FXML
+    private HBox starBox;
+
+        /**
+         * Aggiorna la visualizzazione grafica della media stelle
+         * nel ristorante selezionato utilizzando una HBox.
+         */
+        private void updateStars(double media) {
+
+            starBox.getChildren().clear();
+
+            int fullStars = (int)Math.floor(media);
+            boolean halfStar = (media - fullStars) >= 0.5;
+
+            for (int i = 0; i < 5; i++) {
+                Label star = new Label();
+
+                if (i < fullStars) {
+                    star.setText("★");
+                    star.setStyle("-fx-font-size: 18px; -fx-text-fill: gold;");
+                } else if (i == fullStars && halfStar) {
+                    star.setText("★");
+                    star.setStyle("-fx-font-size: 18px; -fx-text-fill: gold; -fx-opacity: 0.5;");
+                } else {
+                    star.setText("☆");
+                    star.setStyle("-fx-font-size: 18px; -fx-text-fill: gold;");
+                }
+                starBox.getChildren().add(star);
+            }
+        }
 
     //private final GestioneRistorante gestioneRistorante = GestioneRistorante.getInstance();
     private final GestionePossessoRistorante ownershipService = GestionePossessoRistorante.getInstance();
@@ -328,6 +362,7 @@ public class RistoratoreDashboardController implements Initializable {
                 .average()
                 .orElse(0.0);
         mediaLabel.setText(String.format("%.1f", media));
+        updateStars(media);
 
         totaleRecensioniLabel.setText(String.valueOf(recensioni.size()));
 
