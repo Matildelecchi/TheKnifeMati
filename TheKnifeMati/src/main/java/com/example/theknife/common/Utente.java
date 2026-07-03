@@ -2,6 +2,8 @@ package com.example.theknife.common;
 
 import java.io.Serializable;
 
+
+
 /**
  * La classe {@code Utente} rappresenta un utente del sistema TheKnife.
  * Contiene tutte le informazioni personali e di accesso necessarie per gestire le interazioni con l'applicazione.
@@ -29,13 +31,14 @@ public class Utente  implements Serializable {
     private String nome;
     private String cognome;
     private String username;
+    private String email;
     private String passwordHash;
     private String dataNascita;
     private String luogoDomicilio;
-    private String ruolo;
+    private boolean ruolo;
     private String citta;
     private String stato;
-    private String email;
+
 
     public String getCitta() {
         return citta;
@@ -84,7 +87,7 @@ public class Utente  implements Serializable {
         this.stato = stato;
         this.dataNascita = data_nascita;
         this.luogoDomicilio = indirizzo;
-        this.ruolo = (ruolo) ? "Ristoratore" : "Cliente";
+        this.ruolo = ruolo;
     }
 
     
@@ -154,9 +157,9 @@ public class Utente  implements Serializable {
     /**
      * Restituisce il ruolo dell'utente.
      *
-     * @return La stringa che rappresenta il ruolo (es. "cliente", "ristoratore", "ospite").
+     * @param ruolo true se ristoratore, false se cliente
      */
-    public String getRuolo() {
+    public boolean isRuolo() {
         return ruolo;
     }
 
@@ -221,7 +224,7 @@ public class Utente  implements Serializable {
      *
      * @param ruolo Il nuovo ruolo da assegnare (es. "cliente", "ristoratore", "ospite").
      */
-    public void setRuolo(String ruolo) {
+    public void setRuolo(boolean ruolo) {
         this.ruolo = ruolo;
     }
 
@@ -242,7 +245,7 @@ public class Utente  implements Serializable {
      * @return {@code true} se il ruolo dell'utente è "cliente", ignorando la distinzione tra maiuscole e minuscole; {@code false} altrimenti.
      */
     public boolean isCliente() {
-        return "cliente".equalsIgnoreCase(ruolo);
+        return !ruolo;
     }
 
     /**
@@ -251,7 +254,7 @@ public class Utente  implements Serializable {
      * @return {@code true} se il ruolo dell'utente è "ristoratore", ignorando la distinzione tra maiuscole e minuscole; {@code false} altrimenti.
      */
     public boolean isRistoratore() {
-        return "ristoratore".equalsIgnoreCase(ruolo);
+        return ruolo;
     }
 
     /**
@@ -260,7 +263,7 @@ public class Utente  implements Serializable {
      * @return {@code true} se il ruolo dell'utente è "ospite", ignorando la distinzione tra maiuscole e minuscole; {@code false} altrimenti.
      */
     public boolean isOspite() {
-        return "ospite".equalsIgnoreCase(ruolo);
+        return false; // Modifica necessaria: il ruolo "ospite" non è rappresentato da un booleano, quindi restituisce sempre false.
     }
 
     // Override dei metodi Object
@@ -273,7 +276,7 @@ public class Utente  implements Serializable {
      */
     @Override
     public String toString() {
-        return String.format("Utente{nome='%s', cognome='%s', username='%s', ruolo='%s', luogo='%s'}",
+        return String.format("Utente{nome='%s', cognome='%s', username='%s', ,  email='%s', stato='%s', ruolo='%s', luogo='%s'}",
                 nome, cognome, username, ruolo, luogoDomicilio);
     }
 

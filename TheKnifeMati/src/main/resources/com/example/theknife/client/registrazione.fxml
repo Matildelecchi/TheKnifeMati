@@ -51,6 +51,22 @@
                                         <Label style="-fx-font-size: 10px; -fx-text-fill: #888888;" text="Solo lettere, numeri, punti, underscore e trattini" />
                                     </children>
                                 </VBox>
+                               
+                                <!-- Campo Email -->
+                                <VBox spacing="5">
+                                    <children>
+                                        <Label style="-fx-font-weight: bold; -fx-font-size: 12px;" text="Email *" />
+                                        <TextField fx:id="campoEmail" maxWidth="350" promptText="Inserisci la tua email" styleClass="login-textfield" />
+                                         <Label style="-fx-font-size: 10px; -fx-text-fill: #888888;" text="Esempio: nome@email.com" />
+                                     </children>
+                                </VBox>
+                                <!-- Campo Nazione -->  
+                                <VBox spacing="5">
+                                  <children>
+                                        <Label style="-fx-font-weight: bold; -fx-font-size: 12px;" text="Nazione *" />
+                                        <TextField fx:id="campoStato" maxWidth="350" promptText="Es: Italia" styleClass="login-textfield" />
+                                     </children>        
+                                </VBox>
 
                                 <!-- Campo Password -->
                                 <VBox spacing="5">
@@ -96,6 +112,8 @@
                                         <Label maxWidth="350" style="-fx-font-size: 10px; -fx-text-fill: #888888; -fx-wrap-text: true;" text="Cliente: puoi recensire ristoranti | Ristoratore: puoi gestire il tuo ristorante" />
                                     </children>
                                 </VBox>
+
+
 
                                 <!-- Separatore -->
                                 <VBox alignment="CENTER" spacing="10">

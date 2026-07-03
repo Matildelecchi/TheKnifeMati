@@ -84,7 +84,7 @@
                         <HBox spacing="20" alignment="CENTER_LEFT">
                             <VBox spacing="5">
                                 <Label text="Media Stelle"/>
-                                <Label fx:id="mediaLabel" styleClass="stats-value"/>
+                                <HBox fx:id="starBox" spacing="2"/>
                             </VBox>
                             <VBox spacing="5">
                                 <Label text="Totale Recensioni"/>

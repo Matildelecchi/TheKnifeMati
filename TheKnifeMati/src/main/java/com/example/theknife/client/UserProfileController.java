@@ -93,6 +93,9 @@ public class UserProfileController implements Initializable {
      * Pulsante per accedere alla dashboard del ristoratore, visibile solo per gli utenti con ruolo "ristoratore".
      */
     @FXML private Button dashboardButton;
+    
+    @FXML private Label emailLabel;
+    @FXML private Label statoLabel;
 
     //private final GestioneRecensioni gestioneRecensioni = GestioneRecensioni.getInstance();
     //private final GestionePreferiti gestionePreferiti = com.example.theknife.client.GestionePreferiti.getInstance();
@@ -150,7 +153,13 @@ public class UserProfileController implements Initializable {
         }
         // Imposta le informazioni personali dell'utente nelle etichette.
         nomeLabel.setText(SessioneUtente.getNomeCompleto());
-        ruoloLabel.setText("Ruolo: " + SessioneUtente.getRuolo());
+        ruoloLabel.setText(
+         SessioneUtente.isRistoratore()
+                ? "Ruolo: Ristoratore"
+                : "Ruolo: Cliente"
+        );
+        emailLabel.setText(SessioneUtente.getEmail());
+        statoLabel.setText(SessioneUtente.getStato());
 
         // Configura le colonne della tabella delle recensioni associandole ai campi della classe Recensione.
         //ristoranteColumn.setCellValueFactory(new PropertyValueFactory<>("num_tel"));

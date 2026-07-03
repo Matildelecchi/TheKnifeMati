@@ -82,7 +82,7 @@ public class LoginController {
                         utenteAutenticato.getNome(),
                         utenteAutenticato.getCognome(),
                         utenteAutenticato.getUsername(),
-                        utenteAutenticato.getRuolo(),
+                        utenteAutenticato.isRuolo(),
                         utenteAutenticato.getCitta(),
                         utenteAutenticato.getStato()
                 );
@@ -112,7 +112,7 @@ public class LoginController {
     @FXML
     private void gestisciAccessoSenzaLogin(ActionEvent evento) {
         try {
-            SessioneUtente.impostaUtenteCorrente("Ospite", "", "", "ospite", "","");
+            SessioneUtente.impostaUtenteCorrente("Ospite", "", "", false, "","","");
             reindirizzaAllInterfacciaPrincipale(evento);
         } catch (Exception e) {
             e.printStackTrace();

@@ -162,27 +162,27 @@ public class RistorantiController implements Initializable {
         // Carica i dati iniziali
         refreshData();
 
-        // Adatta l'interfaccia utente in base al ruolo dell'utente
-        String ruoloUtente = SessioneUtente.getRuoloUtente();
-        if(SessioneUtente.isOspite()) {
-            profiloButton.setText("Registrati");
-        } else {
-            profiloButton.setText(SessioneUtente.getUsernameUtente());
+        boolean isRistoratore = SessioneUtente.isRistoratore();
+        boolean isCliente = SessioneUtente.isCliente();
+        boolean isOspite = SessioneUtente.isOspite();
+
+        if (isOspite) {
+          profiloButton.setText("Registrati");
+         } else {
+         profiloButton.setText(SessioneUtente.getUsernameUtente());
         }
-        if("ristoratore".equals(ruoloUtente))
-            profiloButton.setVisible(false);
-        else
-            profiloButton.setVisible(true);
 
-        dashboardButton.setVisible("ristoratore".equals(ruoloUtente));
-        dashboardButton.setManaged("ristoratore".equals(ruoloUtente));
+         profiloButton.setVisible(!isRistoratore);
 
-        if("ristoratore".equals(ruoloUtente) || "cliente".equals(ruoloUtente)){
+        dashboardButton.setVisible(isRistoratore);
+        dashboardButton.setManaged(isRistoratore);
+
+        if (isCliente || isRistoratore) {
             campoRicerca1.setText(SessioneUtente.getCitta());
         }
-        this.onCercaClick(null);
 
-    }
+        this.onCercaClick(null);
+            }
 
     /**
      * Carica i dati dei ristoranti da un file CSV.

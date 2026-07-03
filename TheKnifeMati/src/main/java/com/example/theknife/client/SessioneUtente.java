@@ -42,15 +42,17 @@ public class SessioneUtente {
      */
     private String username;
     /**
-     * Il ruolo dell'utente corrente (es. "cliente", "ristoratore", "ospite").
+     * Il ruolo dell'utente corrente ( true = ristoratore, false = cliente)
      */
-    private String ruolo;
+    private boolean ruolo;
 
     private String stato;
     /**
      * Flag che indica se un utente è attualmente loggato.
      */
     private boolean isLoggato;
+
+    private String email;
 
     /**
      * Costruttore privato per prevenire l'istanziazione diretta e
@@ -85,7 +87,7 @@ public class SessioneUtente {
      * @param username Lo username univoco dell'utente.
      * @param ruolo    Il ruolo dell'utente ("cliente", "ristoratore", "ospite").
      */
-    public static void impostaUtenteCorrente(String nome, String cognome, String username, String ruolo, String citta, String stato) {
+    public static void impostaUtenteCorrente(String nome, String cognome, String username, boolean ruolo, String citta, String stato, String email) {
         SessioneUtente sessione = getIstanza();
         sessione.nome = nome;
         sessione.cognome = cognome;
@@ -94,7 +96,7 @@ public class SessioneUtente {
         sessione.citta = citta;
         sessione.isLoggato = true;
         sessione.stato = stato;
-
+        sessione.email = email;
         System.out.println("DEBUG: Sessione utente impostata - " + nome + " " + cognome + " (" + ruolo + ") " + citta+ " "+stato);
     }
 
@@ -118,18 +120,15 @@ public class SessioneUtente {
         return sessione.isLoggato ? sessione.username : null;
     }
 
-    /**
-     * Restituisce il ruolo dell'utente loggato.
-     *
-     * @return Il ruolo dell'utente corrente, oppure {@code null} se nessun utente è autenticato.
-     */
-    public static String getRuoloUtente() {
-        return getIstanza().ruolo;
-    }
 
     public static String getStato() {
         return getIstanza().stato;
     }
+
+    public static String getEmail() {
+    return getIstanza().email;
+    }
+
 
     /**
      * Restituisce il nome completo dell'utente corrente.
@@ -149,9 +148,9 @@ public class SessioneUtente {
      *
      * @return Il ruolo dell'utente, oppure {@code null} se nessun utente è autenticato.
      */
-    public static String getRuolo() {
+    public static boolean isRuolo() {
         SessioneUtente sessione = getIstanza();
-        return sessione.isLoggato ? sessione.ruolo : null;
+        return sessione.ruolo;
     }
 
     /**
@@ -169,7 +168,7 @@ public class SessioneUtente {
      * @return {@code true} se l'utente è un cliente (confronto insensibile alle maiuscole/minuscole), {@code false} altrimenti.
      */
     public static boolean isCliente() {
-        return "cliente".equalsIgnoreCase(getRuoloUtente());
+        return !getIstanza().ruolo;
     }
 
     /**
@@ -178,7 +177,7 @@ public class SessioneUtente {
      * @return {@code true} se l'utente è un ristoratore (confronto insensibile alle maiuscole/minuscole), {@code false} altrimenti.
      */
     public static boolean isRistoratore() {
-        return "ristoratore".equalsIgnoreCase(getRuoloUtente());
+        return getIstanza().ruolo;
     }
 
     /**
@@ -187,7 +186,7 @@ public class SessioneUtente {
      * @return {@code true} se l'utente è un ospite (confronto insensibile alle maiuscole/minuscole), {@code false} altrimenti.
      */
     public static boolean isOspite() {
-        return "ospite".equalsIgnoreCase(getRuoloUtente());
+        return !getIstanza().isLoggato;
     }
 
     /**
@@ -199,7 +198,10 @@ public class SessioneUtente {
         sessione.nome = null;
         sessione.cognome = null;
         sessione.username = null;
-        sessione.ruolo = null;
+        sessione.ruolo = false;
+         sessione.citta = null;
+        sessione.stato = null;
+        sessione.email = null; 
         sessione.isLoggato = false;
 
         System.out.println("DEBUG: Sessione utente pulita");
