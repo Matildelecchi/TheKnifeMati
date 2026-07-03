@@ -75,6 +75,10 @@ public class RegistrazioneController {
     private TextField campoEmail;
 
     @FXML
+    private TextField campoStato;
+
+
+    @FXML
     private ComboBox<String> comboRuolo;
 
     private Runnable onUserRegistered;
@@ -120,15 +124,14 @@ public class RegistrazioneController {
             String nome = campoNome.getText().trim();
             String cognome = campoCognome.getText().trim();
             String email = campoEmail.getText().trim();
+            String stato = campoStato.getText().trim();
             String username = campoUsername.getText().trim();
             String password = campoPassword.getText();
             LocalDate dataNascita = campoDataNascita.getValue();
             String luogoDomicilio = campoLuogoDomicilio.getText().trim();
+            String citta = "";
 
-
-            //cmabiare
-
-            boolean ruolo = (comboRuolo.getValue().toLowerCase().equals("ristoratore")) ? true : false;
+            boolean ruolo = comboRuolo.getValue().equalsIgnoreCase("Ristoratore");
 
             // Verifica che l'username non esista già
             if (verificaUsernameEsistente(username)) {
@@ -142,8 +145,7 @@ public class RegistrazioneController {
 
             // Crea il nuovo utente
             Utente nuovoUtente = new Utente(
-                    username, nome, cognome, email, passwordCifrata,luogoDomicilio,
-                    "stato","citta",
+                    username, nome, cognome, email, passwordCifrata,luogoDomicilio,stato,citta,
                     dataNascita.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
                     ruolo
             );
@@ -283,6 +285,13 @@ public class RegistrazioneController {
             errori.add("Data di nascita non valida");
         }
 
+        // Valida stato (nazione)
+        if (campoStato.getText().trim().isEmpty()) {
+          errori.add("La nazione è obbligatoria");
+        } 
+
+
+
         // Valida luogo di domicilio
         if (campoLuogoDomicilio.getText().trim().isEmpty()) {
             errori.add("Il luogo di domicilio è obbligatorio");
@@ -291,7 +300,7 @@ public class RegistrazioneController {
         }
 
         // Valida ruolo
-        if (comboRuolo.getValue() == null || comboRuolo.getValue().isEmpty()) {
+        if (comboRuolo.getValue() == null) {
             errori.add("Seleziona un ruolo");
         }
 
@@ -310,24 +319,24 @@ public class RegistrazioneController {
      * @param username L'username da verificare.
      * @return true se l'username esiste già, false altrimenti.
      */
-    private boolean verificaUsernameEsistente(String username) {
-        try {
-            // Usa lo stesso percorso esterno del metodo di salvataggio
+        private boolean verificaUsernameEsistente(String username) {
             try {
-                server.getUtenti("SELECT * FROM UTENTI").forEach(utente -> {
-                    if (utente.getUsername().equalsIgnoreCase(username)) {
-                        throw new RuntimeException("Username esistente");
-                    }
-                });
-            } catch (SQLException e) {
-                System.err.println("Errore SQL durante la verifica dell'username: " + e.getMessage());
+                List<Utente> utenti = server.getUtenti("SELECT * FROM UTENTI");
+
+                if (utenti == null) {
+                    System.err.println("Server ha restituito lista utenti null");
+                    return false;
+                }
+
+                return utenti.stream()
+                        .anyMatch(u -> u.getUsername().equalsIgnoreCase(username));
+
+            } catch (Exception e) {
+                System.err.println("Errore controllo username: " + e.getMessage());
                 e.printStackTrace();
+                return false;
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
-        return false;
-    }
 
     /**
      * Salva un nuovo utente nel file CSV.
