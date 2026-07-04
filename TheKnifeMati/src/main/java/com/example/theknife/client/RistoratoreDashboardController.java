@@ -557,7 +557,7 @@ public class RistoratoreDashboardController implements Initializable {
     private void handleLogout() {
         SessioneUtente.eseguiLogout();
         try {
-            URL resourceUrl = getClass().getResource("/com/example/theknife/login.fxml");
+            URL resourceUrl = getClass().getResource("login.fxml");
             if (resourceUrl == null) {
                 throw new IOException("FXML file not found: login.fxml");
             }

@@ -186,7 +186,7 @@ public class SessioneUtente {
      * @return {@code true} se l'utente è un ospite (confronto insensibile alle maiuscole/minuscole), {@code false} altrimenti.
      */
     public static boolean isOspite() {
-        return !getIstanza().isLoggato;
+        return !isUtenteLoggato();
     }
 
     /**

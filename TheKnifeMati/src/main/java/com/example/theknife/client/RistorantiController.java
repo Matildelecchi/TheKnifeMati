@@ -165,14 +165,17 @@ public class RistorantiController implements Initializable {
         boolean isRistoratore = SessioneUtente.isRistoratore();
         boolean isCliente = SessioneUtente.isCliente();
         boolean isOspite = SessioneUtente.isOspite();
+        String username = SessioneUtente.getUsernameUtente();
 
-        if (isOspite) {
-          profiloButton.setText("Registrati");
-         } else {
-         profiloButton.setText(SessioneUtente.getUsernameUtente());
+        if (isOspite || username == null || username.isBlank()) {
+            profiloButton.setText("Registrati");
+        } else {
+            profiloButton.setText(username);
         }
 
-         profiloButton.setVisible(!isRistoratore);
+        // Il profilo deve restare sempre visibile: per i ristoratori la dashboard è un pulsante aggiuntivo.
+        profiloButton.setVisible(true);
+        profiloButton.setManaged(true);
 
         dashboardButton.setVisible(isRistoratore);
         dashboardButton.setManaged(isRistoratore);
@@ -310,8 +313,14 @@ public class RistorantiController implements Initializable {
     @FXML
     private void onProfiloClick(ActionEvent event) {
         try {
-            String fxml = SessioneUtente.isUtenteLoggato() ? "user-profile.fxml" : "registrazione.fxml";
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxml));
+            FXMLLoader loader;
+            if(SessioneUtente.isUtenteLoggato()){
+                 loader = new FXMLLoader(getClass().getResource("user-profile.fxml"));
+                 
+            }else{
+                 loader = new FXMLLoader(getClass().getResource("registrazione.fxml"));
+            }
+
             Parent root = loader.load();
             Scene scene = new Scene(root);
             scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/data/stile.css")).toExternalForm());
