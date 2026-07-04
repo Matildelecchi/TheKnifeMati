@@ -22,7 +22,6 @@ import javafx.scene.chart.PieChart;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.Slider;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
@@ -32,6 +31,9 @@ import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 
 import org.controlsfx.control.CheckComboBox;
+import javafx.scene.control.TableCell;
+import javafx.util.Callback;
+
 
 /**
          * Controller per la gestione delle recensioni di un ristorante.
@@ -65,7 +67,6 @@ import org.controlsfx.control.CheckComboBox;
             @FXML private TableColumn<Recensione, String> colUtente;
             @FXML private TableColumn<Recensione, String> colRisposta;
             @FXML private TextArea recensioneTextArea;
-            @FXML private Slider stelleSlider;
             @FXML private Button inviaButton;
             @FXML private Button modificaButton;
             @FXML private Button eliminaButton;
@@ -76,6 +77,14 @@ import org.controlsfx.control.CheckComboBox;
             @FXML private Label totaleRecensioniLabel;
             @FXML private Button modificaRispostaButton;
             @FXML private TextField titoloText;
+            @FXML private Label stelleLabel;
+            @FXML private Label star1;
+            @FXML private Label star2;
+            @FXML private Label star3;
+            @FXML private Label star4;
+            @FXML private Label star5;
+
+            private int stelleSelezionate = 3;
 
             //private final GestioneRecensioni gestioneRecensioni = GestioneRecensioni.getInstance();
             private final GestionePossessoRistorante ownershipService = GestionePossessoRistorante.getInstance();
@@ -117,6 +126,11 @@ import org.controlsfx.control.CheckComboBox;
              */
             @FXML
             public void initialize() {
+                System.out.println(star1);
+                System.out.println(star2);
+                System.out.println(star3);
+                System.out.println(star4);
+                System.out.println(star5);
                 try {
                     server = ClientMain.getServer();
                     System.out.println("server = "+server);
@@ -129,6 +143,47 @@ import org.controlsfx.control.CheckComboBox;
                 setupTable();
                 setupStarFilter();
                 setupListeners();
+
+                // STELLE 
+                Label[] stars = {star1, star2, star3, star4, star5};
+
+                stelleSelezionate = 3;
+                java.util.function.IntConsumer renderStars = (int value) -> {
+                    for (int i = 0; i < stars.length; i++) {
+                stars[i].setText(i < value ? "★" : "☆");
+                }
+            };
+
+                 // stato iniziale
+                renderStars.accept(stelleSelezionate);
+
+                for (int i = 0; i < stars.length; i++) {
+                    stars[i].setText(i < stelleSelezionate ? "★" : "☆");
+                }
+
+                for (int i = 0; i < stars.length; i++) {
+                    int value = i + 1;
+
+                    stars[i].setOnMouseClicked(e -> {
+                        stelleSelezionate = value;
+
+                        for (int j = 0; j < stars.length; j++) {
+                            stars[j].setText(j < value ? "★" : "☆");
+                        }
+                    });
+
+                    stars[i].setOnMouseEntered(e -> {
+                        for (int j = 0; j < stars.length; j++) {
+                            stars[j].setText(j < value ? "★" : "☆");
+                        }
+                    });
+
+                    stars[i].setOnMouseExited(e -> {
+                        for (int j = 0; j < stars.length; j++) {
+                            stars[j].setText(j < stelleSelezionate ? "★" : "☆");
+                        }
+                    });
+                }
 
 
                 colId.setReorderable(false);
@@ -174,13 +229,17 @@ import org.controlsfx.control.CheckComboBox;
 
                 // I campi di input per le recensioni sono visibili per chi può recensire
                 recensioneTextArea.setVisible(puo_recensire);
-                stelleSlider.setVisible(puo_recensire);
-            }
+                star1.setVisible(puo_recensire);
+                star2.setVisible(puo_recensire);
+                star3.setVisible(puo_recensire);
+                star4.setVisible(puo_recensire);
+                star5.setVisible(puo_recensire);            }
             /**
              * Inizializza la tabella delle recensioni configurando le colonne
              * e preparando le liste osservabili necessarie per filtrare i dati.
              */
             private void setupTable() {
+                // Collegamento colonne --> proprietà del model Recensione
                 colId.setCellValueFactory(new PropertyValueFactory<>("idRec"));
                 colTitolo.setCellValueFactory(new PropertyValueFactory<>("titolo"));
                 colStelle.setCellValueFactory(new PropertyValueFactory<>("stelle"));
@@ -189,10 +248,31 @@ import org.controlsfx.control.CheckComboBox;
                 colUtente.setCellValueFactory(new PropertyValueFactory<>("username"));
                 colRisposta.setCellValueFactory(new PropertyValueFactory<>("risposta"));
 
+                // Lista osservabile delle recensioni
                 masterRecensioniList = FXCollections.observableArrayList();
                 tableView.setItems(masterRecensioniList);
+                
+                 // Tabella si adatta automaticamente
                 tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-    }
+
+               // Personalizza la colonna "stelle" per mostrare stelle grafiche
+                colStelle.setCellFactory(col -> new TableCell<Recensione, Integer>() {
+
+                 @Override
+                protected void updateItem(Integer stelle, boolean empty) {
+                    super.updateItem(stelle, empty);
+
+                    // Se la riga è vuota o senza valore, non mostra nulla
+                    if (empty || stelle == null) {
+                        setText(null);
+                    } else {
+                        // Converte numero (1-5) in stelle grafiche
+                        // esempio: 4 → ★★★★☆
+                        setText("★".repeat(stelle) + "☆".repeat(5 - stelle));
+                    }
+                }
+            });
+        }
 
     private void setupStarFilter() {
         comboBox.getItems().setAll(1, 2, 3, 4, 5);
@@ -261,16 +341,30 @@ import org.controlsfx.control.CheckComboBox;
 
                 // Precompila i campi se è l'autore della recensione
                 recensioneTextArea.setText(newVal.getTesto());
-                stelleSlider.setValue(newVal.getStelle());
+                stelleSelezionate = newVal.getStelle();
+
+                // Aggiorna la visualizzazione delle stelle
+                Label[] stars = {star1, star2, star3, star4, star5};
+                for (int i = 0; i < stars.length; i++) {
+                    stars[i].setText(i < stelleSelezionate ? "★" : "☆");
+                }
                 titoloText.setText(newVal.getTitolo());
                 if (isAutore && puo_recensire) {
                     recensioneTextArea.setDisable(false);
-                    stelleSlider.setDisable(false);
+                    star1.setDisable(false);
+                    star2.setDisable(false);
+                    star3.setDisable(false);
+                    star4.setDisable(false);
+                    star5.setDisable(false);
                     titoloText.setDisable(false);
                     indietroButton.setVisible(false);
                 } else {
                     recensioneTextArea.setDisable(true);
-                    stelleSlider.setDisable(true);
+                    star1.setDisable(true);
+                    star2.setDisable(true);
+                    star3.setDisable(true);
+                    star4.setDisable(true);
+                    star5.setDisable(true);
                     titoloText.setDisable(true);
                     indietroButton.setVisible(true);
                 }
@@ -362,7 +456,11 @@ import org.controlsfx.control.CheckComboBox;
     private void handleIndietro() {
         pulisciCampi();
         recensioneTextArea.setDisable(false);
-        stelleSlider.setDisable(false);
+        star1.setDisable(false);
+        star2.setDisable(false);
+        star3.setDisable(false);
+        star4.setDisable(false);
+        star5.setDisable(false);
         titoloText.setDisable(false);
         indietroButton.setVisible(false);
     }
@@ -423,7 +521,7 @@ import org.controlsfx.control.CheckComboBox;
         );
         gestioneRecensioni.aggiungiRecensione(recensione);*/
         try {
-            server.saveRecensione(titoloText.getText().trim(), recensioneTextArea.getText().trim(), (int) stelleSlider.getValue(), numTelefono, SessioneUtente.getUsernameUtente());
+            server.saveRecensione(titoloText.getText().trim(), recensioneTextArea.getText().trim(), stelleSelezionate, numTelefono, SessioneUtente.getUsernameUtente());
         } catch(SQLException | RemoteException e) {
             e.printStackTrace();
         }
@@ -453,7 +551,7 @@ import org.controlsfx.control.CheckComboBox;
                 (int) stelleSlider.getValue()
         );*/
         try {
-            server.modifyRecensione(selected.getIdRec(), titoloText.getText(), recensioneTextArea.getText(), (int) stelleSlider.getValue());
+            server.modifyRecensione(selected.getIdRec(), titoloText.getText(), recensioneTextArea.getText(), stelleSelezionate);
         } catch(SQLException | RemoteException e) {
             e.printStackTrace();
         }
@@ -519,7 +617,12 @@ import org.controlsfx.control.CheckComboBox;
         titoloText.setText("");
         recensioneTextArea.clear();
         rispostaTextArea.clear();
-        stelleSlider.setValue(3);
+        stelleSelezionate = 3;
+
+        Label[] stars = {star1, star2, star3, star4, star5};
+        for (int i = 0; i < stars.length; i++) {
+            stars[i].setText(i < stelleSelezionate ? "★" : "☆");
+        }
         tableView.getSelectionModel().clearSelection();
     }
 

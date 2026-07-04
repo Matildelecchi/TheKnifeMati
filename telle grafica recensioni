@@ -1,0 +1,301 @@
+[1mdiff --git a/TheKnifeMati/pom.xml b/TheKnifeMati/pom.xml[m
+[1mindex 5928651..517c2b0 100644[m
+[1m--- a/TheKnifeMati/pom.xml[m
+[1m+++ b/TheKnifeMati/pom.xml[m
+[36m@@ -23,7 +23,7 @@[m
+         <maven.compiler.source>22</maven.compiler.source>[m
+         <maven.compiler.target>22</maven.compiler.target>[m
+         <!-- Classe principale dell'applicazione JavaFX -->[m
+[31m-        <javafx.mainClass>com.example.theknife.Main</javafx.mainClass>[m
+[32m+[m[32m        <javafx.mainClass>com.example.theknife.client.App</javafx.mainClass>[m
+     </properties>[m
+ [m
+     <dependencies>[m
+[1mdiff --git a/TheKnifeMati/src/main/java/com/example/theknife/client/RecensioniController.java b/TheKnifeMati/src/main/java/com/example/theknife/client/RecensioniController.java[m
+[1mindex 531807a..c05ec3c 100644[m
+[1m--- a/TheKnifeMati/src/main/java/com/example/theknife/client/RecensioniController.java[m
+[1m+++ b/TheKnifeMati/src/main/java/com/example/theknife/client/RecensioniController.java[m
+[36m@@ -22,7 +22,6 @@[m [mimport javafx.scene.chart.PieChart;[m
+ import javafx.scene.control.Alert;[m
+ import javafx.scene.control.Button;[m
+ import javafx.scene.control.Label;[m
+[31m-import javafx.scene.control.Slider;[m
+ import javafx.scene.control.TableColumn;[m
+ import javafx.scene.control.TableView;[m
+ import javafx.scene.control.TextArea;[m
+[36m@@ -32,6 +31,9 @@[m [mimport javafx.scene.layout.VBox;[m
+ import javafx.util.StringConverter;[m
+ [m
+ import org.controlsfx.control.CheckComboBox;[m
+[32m+[m[32mimport javafx.scene.control.TableCell;[m
+[32m+[m[32mimport javafx.util.Callback;[m
+[32m+[m
+ [m
+ /**[m
+          * Controller per la gestione delle recensioni di un ristorante.[m
+[36m@@ -65,7 +67,6 @@[m [mimport org.controlsfx.control.CheckComboBox;[m
+             @FXML private TableColumn<Recensione, String> colUtente;[m
+             @FXML private TableColumn<Recensione, String> colRisposta;[m
+             @FXML private TextArea recensioneTextArea;[m
+[31m-            @FXML private Slider stelleSlider;[m
+             @FXML private Button inviaButton;[m
+             @FXML private Button modificaButton;[m
+             @FXML private Button eliminaButton;[m
+[36m@@ -76,6 +77,14 @@[m [mimport org.controlsfx.control.CheckComboBox;[m
+             @FXML private Label totaleRecensioniLabel;[m
+             @FXML private Button modificaRispostaButton;[m
+             @FXML private TextField titoloText;[m
+[32m+[m[32m            @FXML private Label stelleLabel;[m
+[32m+[m[32m            @FXML private Label star1;[m
+[32m+[m[32m            @FXML private Label star2;[m
+[32m+[m[32m            @FXML private Label star3;[m
+[32m+[m[32m            @FXML private Label star4;[m
+[32m+[m[32m            @FXML private Label star5;[m
+[32m+[m
+[32m+[m[32m            private int stelleSelezionate = 3;[m
+ [m
+             //private final GestioneRecensioni gestioneRecensioni = GestioneRecensioni.getInstance();[m
+             private final GestionePossessoRistorante ownershipService = GestionePossessoRistorante.getInstance();[m
+[36m@@ -117,6 +126,11 @@[m [mimport org.controlsfx.control.CheckComboBox;[m
+              */[m
+             @FXML[m
+             public void initialize() {[m
+[32m+[m[32m                System.out.println(star1);[m
+[32m+[m[32m                System.out.println(star2);[m
+[32m+[m[32m                System.out.println(star3);[m
+[32m+[m[32m                System.out.println(star4);[m
+[32m+[m[32m                System.out.println(star5);[m
+                 try {[m
+                     server = ClientMain.getServer();[m
+                     System.out.println("server = "+server);[m
+[36m@@ -130,6 +144,47 @@[m [mimport org.controlsfx.control.CheckComboBox;[m
+                 setupStarFilter();[m
+                 setupListeners();[m
+ [m
+[32m+[m[32m                // STELLE[m[41m [m
+[32m+[m[32m                Label[] stars = {star1, star2, star3, star4, star5};[m
+[32m+[m
+[32m+[m[32m                stelleSelezionate = 3;[m
+[32m+[m[32m                java.util.function.IntConsumer renderStars = (int value) -> {[m
+[32m+[m[32m                    for (int i = 0; i < stars.length; i++) {[m
+[32m+[m[32m                stars[i].setText(i < value ? "★" : "☆");[m
+[32m+[m[32m                }[m
+[32m+[m[32m            };[m
+[32m+[m
+[32m+[m[32m                 // stato iniziale[m
+[32m+[m[32m                renderStars.accept(stelleSelezionate);[m
+[32m+[m
+[32m+[m[32m                for (int i = 0; i < stars.length; i++) {[m
+[32m+[m[32m                    stars[i].setText(i < stelleSelezionate ? "★" : "☆");[m
+[32m+[m[32m                }[m
+[32m+[m
+[32m+[m[32m                for (int i = 0; i < stars.length; i++) {[m
+[32m+[m[32m                    int value = i + 1;[m
+[32m+[m
+[32m+[m[32m                    stars[i].setOnMouseClicked(e -> {[m
+[32m+[m[32m                        stelleSelezionate = value;[m
+[32m+[m
+[32m+[m[32m                        for (int j = 0; j < stars.length; j++) {[m
+[32m+[m[32m                            stars[j].setText(j < value ? "★" : "☆");[m
+[32m+[m[32m                        }[m
+[32m+[m[32m                    });[m
+[32m+[m
+[32m+[m[32m                    stars[i].setOnMouseEntered(e -> {[m
+[32m+[m[32m                        for (int j = 0; j < stars.length; j++) {[m
+[32m+[m[32m                            stars[j].setText(j < value ? "★" : "☆");[m
+[32m+[m[32m                        }[m
+[32m+[m[32m                    });[m
+[32m+[m
+[32m+[m[32m                    stars[i].setOnMouseExited(e -> {[m
+[32m+[m[32m                        for (int j = 0; j < stars.length; j++) {[m
+[32m+[m[32m                            stars[j].setText(j < stelleSelezionate ? "★" : "☆");[m
+[32m+[m[32m                        }[m
+[32m+[m[32m                    });[m
+[32m+[m[32m                }[m
+[32m+[m
+ [m
+                 colId.setReorderable(false);[m
+                 colTitolo.setReorderable(false);[m
+[36m@@ -174,13 +229,17 @@[m [mimport org.controlsfx.control.CheckComboBox;[m
+ [m
+                 // I campi di input per le recensioni sono visibili per chi può recensire[m
+                 recensioneTextArea.setVisible(puo_recensire);[m
+[31m-                stelleSlider.setVisible(puo_recensire);[m
+[31m-            }[m
+[32m+[m[32m                star1.setVisible(puo_recensire);[m
+[32m+[m[32m                star2.setVisible(puo_recensire);[m
+[32m+[m[32m                star3.setVisible(puo_recensire);[m
+[32m+[m[32m                star4.setVisible(puo_recensire);[m
+[32m+[m[32m                star5.setVisible(puo_recensire);            }[m
+             /**[m
+              * Inizializza la tabella delle recensioni configurando le colonne[m
+              * e preparando le liste osservabili necessarie per filtrare i dati.[m
+              */[m
+             private void setupTable() {[m
+[32m+[m[32m                // Collegamento colonne --> proprietà del model Recensione[m
+                 colId.setCellValueFactory(new PropertyValueFactory<>("idRec"));[m
+                 colTitolo.setCellValueFactory(new PropertyValueFactory<>("titolo"));[m
+                 colStelle.setCellValueFactory(new PropertyValueFactory<>("stelle"));[m
+[36m@@ -189,10 +248,31 @@[m [mimport org.controlsfx.control.CheckComboBox;[m
+                 colUtente.setCellValueFactory(new PropertyValueFactory<>("username"));[m
+                 colRisposta.setCellValueFactory(new PropertyValueFactory<>("risposta"));[m
+ [m
+[32m+[m[32m                // Lista osservabile delle recensioni[m
+                 masterRecensioniList = FXCollections.observableArrayList();[m
+                 tableView.setItems(masterRecensioniList);[m
+[32m+[m[41m                [m
+[32m+[m[32m                 // Tabella si adatta automaticamente[m
+                 tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);[m
+[31m-    }[m
+[32m+[m
+[32m+[m[32m               // Personalizza la colonna "stelle" per mostrare stelle grafiche[m
+[32m+[m[32m                colStelle.setCellFactory(col -> new TableCell<Recensione, Integer>() {[m
+[32m+[m
+[32m+[m[32m                 @Override[m
+[32m+[m[32m                protected void updateItem(Integer stelle, boolean empty) {[m
+[32m+[m[32m                    super.updateItem(stelle, empty);[m
+[32m+[m
+[32m+[m[32m                    // Se la riga è vuota o senza valore, non mostra nulla[m
+[32m+[m[32m                    if (empty || stelle == null) {[m
+[32m+[m[32m                        setText(null);[m
+[32m+[m[32m                    } else {[m
+[32m+[m[32m                        // Converte numero (1-5) in stelle grafiche[m
+[32m+[m[32m                        // esempio: 4 → ★★★★☆[m
+[32m+[m[32m                        setText("★".repeat(stelle) + "☆".repeat(5 - stelle));[m
+[32m+[m[32m                    }[m
+[32m+[m[32m                }[m
+[32m+[m[32m            });[m
+[32m+[m[32m        }[m
+ [m
+     private void setupStarFilter() {[m
+         comboBox.getItems().setAll(1, 2, 3, 4, 5);[m
+[36m@@ -261,16 +341,30 @@[m [mimport org.controlsfx.control.CheckComboBox;[m
+ [m
+                 // Precompila i campi se è l'autore della recensione[m
+                 recensioneTextArea.setText(newVal.getTesto());[m
+[31m-                stelleSlider.setValue(newVal.getStelle());[m
+[32m+[m[32m                stelleSelezionate = newVal.getStelle();[m
+[32m+[m
+[32m+[m[32m                // Aggiorna la visualizzazione delle stelle[m
+[32m+[m[32m                Label[] stars = {star1, star2, star3, star4, star5};[m
+[32m+[m[32m                for (int i = 0; i < stars.length; i++) {[m
+[32m+[m[32m                    stars[i].setText(i < stelleSelezionate ? "★" : "☆");[m
+[32m+[m[32m                }[m
+                 titoloText.setText(newVal.getTitolo());[m
+                 if (isAutore && puo_recensire) {[m
+                     recensioneTextArea.setDisable(false);[m
+[31m-                    stelleSlider.setDisable(false);[m
+[32m+[m[32m                    star1.setDisable(false);[m
+[32m+[m[32m                    star2.setDisable(false);[m
+[32m+[m[32m                    star3.setDisable(false);[m
+[32m+[m[32m                    star4.setDisable(false);[m
+[32m+[m[32m                    star5.setDisable(false);[m
+                     titoloText.setDisable(false);[m
+                     indietroButton.setVisible(false);[m
+                 } else {[m
+                     recensioneTextArea.setDisable(true);[m
+[31m-                    stelleSlider.setDisable(true);[m
+[32m+[m[32m                    star1.setDisable(true);[m
+[32m+[m[32m                    star2.setDisable(true);[m
+[32m+[m[32m                    star3.setDisable(true);[m
+[32m+[m[32m                    star4.setDisable(true);[m
+[32m+[m[32m                    star5.setDisable(true);[m
+                     titoloText.setDisable(true);[m
+                     indietroButton.setVisible(true);[m
+                 }[m
+[36m@@ -362,7 +456,11 @@[m [mimport org.controlsfx.control.CheckComboBox;[m
+     private void handleIndietro() {[m
+         pulisciCampi();[m
+         recensioneTextArea.setDisable(false);[m
+[31m-        stelleSlider.setDisable(false);[m
+[32m+[m[32m        star1.setDisable(false);[m
+[32m+[m[32m        star2.setDisable(false);[m
+[32m+[m[32m        star3.setDisable(false);[m
+[32m+[m[32m        star4.setDisable(false);[m
+[32m+[m[32m        star5.setDisable(false);[m
+         titoloText.setDisable(false);[m
+         indietroButton.setVisible(false);[m
+     }[m
+[36m@@ -423,7 +521,7 @@[m [mimport org.controlsfx.control.CheckComboBox;[m
+         );[m
+         gestioneRecensioni.aggiungiRecensione(recensione);*/[m
+         try {[m
+[31m-            server.saveRecensione(titoloText.getText().trim(), recensioneTextArea.getText().trim(), (int) stelleSlider.getValue(), numTelefono, SessioneUtente.getUsernameUtente());[m
+[32m+[m[32m            server.saveRecensione(titoloText.getText().trim(), recensioneTextArea.getText().trim(), stelleSelezionate, numTelefono, SessioneUtente.getUsernameUtente());[m
+         } catch(SQLException | RemoteException e) {[m
+             e.printStackTrace();[m
+         }[m
+[36m@@ -453,7 +551,7 @@[m [mimport org.controlsfx.control.CheckComboBox;[m
+                 (int) stelleSlider.getValue()[m
+         );*/[m
+         try {[m
+[31m-            server.modifyRecensione(selected.getIdRec(), titoloText.getText(), recensioneTextArea.getText(), (int) stelleSlider.getValue());[m
+[32m+[m[32m            server.modifyRecensione(selected.getIdRec(), titoloText.getText(), recensioneTextArea.getText(), stelleSelezionate);[m
+         } catch(SQLException | RemoteException e) {[m
+             e.printStackTrace();[m
+         }[m
+[36m@@ -519,7 +617,12 @@[m [mimport org.controlsfx.control.CheckComboBox;[m
+         titoloText.setText("");[m
+         recensioneTextArea.clear();[m
+         rispostaTextArea.clear();[m
+[31m-        stelleSlider.setValue(3);[m
+[32m+[m[32m        stelleSelezionate = 3;[m
+[32m+[m
+[32m+[m[32m        Label[] stars = {star1, star2, star3, star4, star5};[m
+[32m+[m[32m        for (int i = 0; i < stars.length; i++) {[m
+[32m+[m[32m            stars[i].setText(i < stelleSelezionate ? "★" : "☆");[m
+[32m+[m[32m        }[m
+         tableView.getSelectionModel().clearSelection();[m
+     }[m
+ [m
+[1mdiff --git a/TheKnifeMati/src/main/java/com/example/theknife/server/ServerMain.java b/TheKnifeMati/src/main/java/com/example/theknife/server/ServerMain.java[m
+[1mindex f53a554..f484818 100644[m
+[1m--- a/TheKnifeMati/src/main/java/com/example/theknife/server/ServerMain.java[m
+[1m+++ b/TheKnifeMati/src/main/java/com/example/theknife/server/ServerMain.java[m
+[36m@@ -24,7 +24,7 @@[m [mpublic class ServerMain implements DBService {[m
+     static int PORT_STUB = 1;[m
+     private static final String URL = "jdbc:postgresql://localhost:5432/theknife";[m
+     private static final String USER = "postgres";[m
+[31m-    private static final String PASSWORD = "password";[m
+[32m+[m[32m    private static final String PASSWORD = "1234";[m
+ [m
+     [m
+ [m
+[1mdiff --git a/TheKnifeMati/src/main/resources/META-INF/MANIFEST.MF b/TheKnifeMati/src/main/resources/META-INF/MANIFEST.MF[m
+[1mindex 8a1eb87..2b829dc 100644[m
+[1m--- a/TheKnifeMati/src/main/resources/META-INF/MANIFEST.MF[m
+[1m+++ b/TheKnifeMati/src/main/resources/META-INF/MANIFEST.MF[m
+[36m@@ -1,3 +1,3 @@[m
+ Manifest-Version: 1.0[m
+[31m-Main-Class: com.example.theknife.Main[m
+[32m+[m[32mMain-Class: com.example.theknife.client.App[m
+ [m
+[1mdiff --git a/TheKnifeMati/src/main/resources/com/example/theknife/client/recensioni.fxml b/TheKnifeMati/src/main/resources/com/example/theknife/client/recensioni.fxml[m
+[1mindex 19e38a4..6a866cb 100644[m
+[1m--- a/TheKnifeMati/src/main/resources/com/example/theknife/client/recensioni.fxml[m
+[1m+++ b/TheKnifeMati/src/main/resources/com/example/theknife/client/recensioni.fxml[m
+[36m@@ -4,7 +4,6 @@[m
+ <?import javafx.scene.chart.PieChart?>[m
+ <?import javafx.scene.control.Button?>[m
+ <?import javafx.scene.control.Label?>[m
+[31m-<?import javafx.scene.control.Slider?>[m
+ <?import javafx.scene.control.SplitPane?>[m
+ <?import javafx.scene.control.TableColumn?>[m
+ <?import javafx.scene.control.TableView?>[m
+[36m@@ -43,8 +42,15 @@[m
+         <Label text="La tua recensione:" />[m
+         <TextArea fx:id="recensioneTextArea" prefRowCount="3" wrapText="true" />[m
+         <HBox alignment="CENTER_LEFT" spacing="10">[m
+[32m+[m[32m        <Label fx:id="stelleLabel" text="★★★☆☆" />[m
+           <Label text="Stelle:" />[m
+[31m-          <Slider fx:id="stelleSlider" blockIncrement="1" majorTickUnit="1" max="5" min="1" minorTickCount="0" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="3" />[m
+[32m+[m[32m        <HBox spacing="3">[m
+[32m+[m[32m          <Label fx:id="star1" text="☆" style="-fx-font-size: 18px; -fx-cursor: hand;" />[m
+[32m+[m[32m          <Label fx:id="star2" text="☆" style="-fx-font-size: 18px; -fx-cursor: hand;" />[m
+[32m+[m[32m          <Label fx:id="star3" text="☆" style="-fx-font-size: 18px; -fx-cursor: hand;" />[m
+[32m+[m[32m          <Label fx:id="star4" text="☆" style="-fx-font-size: 18px; -fx-cursor: hand;" />[m
+[32m+[m[32m          <Label fx:id="star5" text="☆" style="-fx-font-size: 18px; -fx-cursor: hand;" />[m
+[32m+[m[32m      </HBox>[m
+           <Label alignment="CENTER_RIGHT" prefHeight="18.0" prefWidth="138.0" text="Titolo: " />[m
+           <TextField fx:id="titoloText" />[m
+         </HBox>[m

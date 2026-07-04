@@ -4,7 +4,6 @@
 <?import javafx.scene.chart.PieChart?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
@@ -43,8 +42,15 @@
         <Label text="La tua recensione:" />
         <TextArea fx:id="recensioneTextArea" prefRowCount="3" wrapText="true" />
         <HBox alignment="CENTER_LEFT" spacing="10">
+        <Label fx:id="stelleLabel" text="★★★☆☆" />
           <Label text="Stelle:" />
-          <Slider fx:id="stelleSlider" blockIncrement="1" majorTickUnit="1" max="5" min="1" minorTickCount="0" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="3" />
+        <HBox spacing="3">
+          <Label fx:id="star1" text="☆" style="-fx-font-size: 18px; -fx-cursor: hand;" />
+          <Label fx:id="star2" text="☆" style="-fx-font-size: 18px; -fx-cursor: hand;" />
+          <Label fx:id="star3" text="☆" style="-fx-font-size: 18px; -fx-cursor: hand;" />
+          <Label fx:id="star4" text="☆" style="-fx-font-size: 18px; -fx-cursor: hand;" />
+          <Label fx:id="star5" text="☆" style="-fx-font-size: 18px; -fx-cursor: hand;" />
+      </HBox>
           <Label alignment="CENTER_RIGHT" prefHeight="18.0" prefWidth="138.0" text="Titolo: " />
           <TextField fx:id="titoloText" />
         </HBox>
