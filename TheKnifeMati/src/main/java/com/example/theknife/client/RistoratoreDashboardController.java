@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 import com.example.theknife.common.DBService;
@@ -565,6 +566,7 @@ public class RistoratoreDashboardController implements Initializable {
             Parent root = loader.load();
             Stage currentStage = (Stage) logoutButton.getScene().getWindow();
             Scene scene = new Scene(root);
+            scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/data/stile.css")).toExternalForm());
             currentStage.setScene(scene);
             currentStage.show();
         } catch (IOException e) {
