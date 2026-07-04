@@ -3,6 +3,7 @@ package com.example.theknife.client;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,15 +13,14 @@ import com.example.theknife.common.DBService;
 import com.example.theknife.common.Recensione;
 
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TableColumn;
@@ -29,6 +29,9 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
+import javafx.util.StringConverter;
+
+import org.controlsfx.control.CheckComboBox;
 
 /**
          * Controller per la gestione delle recensioni di un ristorante.
@@ -52,8 +55,10 @@ import javafx.scene.layout.VBox;
          */
         public class RecensioniController {
             @FXML private PieChart pieChart;
-            @FXML private ComboBox<Integer> comboBox;
+            @FXML private CheckComboBox<Integer> comboBox;
             @FXML private TableView<Recensione> tableView;
+            @FXML private TableColumn<Recensione, Integer> colId;
+            @FXML private TableColumn<Recensione, String> colTitolo;
             @FXML private TableColumn<Recensione, Integer> colStelle;
             @FXML private TableColumn<Recensione, String> colTesto;
             @FXML private TableColumn<Recensione, String> colData;
@@ -76,7 +81,6 @@ import javafx.scene.layout.VBox;
             private final GestionePossessoRistorante ownershipService = GestionePossessoRistorante.getInstance();
             private String numTelefono;
             private ObservableList<Recensione> masterRecensioniList;
-            private FilteredList<Recensione> filteredList;
             private RistoratoreDashboardController parentController;
             private Parent rootToRestore;
             private Runnable tornaAlMenuPrincipaleCallback;
@@ -123,9 +127,12 @@ import javafx.scene.layout.VBox;
                 
                 setupUI();
                 setupTable();
+                setupStarFilter();
                 setupListeners();
 
 
+                colId.setReorderable(false);
+                colTitolo.setReorderable(false);
                 colStelle.setReorderable(false);
                 colTesto.setReorderable(false);
                 colData.setReorderable(false);
@@ -174,6 +181,8 @@ import javafx.scene.layout.VBox;
              * e preparando le liste osservabili necessarie per filtrare i dati.
              */
             private void setupTable() {
+                colId.setCellValueFactory(new PropertyValueFactory<>("idRec"));
+                colTitolo.setCellValueFactory(new PropertyValueFactory<>("titolo"));
                 colStelle.setCellValueFactory(new PropertyValueFactory<>("stelle"));
                 colTesto.setCellValueFactory(new PropertyValueFactory<>("testo"));
                 colData.setCellValueFactory(new PropertyValueFactory<>("data"));
@@ -181,9 +190,35 @@ import javafx.scene.layout.VBox;
                 colRisposta.setCellValueFactory(new PropertyValueFactory<>("risposta"));
 
                 masterRecensioniList = FXCollections.observableArrayList();
-                filteredList = new FilteredList<>(masterRecensioniList, p -> true);
-                tableView.setItems(filteredList);
+                tableView.setItems(masterRecensioniList);
                 tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+    }
+
+    private void setupStarFilter() {
+        comboBox.getItems().setAll(1, 2, 3, 4, 5);
+        comboBox.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(Integer value) {
+                if (value == null) {
+                    return "";
+                }
+                return "★".repeat(value);
+            }
+
+            @Override
+            public Integer fromString(String string) {
+                throw new UnsupportedOperationException("Conversion from text is not used");
+            }
+        });
+        comboBox.setTitle("Filtra per stelle");
+        comboBox.getCheckModel().checkAll();
+
+        comboBox.getCheckModel().getCheckedItems().addListener((ListChangeListener<Integer>) change -> {
+            while (change.next()) {
+                // The list itself is read after the change batch, this loop only drains events.
+            }
+            refreshData();
+        });
     }
     /**
      * Imposta i listener sugli elementi dell'interfaccia, in particolare
@@ -212,7 +247,7 @@ import javafx.scene.layout.VBox;
 
             if (newVal != null) {
                 boolean isAutore = newVal.getUsername().equals(currentUser);
-                boolean hasRisposta = !newVal.getRisposta().isEmpty();
+                boolean hasRisposta = newVal.getRisposta() != null && !newVal.getRisposta().isEmpty();
 
                 // Visibilità per utenti che possono recensire
                 modificaButton.setVisible(isAutore && puo_recensire);
@@ -272,15 +307,25 @@ import javafx.scene.layout.VBox;
      */
     public void refreshData() {
         if (numTelefono != null) {
-            try {
-                masterRecensioniList.setAll(server.getRecensioni(numTelefono));
-            } catch(RemoteException | SQLException e) {
-                System.out.println("errore con il server");
-                e.printStackTrace();
-            }
-            //masterRecensioniList.setAll(server.getRecensioni(numTelefono));
+            loadFilteredReviewsFromServer();
             aggiornaPieChart();
             pulisciCampi();
+        }
+    }
+
+    private void loadFilteredReviewsFromServer() {
+        if (server == null) {
+            mostraErrore("Errore server", "Servizio recensioni non disponibile.");
+            return;
+        }
+
+        List<Integer> selectedStars = new ArrayList<>(comboBox.getCheckModel().getCheckedItems());
+        try {
+            List<Recensione> remoteReviews = server.getRecensioniByStars(numTelefono, selectedStars);
+            masterRecensioniList.setAll(remoteReviews);
+        } catch (RemoteException | SQLException e) {
+            mostraErrore("Errore di rete", "Impossibile caricare le recensioni filtrate dal server.");
+            e.printStackTrace();
         }
     }
 
@@ -330,8 +375,8 @@ import javafx.scene.layout.VBox;
         Map<Integer, Integer> recensioniMap = new HashMap<>();
         int totale = 0;
 
-        // Conta le recensioni per ogni numero di stelle basandosi sulla lista filtrata
-        for (Recensione r : filteredList) {
+        // Conta le recensioni per ogni numero di stelle basandosi sulla lista filtrata lato server
+        for (Recensione r : masterRecensioniList) {
             recensioniMap.merge(r.getStelle(), 1, Integer::sum);
             totale++;
         }

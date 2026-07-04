@@ -4,6 +4,7 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 public interface DBService extends Remote {
 
@@ -17,6 +18,7 @@ public interface DBService extends Remote {
     Ristorante getRistorante(String num_tel) throws RemoteException, SQLException;
     ArrayList<Ristorante> getRistoranti(String citta, String stato) throws RemoteException, SQLException;
     ArrayList<Recensione> getRecensioni(String num_tel) throws RemoteException, SQLException;
+    ArrayList<Recensione> getRecensioniByStars(String num_tel, List<Integer> stars) throws RemoteException, SQLException;
     ArrayList<Recensione> getRecensioniByUsername(String username) throws RemoteException, SQLException;
     ArrayList<Ristorante> getPreferiti(String username) throws RemoteException, SQLException;
     String getRisposta(int id_rec) throws RemoteException, SQLException;

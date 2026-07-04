@@ -50,6 +50,12 @@
             <version>${javafx.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.controlsfx</groupId>
+            <artifactId>controlsfx</artifactId>
+            <version>11.2.1</version>
+        </dependency>
+
         <!-- Dipendenze per piattaforme specifiche (opzionale per maggiore compatibilità) -->
         <dependency>
             <groupId>org.openjfx</groupId>

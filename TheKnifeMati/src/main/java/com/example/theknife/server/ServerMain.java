@@ -11,6 +11,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import com.example.theknife.common.DBService;
 import com.example.theknife.common.Recensione;
@@ -187,6 +189,62 @@ public class ServerMain implements DBService {
             System.err.println("Errore DB getRecensioni: " + e.getMessage());
             throw e;
         }
+        return results;
+    }
+
+    @Override
+    public ArrayList<Recensione> getRecensioniByStars(String num_tel, List<Integer> stars)
+            throws RemoteException, SQLException {
+        ArrayList<Recensione> results = new ArrayList<>();
+        if (num_tel == null || num_tel.trim().isEmpty()) {
+            return results;
+        }
+
+        List<Integer> safeStars = stars == null ? List.of() : stars.stream()
+                .filter(star -> star != null && star >= 1 && star <= 5)
+                .distinct()
+                .toList();
+
+        StringBuilder query = new StringBuilder(
+                "SELECT r.id_rec, r.titolo, r.testo, r.stelle, r.data_rec, r.ora, r.num_tel, r.username, " +
+                        "COALESCE(rs.testo, '') AS risposta " +
+                        "FROM recensioni r LEFT JOIN risposte rs ON r.id_rec = rs.id_rec " +
+                        "WHERE r.num_tel = ?");
+
+        if (!safeStars.isEmpty()) {
+            String placeholders = safeStars.stream().map(star -> "?").collect(Collectors.joining(","));
+            query.append(" AND r.stelle IN (").append(placeholders).append(")");
+        }
+        query.append(" ORDER BY r.data_rec DESC, r.id_rec DESC");
+
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(query.toString())) {
+            int index = 1;
+            ps.setString(index++, num_tel.trim());
+            for (Integer star : safeStars) {
+                ps.setInt(index++, star);
+            }
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Recensione recensione = new Recensione(
+                            rs.getInt("id_rec"),
+                            rs.getString("titolo"),
+                            rs.getString("testo"),
+                            rs.getInt("stelle"),
+                            rs.getString("data_rec"),
+                            rs.getString("ora"),
+                            rs.getString("num_tel"),
+                            rs.getString("username"));
+                    recensione.setRisposta(rs.getString("risposta"));
+                    results.add(recensione);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Errore DB getRecensioniByStars: " + e.getMessage());
+            throw e;
+        }
+
         return results;
     }
 
