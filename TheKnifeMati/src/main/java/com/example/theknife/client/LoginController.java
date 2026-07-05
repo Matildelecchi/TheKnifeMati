@@ -28,7 +28,9 @@ import javafx.stage.Stage;
 
 /**
  * Controller per la gestione del login degli utenti.
- * Gestisce l'autenticazione degli utenti e il reindirizzamento alla schermata principale.
+ * Gestisce l'autenticazione degli utenti e il reindirizzamento alla schermata
+ * principale.
+ * 
  * @author Matilde Lecchi, 759875, Sede CO
  * @author Eleonora Anna Caredda, 762576, Sede CO
  * @author Claudio Bonci, 759939, Sede CO
@@ -40,8 +42,10 @@ public class LoginController {
     private static final String USERS_FILE = "data/utenti.csv";
     private static final String CSS_PATH = "/data/stile.css";
 
-    @FXML private TextField campoUsername;
-    @FXML private PasswordField campoPassword;
+    @FXML
+    private TextField campoUsername;
+    @FXML
+    private PasswordField campoPassword;
 
     private Runnable onLoginSuccess;
     private static DBService server;
@@ -50,15 +54,14 @@ public class LoginController {
         this.onLoginSuccess = callback;
     }
 
-    @FXML 
+    @FXML
     private void initialize() {
         try {
             server = ClientMain.getServer();
-        } catch(RemoteException | NotBoundException e) {
+        } catch (RemoteException | NotBoundException e) {
             e.printStackTrace();
         }
     }
-
 
     /**
      * Gestisce il processo di login verificando username e password.
@@ -85,7 +88,9 @@ public class LoginController {
                         utenteAutenticato.isRuolo(),
                         utenteAutenticato.getCitta(),
                         utenteAutenticato.getStato(),
-                        utenteAutenticato.getEmail()
+                        utenteAutenticato.getEmail(),
+                        utenteAutenticato.getDataNascita(),
+                        utenteAutenticato.getLuogoDomicilio()
 
                 );
 
@@ -114,7 +119,7 @@ public class LoginController {
     @FXML
     private void gestisciAccessoSenzaLogin(ActionEvent evento) {
         try {
-            SessioneUtente.impostaUtenteCorrente("Ospite", "", "", false, "","","");
+            SessioneUtente.impostaUtenteCorrente("Ospite", "", "", false, "", "", "", "", "");
             reindirizzaAllInterfacciaPrincipale(evento);
         } catch (Exception e) {
             e.printStackTrace();
@@ -164,7 +169,7 @@ public class LoginController {
      * @throws Exception se si verifica un errore di lettura o cifratura
      */
     private Utente autenticaUtente(String username, String password) throws Exception {
-        //List<Utente> utenti = caricaUtentiDaCSV();
+        // List<Utente> utenti = caricaUtentiDaCSV();
         ArrayList<Utente> utenti = server.getUtenti("SELECT * FROM UTENTI");
         String passwordCifrata = cifraPassword(password);
 
@@ -173,11 +178,13 @@ public class LoginController {
                         utente.getPasswordHash().equals(passwordCifrata))
                 .findFirst()
                 .orElse(null);
-        /*return utenti.stream()
-                .filter(utente -> utente.getUsername().equals(username) &&
-                        utente.getPasswordHash().equals(password))
-                .findFirst()
-                .orElse(null);*/
+        /*
+         * return utenti.stream()
+         * .filter(utente -> utente.getUsername().equals(username) &&
+         * utente.getPasswordHash().equals(password))
+         * .findFirst()
+         * .orElse(null);
+         */
     }
 
     /**
@@ -186,30 +193,32 @@ public class LoginController {
      * @return lista di {@link Utente}
      * @throws IOException se si verifica un errore di lettura del file
      */
-    /*private List<Utente> caricaUtentiDaCSV() throws IOException {
-        List<Utente> utenti = new ArrayList<>();
-        File csvFile = new File(USERS_FILE);
-
-        if (!csvFile.exists()) {
-            createUsersFile(csvFile);
-            return utenti;
-        }
-
-        try (BufferedReader lettore = new BufferedReader(
-                new FileReader(csvFile, StandardCharsets.UTF_8))) {
-
-            String riga = lettore.readLine(); // Skip header
-            while ((riga = lettore.readLine()) != null) {
-                if (!riga.trim().isEmpty()) {
-                    Utente utente = parseUserFromCsv(riga);
-                    if (utente != null) {
-                        utenti.add(utente);
-                    }
-                }
-            }
-        }
-        return utenti;
-    }*/
+    /*
+     * private List<Utente> caricaUtentiDaCSV() throws IOException {
+     * List<Utente> utenti = new ArrayList<>();
+     * File csvFile = new File(USERS_FILE);
+     * 
+     * if (!csvFile.exists()) {
+     * createUsersFile(csvFile);
+     * return utenti;
+     * }
+     * 
+     * try (BufferedReader lettore = new BufferedReader(
+     * new FileReader(csvFile, StandardCharsets.UTF_8))) {
+     * 
+     * String riga = lettore.readLine(); // Skip header
+     * while ((riga = lettore.readLine()) != null) {
+     * if (!riga.trim().isEmpty()) {
+     * Utente utente = parseUserFromCsv(riga);
+     * if (utente != null) {
+     * utenti.add(utente);
+     * }
+     * }
+     * }
+     * }
+     * return utenti;
+     * }
+     */
 
     /**
      * Crea il file utenti con l’header se non esiste.
@@ -234,16 +243,18 @@ public class LoginController {
      * @param riga stringa CSV contenente i dati di un utente
      * @return oggetto {@link Utente} oppure {@code null} se i dati non sono validi
      */
-    /*private Utente parseUserFromCsv(String riga) {
-        String[] parti = riga.split(",");
-        if (parti.length >= 7) {
-            return new Utente(
-                    parti[0].trim(), parti[1].trim(), parti[2].trim(),
-                    parti[3].trim(), parti[4].trim(), parti[5].trim(), parti[6].trim()
-            );
-        }
-        return null;
-    }*/
+    /*
+     * private Utente parseUserFromCsv(String riga) {
+     * String[] parti = riga.split(",");
+     * if (parti.length >= 7) {
+     * return new Utente(
+     * parti[0].trim(), parti[1].trim(), parti[2].trim(),
+     * parti[3].trim(), parti[4].trim(), parti[5].trim(), parti[6].trim()
+     * );
+     * }
+     * return null;
+     * }
+     */
 
     /**
      * Cifra una password in SHA-256.
@@ -277,19 +288,18 @@ public class LoginController {
         caricaScena(evento, "lista.fxml", "TheKnife - Ricerca Ristoranti", 1024, 768);
     }
 
-
     /**
      * Metodo helper per caricare una nuova scena.
      *
-     * @param evento evento che ha generato il cambio scena
-     * @param fxml file FXML da caricare
-     * @param titolo titolo della finestra
-     * @param defaultWidth larghezza di default
+     * @param evento        evento che ha generato il cambio scena
+     * @param fxml          file FXML da caricare
+     * @param titolo        titolo della finestra
+     * @param defaultWidth  larghezza di default
      * @param defaultHeight altezza di default
      * @throws IOException se si verifica un errore di caricamento
      */
     private void caricaScena(ActionEvent evento, String fxml, String titolo,
-                             int defaultWidth, int defaultHeight) throws IOException {
+            int defaultWidth, int defaultHeight) throws IOException {
 
         FXMLLoader caricatore = new FXMLLoader(getClass().getResource(fxml));
         Parent radice = caricatore.load();
@@ -317,8 +327,8 @@ public class LoginController {
     /**
      * Mostra un dialogo di avviso all’utente.
      *
-     * @param titolo titolo della finestra di dialogo
-     * @param messaggio testo del messaggio da mostrare
+     * @param titolo     titolo della finestra di dialogo
+     * @param messaggio  testo del messaggio da mostrare
      * @param tipoAvviso tipo di {@link Alert}
      */
     private void mostraAvviso(String titolo, String messaggio, Alert.AlertType tipoAvviso) {

@@ -33,5 +33,7 @@ public interface DBService extends Remote {
     boolean isPreferito(String username, String num_tel) throws RemoteException, SQLException;
     boolean removePreferito(String username, String num_tel) throws RemoteException, SQLException;
     boolean savePreferito(String username, String num_tel) throws RemoteException, SQLException;
+    Utente getUtenteByUsername(String username) throws RemoteException, SQLException;
+    boolean modifyUsernameCampo(String username, String field, String set) throws RemoteException, SQLException;
 }
 

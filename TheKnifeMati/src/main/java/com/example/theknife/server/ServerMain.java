@@ -885,6 +885,63 @@ public class ServerMain implements DBService {
         //return false;
     }
 
+    @Override
+    public Utente getUtenteByUsername(String username) throws RemoteException, SQLException {
+        // ArrayList<Utente> results = new ArrayList<>();
+        if (username == null || username.trim().isEmpty() || username.contains("TODO")) {
+            // TODO: implement SQL query execution for utenti
+            return null;
+        }
+
+        String query = "SELECT * FROM utenti WHERE username = ?;";
+
+        try (Connection conn = getConnection();
+                PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setString(1, username);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                Utente utente = new Utente(
+                        rs.getString("username"),
+                        rs.getString("nome"),
+                        rs.getString("cognome"),
+                        rs.getString("email"),
+                        rs.getString("password_hash"),
+                        rs.getString("indirizzo"),
+                        rs.getString("stato"),
+                        rs.getString("citta"),
+                        rs.getString("data_nascita"),
+                        rs.getBoolean("ruolo"));
+                return utente;
+            }
+            rs.close();
+
+        } catch (SQLException e) {
+            System.err.println("Errore DB getUtenteByUsername: " + e.getMessage());
+            throw e;
+        }
+        return null;
+    }
+		
+	@Override
+    public boolean modifyUsernameCampo(String username, String field, String set) throws RemoteException, SQLException {
+        if (username == null || username.trim().isEmpty() || username.contains("TODO")) {
+            // TODO: implement SQL query execution for utenti
+            return false;
+        }
+
+        String query = "UPDATE utenti SET " + field + " = ? WHERE username = ?;";
+        try (Connection conn = getConnection();
+                PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setString(1, set);
+            ps.setString(2, username);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("Errore DB modifyRecensione: " + e.getMessage());
+            throw e;
+        }
+    }
+
 
     @Override
     public double getStelleByTel(String num_tel) throws RemoteException, SQLException {

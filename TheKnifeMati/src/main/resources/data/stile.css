@@ -1,41 +1,41 @@
 /* ============================================================
    DESIGN TOKENS â€” modifica qui, si propagano ovunque
    ============================================================ */
-* {
+.root {
     /* Palette primaria */
-    -brand-900:        #0a2f6e;
-    -brand-700:        #0d47a1;
-    -brand-500:        #1e88e5;
-    -brand-300:        #64b5f6;
-    -brand-100:        #e3f2fd;
+    -brand-900: #0a2f6e;
+    -brand-700: #0d47a1;
+    -brand-500: #1e88e5;
+    -brand-300: #64b5f6;
+    -brand-100: #e3f2fd;
 
     /* Palette neutri */
-    -neutral-900:      #0f1923;
-    -neutral-700:      #334155;
-    -neutral-500:      #64748b;
-    -neutral-300:      #cbd5e1;
-    -neutral-100:      #f1f5f9;
-    -neutral-050:      #f8fafc;
-    -white:            #ffffff;
+    -neutral-900: #0f1923;
+    -neutral-700: #334155;
+    -neutral-500: #64748b;
+    -neutral-300: #cbd5e1;
+    -neutral-100: #f1f5f9;
+    -neutral-050: #f8fafc;
+    -white: #ffffff;
 
     /* Accento secondario */
-    -accent-maps:      #4285f4;
+    -accent-maps: #4285f4;
 
     /* Tipografia */
-    -font-family:      "Calibri", "Trebuchet MS", "Segoe UI", sans-serif;
-    -font-size-base:   14px;
+    -font-family: "Calibri", "Trebuchet MS", "Segoe UI", sans-serif;
+    -font-size-base: 14px;
 
     /* Raggi */
-    -radius-sm:        8px;
-    -radius-md:        14px;
-    -radius-lg:        20px;
-    -radius-pill:      999px;
+    -radius-sm: 8px;
+    -radius-md: 14px;
+    -radius-lg: 20px;
+    -radius-pill: 999px;
 
     /* Ombre */
-    -shadow-xs:        dropshadow(gaussian, rgba(15,25,35,0.08), 4,  0, 0, 1);
-    -shadow-sm:        dropshadow(gaussian, rgba(15,25,35,0.10), 8,  0, 0, 2);
-    -shadow-md:        dropshadow(gaussian, rgba(15,25,35,0.12), 16, 0, 0, 4);
-    -shadow-focus:     dropshadow(three-pass-box, rgba(30,136,229,0.28), 6, 0, 0, 0);
+    -shadow-xs: dropshadow(gaussian, rgba(15, 25, 35, 0.08), 4, 0, 0, 1);
+    -shadow-sm: dropshadow(gaussian, rgba(15, 25, 35, 0.10), 8, 0, 0, 2);
+    -shadow-md: dropshadow(gaussian, rgba(15, 25, 35, 0.12), 16, 0, 0, 4);
+    -shadow-focus: dropshadow(three-pass-box, rgba(30, 136, 229, 0.28), 6, 0, 0, 0);
 }
 
 /* ============================================================
@@ -60,6 +60,18 @@
     -fx-border-radius: -radius-lg;
     -fx-effect: -shadow-md;
     -fx-max-width: 22em;
+}
+
+.login-card-2 {
+    -fx-background-color: -white;
+    -fx-padding: 2.6em 2.4em;
+    -fx-spacing: 1.2em;
+    -fx-background-radius: -radius-lg;
+    -fx-border-color: -neutral-300;
+    -fx-border-width: 1px;
+    -fx-border-radius: -radius-lg;
+    -fx-effect: -shadow-md;
+    -fx-max-width: 60em;
 }
 
 .login-title {
@@ -146,10 +158,12 @@
     -fx-cursor: hand;
     -fx-effect: -shadow-xs;
 }
+
 .primary-button:hover {
     -fx-background-color: -brand-900;
     -fx-effect: -shadow-sm;
 }
+
 .primary-button:pressed {
     -fx-background-color: -brand-900;
     -fx-effect: none;
@@ -171,11 +185,13 @@
     -fx-max-width: infinity;
     -fx-alignment: center;
 }
+
 .secondary-button:hover {
     -fx-background-color: -brand-100;
     -fx-text-fill: -brand-900;
     -fx-border-color: -brand-900;
 }
+
 .secondary-button:pressed {
     -fx-background-color: -brand-300;
 }
@@ -195,6 +211,7 @@
     -fx-max-width: infinity;
     -fx-alignment: center;
 }
+
 .guest-button:hover {
     -fx-background-color: -neutral-100;
     -fx-text-fill: -neutral-700;
@@ -214,11 +231,13 @@
     -fx-padding: 0.55em 1.2em;
     -fx-cursor: hand;
 }
+
 .danger-button:hover {
     -fx-background-color: -neutral-100;
     -fx-text-fill: #c0392b;
     -fx-border-color: #c0392b;
 }
+
 .danger-button:pressed {
     -fx-background-color: -neutral-300;
     -fx-effect: none;
@@ -238,6 +257,7 @@
     -fx-padding: 0.45em 1em;
     -fx-cursor: hand;
 }
+
 .nav-button:hover {
     -fx-background-color: -brand-100;
     -fx-border-color: -brand-500;
@@ -256,18 +276,21 @@
     -fx-cursor: hand;
     -fx-effect: -shadow-xs;
 }
+
 .maps-button:hover {
     -fx-background-color: #2f6fde;
     -fx-effect: -shadow-sm;
     -fx-scale-x: 1.04;
     -fx-scale-y: 1.04;
 }
+
 .maps-button:pressed {
     -fx-background-color: #2457b8;
     -fx-effect: none;
     -fx-scale-x: 0.98;
     -fx-scale-y: 0.98;
 }
+
 .maps-button:disabled {
     -fx-background-color: -neutral-300;
     -fx-text-fill: -neutral-500;
@@ -278,7 +301,8 @@
 /* ============================================================
    INTESTAZIONI E LABEL
    ============================================================ */
-.header-label, #customlabel {
+.header-label,
+#customlabel {
     -fx-background-color: rgba(100, 181, 246, 0.18);
     -fx-border-color: -neutral-300;
     -fx-border-width: 1px;
@@ -315,7 +339,8 @@
 /* ============================================================
    MENU E FILTRI
    ============================================================ */
-.filter-menu, .menu-button {
+.filter-menu,
+.menu-button {
     -fx-background-color: -brand-500;
     -fx-border-radius: -radius-sm;
     -fx-background-radius: -radius-sm;
@@ -323,7 +348,9 @@
     -fx-font-weight: 700;
     -fx-text-fill: -white;
 }
-.filter-menu .arrow, .menu-button .arrow {
+
+.filter-menu .arrow,
+.menu-button .arrow {
     -fx-background-color: -white;
 }
 
@@ -476,14 +503,37 @@
 }
 
 /* Palette grafici â€” tonalitÃ  blu corporate */
-.default-color0.chart-pie { -fx-pie-color: #0a2f6e; }
-.default-color1.chart-pie { -fx-pie-color: #0d47a1; }
-.default-color2.chart-pie { -fx-pie-color: #1e88e5; }
-.default-color3.chart-pie { -fx-pie-color: #64b5f6; }
-.default-color4.chart-pie { -fx-pie-color: #334155; }
-.default-color5.chart-pie { -fx-pie-color: #64748b; }
-.default-color6.chart-pie { -fx-pie-color: #94a3b8; }
-.default-color7.chart-pie { -fx-pie-color: #cbd5e1; }
+.default-color0.chart-pie {
+    -fx-pie-color: #0a2f6e;
+}
+
+.default-color1.chart-pie {
+    -fx-pie-color: #0d47a1;
+}
+
+.default-color2.chart-pie {
+    -fx-pie-color: #1e88e5;
+}
+
+.default-color3.chart-pie {
+    -fx-pie-color: #64b5f6;
+}
+
+.default-color4.chart-pie {
+    -fx-pie-color: #334155;
+}
+
+.default-color5.chart-pie {
+    -fx-pie-color: #64748b;
+}
+
+.default-color6.chart-pie {
+    -fx-pie-color: #94a3b8;
+}
+
+.default-color7.chart-pie {
+    -fx-pie-color: #cbd5e1;
+}
 
 /* ============================================================
    DASHBOARD â€” sezioni statistiche

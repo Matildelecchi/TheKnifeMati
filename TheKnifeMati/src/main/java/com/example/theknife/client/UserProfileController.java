@@ -236,6 +236,7 @@ public class UserProfileController implements Initializable {
         // Imposta i gestori degli eventi per i pulsanti.
         logoutButton.setOnAction(event -> handleLogout());
         tornaalMenuButton.setOnAction(event -> handleTornaAlMenu());
+        userDataButton.setOnAction(event -> handleDatiUtente());
 
         // Aggiunge un gestore per gli eventi di doppio click sulle liste.
         preferitiList.setOnMouseClicked(event -> {
@@ -275,6 +276,26 @@ public class UserProfileController implements Initializable {
                 showError("Errore", "Impossibile aprire la dashboard ristoratore: " + e.getMessage());
             }
         });
+    }
+
+    @FXML 
+    private void handleDatiUtente() {
+        try {
+            URL resourceUrl = getClass().getResource("/com/example/theknife/client/DatiUtente.fxml");
+            if (resourceUrl == null) {
+                throw new IOException("FXML file not found: DatiUtente.fxml");
+            }
+            FXMLLoader loader = new FXMLLoader(resourceUrl);
+            Parent root = loader.load();
+            Stage currentStage = (Stage) tornaalMenuButton.getScene().getWindow();
+            Scene scene = new Scene(root);
+            addStylesheet(scene);
+            currentStage.setScene(scene);
+            currentStage.show();
+        } catch (IOException e) {
+            System.err.println("Error loading main menu: " + e.getMessage());
+            showError("Errore", "Impossibile tornare al menu principale: " + e.getMessage());
+        }
     }
 
     /**

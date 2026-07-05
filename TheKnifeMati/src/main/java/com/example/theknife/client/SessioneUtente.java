@@ -1,12 +1,15 @@
 package com.example.theknife.client;
 
 /**
- * La classe {@code SessioneUtente} gestisce lo stato dell'utente attualmente loggato
+ * La classe {@code SessioneUtente} gestisce lo stato dell'utente attualmente
+ * loggato
  * all'interno dell'applicazione.
  * <p>
- * Implementa il pattern **Singleton** per garantire che esista una e una sola istanza
+ * Implementa il pattern **Singleton** per garantire che esista una e una sola
+ * istanza
  * di questa classe in ogni momento, fornendo un punto di accesso globale alle
- * informazioni dell'utente corrente. Mantiene i dati essenziali come nome, cognome,
+ * informazioni dell'utente corrente. Mantiene i dati essenziali come nome,
+ * cognome,
  * username e ruolo, e offre metodi per verificare lo stato di login e il ruolo
  * dell'utente.
  * </p>
@@ -54,6 +57,9 @@ public class SessioneUtente {
 
     private String email;
 
+    private String data;
+    private String indirizzo;
+
     /**
      * Costruttore privato per prevenire l'istanziazione diretta e
      * per implementare il pattern Singleton.
@@ -66,7 +72,8 @@ public class SessioneUtente {
      * Restituisce l'istanza singleton di {@code SessioneUtente}.
      * <p>
      * Questo metodo garantisce che venga creata una sola istanza della classe,
-     * rendendola accessibile in modo thread-safe da qualsiasi punto dell'applicazione.
+     * rendendola accessibile in modo thread-safe da qualsiasi punto
+     * dell'applicazione.
      * </p>
      *
      * @return L'istanza unica di {@code SessioneUtente}.
@@ -87,7 +94,8 @@ public class SessioneUtente {
      * @param username Lo username univoco dell'utente.
      * @param ruolo    Il ruolo dell'utente ("cliente", "ristoratore", "ospite").
      */
-    public static void impostaUtenteCorrente(String nome, String cognome, String username, boolean ruolo, String citta, String stato, String email) {
+    public static void impostaUtenteCorrente(String nome, String cognome, String username, boolean ruolo, String citta,
+            String stato, String email, String data, String indirizzo) {
         SessioneUtente sessione = getIstanza();
         sessione.nome = nome;
         sessione.cognome = cognome;
@@ -97,7 +105,10 @@ public class SessioneUtente {
         sessione.isLoggato = true;
         sessione.stato = stato;
         sessione.email = email;
-        System.out.println("DEBUG: Sessione utente impostata - " + nome + " " + cognome + " (" + ruolo + ") " + citta+ " "+stato);
+        sessione.data = data;
+        sessione.indirizzo = indirizzo;
+        System.out.println("DEBUG: Sessione utente impostata - " + nome + " " + cognome + " (" + ruolo + ") " + citta
+                + " " + stato);
     }
 
     /**
@@ -113,44 +124,82 @@ public class SessioneUtente {
     /**
      * Restituisce lo username dell'utente loggato.
      *
-     * @return Lo username dell'utente corrente, oppure {@code null} se nessun utente è autenticato.
+     * @return Lo username dell'utente corrente, oppure {@code null} se nessun
+     *         utente è autenticato.
      */
     public static String getUsernameUtente() {
         SessioneUtente sessione = getIstanza();
         return sessione.isLoggato ? sessione.username : null;
     }
 
-
     public static String getStato() {
         return getIstanza().stato;
     }
 
     public static String getEmail() {
-    return getIstanza().email;
+        return getIstanza().email;
     }
 
+    public static String getIndirizzo() {
+        return getIstanza().indirizzo;
+    }
+
+    public static void setNome(String nome) {
+        getIstanza().nome = nome;
+    }
+    public static void setCognome(String cognome) {
+        getIstanza().cognome = cognome;
+    }
+    public static void setIndirizzo(String indirizzo) {
+        getIstanza().indirizzo = indirizzo;
+    }
+    public static void setCitta(String citta) {
+        getIstanza().citta = citta;
+    }
+    public static void setStato(String stato) {
+        getIstanza().stato = stato;
+    }
 
     /**
      * Restituisce il nome completo dell'utente corrente.
      *
-     * @return Il nome completo (nome + cognome), la stringa "Ospite" se il ruolo è ospite,
-     * oppure una stringa vuota se nessun utente è loggato.
+     * @return Il nome completo (nome + cognome), la stringa "Ospite" se il ruolo è
+     *         ospite,
+     *         oppure una stringa vuota se nessun utente è loggato.
      */
     public static String getNomeCompleto() {
         SessioneUtente sessione = getIstanza();
-        if (!sessione.isLoggato) return "";
-        if (isOspite()) return "Ospite";
+        if (!sessione.isLoggato)
+            return "";
+        if (isOspite())
+            return "Ospite";
         return sessione.nome + " " + sessione.cognome;
+    }
+
+    public static String getNome() {
+        SessioneUtente sessione = getIstanza();
+        return sessione.nome;
+    }
+
+    public static String getCognome() {
+        SessioneUtente sessione = getIstanza();
+        return sessione.cognome;
     }
 
     /**
      * Restituisce il ruolo dell'utente corrente.
      *
-     * @return Il ruolo dell'utente, oppure {@code null} se nessun utente è autenticato.
+     * @return Il ruolo dell'utente, oppure {@code null} se nessun utente è
+     *         autenticato.
      */
     public static boolean isRuolo() {
         SessioneUtente sessione = getIstanza();
         return sessione.ruolo;
+    }
+
+    public static String getData() {
+        SessioneUtente sessione = getIstanza();
+        return sessione.data;
     }
 
     /**
@@ -160,12 +209,14 @@ public class SessioneUtente {
      */
     public static String getCitta() {
         SessioneUtente sessione = getIstanza();
-        return sessione.citta;  // Correzione: uso sessione.citta invece di this.citta
+        return sessione.citta; // Correzione: uso sessione.citta invece di this.citta
     }
+
     /**
      * Verifica se l'utente corrente ha il ruolo di "cliente".
      *
-     * @return {@code true} se l'utente è un cliente (confronto insensibile alle maiuscole/minuscole), {@code false} altrimenti.
+     * @return {@code true} se l'utente è un cliente (confronto insensibile alle
+     *         maiuscole/minuscole), {@code false} altrimenti.
      */
     public static boolean isCliente() {
         return !getIstanza().ruolo;
@@ -174,7 +225,8 @@ public class SessioneUtente {
     /**
      * Verifica se l'utente corrente ha il ruolo di "ristoratore".
      *
-     * @return {@code true} se l'utente è un ristoratore (confronto insensibile alle maiuscole/minuscole), {@code false} altrimenti.
+     * @return {@code true} se l'utente è un ristoratore (confronto insensibile alle
+     *         maiuscole/minuscole), {@code false} altrimenti.
      */
     public static boolean isRistoratore() {
         return getIstanza().ruolo;
@@ -183,7 +235,8 @@ public class SessioneUtente {
     /**
      * Verifica se l'utente corrente ha il ruolo di "ospite".
      *
-     * @return {@code true} se l'utente è un ospite (confronto insensibile alle maiuscole/minuscole), {@code false} altrimenti.
+     * @return {@code true} se l'utente è un ospite (confronto insensibile alle
+     *         maiuscole/minuscole), {@code false} altrimenti.
      */
     public static boolean isOspite() {
         return !isUtenteLoggato();
@@ -199,26 +252,29 @@ public class SessioneUtente {
         sessione.cognome = null;
         sessione.username = null;
         sessione.ruolo = false;
-         sessione.citta = null;
+        sessione.citta = null;
         sessione.stato = null;
-        sessione.email = null; 
+        sessione.email = null;
         sessione.isLoggato = false;
 
         System.out.println("DEBUG: Sessione utente pulita");
     }
 
     /**
-     * Alias per {@link #pulisciSessione()}. Fornisce una semantica più chiara per l'operazione di logout.
+     * Alias per {@link #pulisciSessione()}. Fornisce una semantica più chiara per
+     * l'operazione di logout.
      */
     public static void eseguiLogout() {
         pulisciSessione();
     }
 
     /**
-     * Restituisce una rappresentazione in formato stringa della sessione utente corrente.
+     * Restituisce una rappresentazione in formato stringa della sessione utente
+     * corrente.
      *
-     * @return Una stringa che descrive lo stato della sessione, inclusi i dati dell'utente se loggato,
-     * altrimenti indica che non c'è una sessione attiva.
+     * @return Una stringa che descrive lo stato della sessione, inclusi i dati
+     *         dell'utente se loggato,
+     *         altrimenti indica che non c'è una sessione attiva.
      */
     @Override
     public String toString() {
@@ -231,9 +287,11 @@ public class SessioneUtente {
     }
 
     /**
-     * Metodo statico per ottenere la rappresentazione stringa della sessione corrente.
+     * Metodo statico per ottenere la rappresentazione stringa della sessione
+     * corrente.
      *
-     * @return Una stringa con le informazioni della sessione corrente, richiamando il metodo {@link #toString()}.
+     * @return Una stringa con le informazioni della sessione corrente, richiamando
+     *         il metodo {@link #toString()}.
      */
     public static String getStringaSessione() {
         return getIstanza().toString();

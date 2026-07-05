@@ -328,8 +328,9 @@ public class RistorantiController implements Initializable {
             Stage stage = (Stage) window;
             stage.setScene(scene);
             stage.show();
-        } catch (IOException e) {
+        } catch (Exception e) {
             mostraErrore("Errore durante l'apertura del profilo/registrazione", e);
+            e.printStackTrace();
         }
     }
 
