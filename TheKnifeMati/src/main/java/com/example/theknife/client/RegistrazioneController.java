@@ -34,17 +34,30 @@ import javafx.stage.Stage;
 /**
  * Controller per la gestione della registrazione di nuovi utenti.
  * <p>
- * Permette l'inserimento dei dati personali e la scelta del ruolo (cliente o ristoratore),
- * valida tutti i campi e salva l'utente nel file CSV.
- * </p>
- * <p>
- * Gestisce inoltre il passaggio alla schermata di login dopo la registrazione.
+ * Questa classe gestisce l'interfaccia di registrazione e consente la creazione
+ * di nuovi account nel sistema TheKnife.
  * </p>
  *
- * @author Claudio Bonci, 759939, Sede CO
- * @author Eleonora Anna Caredda, 762576, Sede CO
- * @author Filippo Crippa, 762174, Sede CO
- * @author Matilde Lecchi, 759875, Sede CO
+ * <p>Funzionalità principali:</p>
+ * <ul>
+ *   <li>Inserimento dati utente (nome, cognome, email, username, ecc.)</li>
+ *   <li>Validazione completa dei campi (formato, sicurezza password, età minima)</li>
+ *   <li>Selezione del ruolo (Cliente o Ristoratore)</li>
+ *   <li>Controllo unicità username tramite server</li>
+ *   <li>Cifratura password con SHA-256</li>
+ *   <li>Salvataggio utente tramite servizio remoto DBService (RMI)</li>
+ *   <li>Navigazione verso la schermata di login dopo registrazione</li>
+ * </ul>
+ *
+ * <p>
+ * La comunicazione con il backend avviene tramite {@link DBService}.
+ * L’interfaccia è implementata con JavaFX.
+ * </p>
+ *
+ * @author Claudio Bonci
+ * @author Eleonora Anna Caredda
+ * @author Filippo Crippa
+ * @author Matilde Lecchi
  * @version 1.0
  * @since 2026-05-20
  */
@@ -86,7 +99,14 @@ public class RegistrazioneController {
     private static DBService server;
 
     /**
-     * Inizializza il controller impostando i valori della ComboBox per il ruolo.
+     * Inizializza il controller e configura la schermata di registrazione.
+     * <p>
+     * In particolare:
+     * <ul>
+     *   <li>Inizializza la connessione al servizio remoto {@link DBService}</li>
+     *   <li>Popola la ComboBox dei ruoli (Cliente, Ristoratore)</li>
+     *   <li>Imposta il valore di default del ruolo</li>
+     * </ul>
      */
     @FXML
     private void initialize() {
@@ -107,11 +127,17 @@ public class RegistrazioneController {
     /**
      * Gestisce la registrazione di un nuovo utente.
      * <p>
-     * Valida tutti i campi obbligatori, verifica la disponibilità dell'username,
-     * cifra la password e salva l'utente nel file CSV. Infine, ritorna al login.
-     * </p>
+     * Esegue:
+     * <ul>
+     *   <li>Validazione dei campi inseriti</li>
+     *   <li>Verifica unicità username</li>
+     *   <li>Cifratura password con SHA-256</li>
+     *   <li>Creazione dell’oggetto {@link Utente}</li>
+     *   <li>Salvataggio nel database remoto</li>
+     *   <li>Reindirizzamento al login in caso di successo</li>
+     * </ul>
      *
-     * @param evento L'evento generato dal clic sul pulsante di registrazione.
+     * @param evento evento generato dal click sul pulsante di registrazione
      */
     @FXML
     private void gestisciRegistrazione(ActionEvent evento) {
@@ -169,13 +195,13 @@ public class RegistrazioneController {
     }
 
     /**
-     * Torna alla schermata di login.
+     * Gestisce il ritorno alla schermata di login.
      * <p>
-     * Carica il file FXML del login, applica il CSS se disponibile
-     * e imposta la scena nella finestra corrente.
+     * Carica la scena FXML del login, applica lo stile CSS e sostituisce
+     * la scena corrente.
      * </p>
      *
-     * @param evento L'evento generato dal clic sul pulsante.
+     * @param evento evento generato dal click sul pulsante
      */
     @FXML
     private void tornaAlLogin(ActionEvent evento) {
@@ -214,13 +240,19 @@ public class RegistrazioneController {
     }
 
     /**
-     * Valida tutti i campi di input.
+     * Valida tutti i campi di input della registrazione.
      * <p>
-     * Controlla la presenza dei dati, la lunghezza minima e la correttezza di username e password.
-     * Inoltre verifica età minima e dati del domicilio.
-     * </p>
+     * Controlla:
+     * <ul>
+     *   <li>Campi obbligatori (nome, cognome, username, ecc.)</li>
+     *   <li>Formato username</li>
+     *   <li>Sicurezza password (lunghezza e complessità)</li>
+     *   <li>Conferma password</li>
+     *   <li>Età minima (16 anni)</li>
+     *   <li>Dati di domicilio</li>
+     * </ul>
      *
-     * @return true se tutti i campi sono validi, false altrimenti.
+     * @return true se tutti i campi sono validi, false altrimenti
      */
     private boolean validaCampi() {
         List<String> errori = new ArrayList<>();
@@ -314,10 +346,10 @@ public class RegistrazioneController {
     }
 
     /**
-     * Verifica se un username esiste già nel file CSV.
+     * Verifica se uno username è già presente nel database.
      *
-     * @param username L'username da verificare.
-     * @return true se l'username esiste già, false altrimenti.
+     * @param username username da controllare
+     * @return true se esiste già, false altrimenti
      */
         private boolean verificaUsernameEsistente(String username) {
             try {
@@ -339,10 +371,11 @@ public class RegistrazioneController {
         }
 
     /**
-     * Salva un nuovo utente nel file CSV.
+     * Salva un nuovo utente nel database remoto.
      *
-     * @param utente L'utente da salvare.
-     * @return true se il salvataggio è riuscito, false altrimenti.
+     * @param utente utente da salvare
+     * @return true se il salvataggio è avvenuto con successo
+     * @throws RemoteException se si verifica un errore RMI
      */
 
     private boolean salvaUtenteNelDB(Utente utente) throws RemoteException {
@@ -361,12 +394,12 @@ public class RegistrazioneController {
     }
 
     /**
-     * Cifra la password con SHA-256.
-     *
-     * @param password La password in chiaro.
-     * @return La password cifrata in formato esadecimale.
-     * @throws NoSuchAlgorithmException Se SHA-256 non è disponibile.
-     */
+     * Cifra una password utilizzando l’algoritmo SHA-256.
+    *
+    * @param password password in chiaro
+    * @return stringa hash in formato esadecimale
+    * @throws NoSuchAlgorithmException se SHA-256 non è disponibile
+    */
     private String cifraPassword(String password) throws NoSuchAlgorithmException {
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
         byte[] hash = digest.digest(password.getBytes(StandardCharsets.UTF_8));
@@ -384,11 +417,11 @@ public class RegistrazioneController {
     }
 
     /**
-     * Mostra un alert all'utente.
+     * Mostra un alert grafico all’utente.
      *
-     * @param titolo Titolo dell'alert.
-     * @param messaggio Messaggio da visualizzare.
-     * @param tipoAvviso Tipo di alert (INFO, WARNING, ERROR).
+     * @param titolo titolo della finestra di alert
+     * @param messaggio contenuto del messaggio
+     * @param tipoAvviso tipo di alert (INFO, WARNING, ERROR)
      */
     private void mostraAvviso(String titolo, String messaggio, Alert.AlertType tipoAvviso) {
         Alert avviso = new Alert(tipoAvviso);
@@ -399,9 +432,9 @@ public class RegistrazioneController {
     }
 
     /**
-     * Imposta un callback da eseguire quando un utente viene registrato con successo.
+     * Imposta un callback da eseguire dopo una registrazione avvenuta con successo.
      *
-     * @param callback La funzione da eseguire dopo la registrazione.
+     * @param callback azione da eseguire dopo la registrazione
      */
     public void setOnUserRegistered(Runnable callback) {
         this.onUserRegistered = callback;

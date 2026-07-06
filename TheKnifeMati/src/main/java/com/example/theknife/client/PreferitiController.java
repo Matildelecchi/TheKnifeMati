@@ -35,6 +35,9 @@ import javafx.scene.layout.HBox;
  *     <li>Aggiornare dinamicamente la lista in caso di modifiche</li>
  * </ul>
  * </p>
+ * I dati vengono ottenuti dal servizio {@link GestionePreferiti}
+ * e arricchiti tramite {@link GestioneRistorante}.
+ * </p>
  *
  * @author Claudio Bonci, 759939, Sede CO
  * @author Eleonora Anna Caredda, 762576, Sede CO
@@ -44,15 +47,27 @@ import javafx.scene.layout.HBox;
  * @since 2026-05-20
  */
 public class PreferitiController implements Initializable {
+     /** ListView che mostra i ristoranti preferiti. */
     @FXML private ListView<Ristorante> preferitiListView;
+    
+    /** Gestione dei ristoranti preferiti (persistenza locale). */
     private final GestionePreferiti gestionePreferiti = com.example.theknife.client.GestionePreferiti.getInstance();
+    
+    /** Gestione dei dati dei ristoranti (cache + RMI). */
     private final GestioneRistorante gestioneRistorante = GestioneRistorante.getInstance();
+    
+     /** Servizi host per apertura link esterni (opzionale). */
     private HostServices hostServices;
 
     /**
      * Inizializza il controller configurando la ListView dei preferiti.
-     * Imposta il gestore per il doppio click per aprire i dettagli
-     * del ristorante e configura il cell factory con pulsante di rimozione.
+Imposta:
+     * <ul>
+     *   <li>Doppio click per apertura dettagli ristorante</li>
+     *   <li>Cell factory personalizzata con pulsante di rimozione</li>
+     *   <li>Caricamento iniziale dei preferiti</li>
+     * </ul>
+     * </p>
      *
      * @param location  URL della risorsa FXML (non utilizzato)
      * @param resources Risorse per l'inizializzazione (non utilizzate)
@@ -115,8 +130,11 @@ public class PreferitiController implements Initializable {
 
     /**
      * Carica la lista dei ristoranti preferiti dell'utente corrente.
-     * Recupera l'username dalla sessione, ottiene i preferiti dal GestionePreferiti
-     * e i dettagli dei ristoranti dal GestioneRistorante.
+      * <p>
+     * I dati vengono ottenuti da {@link GestionePreferiti}
+     * e convertiti in oggetti {@link Ristorante} tramite
+     * {@link GestioneRistorante}.
+     * </p>
      */
     private void caricaPreferiti() {
         String username = SessioneUtente.getUsernameUtente();

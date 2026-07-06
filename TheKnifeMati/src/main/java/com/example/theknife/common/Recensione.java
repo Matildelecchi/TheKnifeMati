@@ -3,21 +3,29 @@ package com.example.theknife.common;
 import java.io.Serializable;
 
 /**
- * Rappresenta una recensione per un ristorante.
+ * Rappresenta una recensione associata a un ristorante.
+ *
  * <p>
- * Ogni recensione contiene:
- * <ul>
- *     <li>Numero di stelle (1-5)</li>
- *     <li>Testo della recensione</li>
- *     <li>ID del ristorante recensito</li>
- *     <li>Username dell'utente che ha scritto la recensione</li>
- *     <li>Data di creazione della recensione</li>
- *     <li>Risposta del ristorante (opzionale)</li>
- * </ul>
+ * Ogni recensione contiene informazioni relative all’esperienza di un utente
+ * presso un ristorante, includendo valutazione, testo, data e un eventuale
+ * riscontro da parte del ristorante.
  * </p>
  *
- * Le proprietà utilizzano le classi di binding di JavaFX per supportare
- * l'aggiornamento dinamico dell'interfaccia utente.
+ * <p>
+ * La classe è serializzabile per permettere il trasferimento tramite RMI
+ * e la persistenza dei dati tra client e server.
+ * </p>
+ *
+ * <h3>Informazioni contenute:</h3>
+ * <ul>
+ *     <li>Numero di stelle (1–5)</li>
+ *     <li>Titolo della recensione</li>
+ *     <li>Testo della recensione</li>
+ *     <li>Identificativo del ristorante (telefono)</li>
+ *     <li>Username dell’utente autore</li>
+ *     <li>Data e ora di pubblicazione</li>
+ *     <li>Risposta del ristoratore (opzionale)</li>
+ * </ul>
  *
  * @author Claudio Bonci, 759939, Sede CO
  * @author Eleonora Anna Caredda, 762576, Sede CO
@@ -40,12 +48,16 @@ public class Recensione  implements Serializable {
     private String titolo;
 
     /**
-     * Costruttore per creare una nuova recensione.
+     * Costruisce una nuova istanza di {@code Recensione}.
      *
-     * @param stelle numero di stelle della recensione (da 1 a 5)
+     * @param id_rec identificativo univoco della recensione
+     * @param titolo titolo della recensione
      * @param testo testo della recensione
-     * @param ristoranteId identificativo del ristorante recensito
-     * @param username username dell'utente che scrive la recensione
+     * @param stelle numero di stelle assegnate (1–5)
+     * @param data_rec data di pubblicazione della recensione
+     * @param ora ora di pubblicazione della recensione
+     * @param num_tel numero di telefono del ristorante recensito
+     * @param username username dell’utente autore della recensione
      */
     public Recensione(int id_rec,String titolo, String testo,int stelle, String data_rec, String ora, String num_tel, String username) {
         this.stelle = stelle;
@@ -64,52 +76,62 @@ public class Recensione  implements Serializable {
 
     // ------------------ Value Getters ------------------
 
-    /** Restituisce il numero di stelle della recensione */
+   /** @return numero di stelle assegnate alla recensione */
     public int getStelle() { return stelle; }
 
+    /** @return ora di pubblicazione della recensione */
     public String getOra() { return ora; }
+
+     /** @return identificativo della recensione */
     public int getIdRec() { return idRec; }
+
+    /** @return titolo della recensione */
     public String getTitolo() { return titolo; }
 
-    /** Restituisce il testo della recensione */
+    /** @return testo della recensione */
     public String getTesto() { return testo; }
 
-    /** Restituisce l'ID del ristorante recensito */
+    /** @return numero di telefono del ristorante recensito */
     public String getRistoranteTel() { return ristoranteTel; }
 
-    /** Restituisce l'username dell'utente che ha scritto la recensione */
+    /** @return username dell’autore della recensione */
     public String getUsername() { return username; }
 
-    /** Restituisce la data di creazione della recensione */
+    /** @return data di pubblicazione della recensione */
     public String getData() { return data; }
 
-    /** Restituisce la risposta del ristorante */
+    /** @return risposta del ristoratore (può essere vuota) */
     public String getRisposta() { 
         return risposta; 
     }
 
     // ------------------ Value Setters ------------------
 
-    /** Imposta il numero di stelle della recensione */
+    /** @param value imposta il numero di stelle */    
     public void setStelle(int value) { stelle = value; }
 
-    /** Imposta il testo della recensione */
+    /** @param value imposta il testo della recensione */
     public void setTesto(String value) { testo = value; }
 
-    /** Imposta la data della recensione */
+    /** @param value imposta la data della recensione */
     public void setData(String value) { data = value; }
 
-    /** Imposta la risposta del ristorante */
+    /** @param value imposta la risposta del ristoratore */
     public void setRisposta(String value) { risposta = value; }
 
+    /** @param value imposta il numero di telefono del ristorante recensito */
     public void setOra(String value) {ora = value; }
+    
+    /** @param value imposta l’identificativo della recensione */
     public void setIdRec(int value) {idRec = value; }
+    
+    /** @param value imposta il titolo della recensione */
     public void setTitolo(String value) {titolo = value; }
 
     /**
-     * Rappresentazione testuale della recensione.
+     * Restituisce una rappresentazione testuale della recensione.
      *
-     * @return stringa contenente stelle, testo, ristorante, utente e data
+     * @return stringa formattata contenente i principali attributi
      */
     @Override
     public String toString() {

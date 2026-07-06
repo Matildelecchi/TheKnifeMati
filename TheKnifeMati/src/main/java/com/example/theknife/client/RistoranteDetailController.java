@@ -41,10 +41,29 @@ import javafx.scene.layout.VBox;
 /**
  * Controller per la visualizzazione dei dettagli di un ristorante.
  * <p>
- * Questa classe gestisce l'interfaccia utente che mostra tutte le informazioni di un ristorante,
- * incluse le recensioni, e permette di aggiungere il ristorante ai preferiti
- * o di lasciare una recensione. Si occupa di popolare i campi dell'interfaccia
- * con i dati del ristorante selezionato e di gestire le interazioni dell'utente.
+ * Questa classe gestisce l'interfaccia utente che mostra tutte le informazioni
+ * di un ristorante selezionato, incluse:
+ * <ul>
+ *   <li>informazioni generali (nome, indirizzo, città, cucina, contatti)</li>
+ *   <li>sito web e posizione su Google Maps</li>
+ *   <li>servizi e descrizione</li>
+ *   <li>premi e riconoscimenti (es. Michelin, Stella Verde)</li>
+ *   <li>recensioni recenti</li>
+ * </ul>
+ * </p>
+ * <p>
+ * Permette inoltre di:
+ * <ul>
+ *   <li>aggiungere o rimuovere il ristorante dai preferiti</li>
+ *   <li>aprire il sito web o la posizione su Maps</li>
+ *   <li>visualizzare la schermata completa delle recensioni</li>
+ *   <li>copiarsi il numero di telefono</li>
+ * </ul>
+ * </p>
+ *
+ *  * <p>
+ * Il controller utilizza {@link DBService} per comunicare con il server remoto
+ * tramite RMI e recuperare preferiti e recensioni.
  * </p>
  *
  * @author Claudio Bonci, 759939, Sede CO

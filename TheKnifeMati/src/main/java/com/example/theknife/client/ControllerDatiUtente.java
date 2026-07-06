@@ -29,18 +29,19 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 /**
- * Controller per la schermata di gestione del profilo dell'utente loggato.
+ * Controller della schermata di gestione del profilo utente.
  * <p>
- * Questa classe si occupa esclusivamente della visualizzazione e della modifica
- * dei dati anagrafici dell'utente (nome, cognome, email, indirizzo, città,
- * stato,
- * password). La gestione di recensioni e ristoranti preferiti non fa parte di
- * questo controller.
+ * Permette all’utente autenticato di visualizzare e modificare i propri dati
+ * anagrafici (nome, cognome, indirizzo, città, stato e password).
  * </p>
+ *
  * <p>
- * I dati mostrati a schermo provengono da {@link SessioneUtente}, mentre le
- * operazioni di salvataggio avvengono tramite il servizio remoto
- * {@link DBService}.
+ * I dati vengono recuperati dalla {@link SessioneUtente} e sincronizzati con il
+ * server remoto tramite il servizio {@link DBService}.
+ * </p>
+ *
+ * <p>
+ * Le modifiche vengono validate lato client e poi inviate al server tramite RMI.
  * </p>
  *
  * @author TheKnifeTeam
@@ -92,6 +93,7 @@ public class ControllerDatiUtente implements Initializable {
     @FXML
     private Label usernameLabel;
 
+    /** Riferimento al servizio remoto RMI. */
     private static DBService server;
 
     /**
@@ -297,6 +299,14 @@ public class ControllerDatiUtente implements Initializable {
      * }
      */
 
+    /**
+     * Mostra un alert all’utente.
+     *
+     * @param titolo titolo finestra
+     * @param messaggio contenuto
+     * @param tipo tipo di alert
+     */
+
     private void mostraAvviso(String titolo, String messaggio, Alert.AlertType tipoAvviso) {
         Alert avviso = new Alert(tipoAvviso);
         avviso.setTitle(titolo);
@@ -422,6 +432,12 @@ public class ControllerDatiUtente implements Initializable {
         nuovaPassword.setText("");
     }
 
+    /**
+     * Converte una password in hash SHA-256.
+     *
+     * @param password password in chiaro
+     * @return hash esadecimale
+     */
 
     private String cifraPassword(String password) throws NoSuchAlgorithmException {
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -437,20 +453,14 @@ public class ControllerDatiUtente implements Initializable {
         }
         return stringaEsadecimale.toString();
     }
+    
     /**
-     * Apre la finestra di dialogo per la modifica di un singolo campo anagrafico
-     * dell'utente, quindi salva la modifica sul server tramite
-     * {@link DBService#setUtente}.
-     * <p>
-     * NOTA: si assume che {@code ControllerChangeDataUser} esponga un metodo
-     * {@code getNuovoValore()} che restituisce il nuovo valore inserito
-     * (o {@code null} se l'utente ha annullato l'operazione).
-     * </p>
+     * Modifica un campo dell’utente sul server.
      *
-     * @param field Il nome del campo da modificare ("Nome", "Cognome", "Citta",
-     *              "Indirizzo", "Stato", "Email").
-     * @throws IOException se il file FXML del dialogo non viene trovato.
+     * @param field campo da modificare
+     * @param set nuovo valore
      */
+    
     private void changeData(String field, String set) throws IOException {
         try {
             server.modifyUsernameCampo(SessioneUtente.getUsernameUtente(), field, set);

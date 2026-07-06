@@ -31,12 +31,30 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 
 /**
- * Controller per la schermata principale di visualizzazione e ricerca dei ristoranti.
+ * Controller della schermata principale di visualizzazione e ricerca dei ristoranti.
+ *
  * <p>
- * Questa classe gestisce l'interfaccia utente che mostra una lista di tutti i ristoranti
- * disponibili, permettendo all'utente di cercarli, filtrarli per fascia di prezzo e
- * visualizzarne i dettagli. Adatta anche la visibilità di alcuni elementi dell'interfaccia
- * in base al ruolo dell'utente loggato.
+ * Questa classe rappresenta il controller principale dell'applicazione e gestisce
+ * la visualizzazione della lista dei ristoranti e le relative operazioni di ricerca,
+ * filtro e navigazione.
+ * </p>
+ *
+ * <p>
+ * In particolare consente di:
+ * </p>
+ * <ul>
+ *     <li>Visualizzare tutti i ristoranti disponibili in una tabella JavaFX</li>
+ *     <li>Effettuare ricerche per nome, città e tipo di cucina</li>
+ *     <li>Filtrare i risultati per fascia di prezzo</li>
+ *     <li>Aprire la schermata dettagli di un ristorante</li>
+ *     <li>Gestire la navigazione verso profilo utente o registrazione</li>
+ *     <li>Accedere alla dashboard del ristoratore (se autorizzato)</li>
+ * </ul>
+ *
+ * <p>
+ * * Il comportamento della UI varia in base al ruolo dell'utente gestito tramite
+ * {@code SessioneUtente}. I dati vengono recuperati tramite un servizio remoto
+ * {@link DBService}.
  * </p>
  *
  * @author Claudio Bonci, 759939, Sede CO
@@ -97,19 +115,24 @@ public class RistorantiController implements Initializable {
      */
     @FXML private Button profiloButton;
 
+    /** Lista osservabile dei ristoranti caricati. */
     private final ObservableList<Ristorante> listaRistoranti = FXCollections.observableArrayList();
+    /** Fascia di prezzo selezionata per il filtro. */
     private String fasciaPrezzoSelezionata = "";
+    /** Servizio remoto per l'accesso ai dati. */
     private static DBService server;
 
     /**
-     * Inizializza il controller dopo che il file FXML è stato caricato.
-     * Configura le colonne della tabella, imposta i listener per gli eventi utente
-     * e carica i dati iniziali dei ristoranti. Adatta anche la visibilità dei
-     * pulsanti in base al ruolo dell'utente corrente.
-     * Infine carica inizialmente i ristoranti vicini al domicilio dell'utente, se loggato.
+     * Inizializza il controller dopo il caricamento del file FXML.
      *
-     * @param location  L'URL di localizzazione della risorsa FXML, o null se non noto.
-     * @param resources Le risorse utilizzate per localizzare l'oggetto root, o null se non localizzato.
+     * <p>
+     * Configura la tabella, inizializza i listener degli eventi, imposta i
+     * valori delle ComboBox e carica i dati iniziali dei ristoranti.
+     * Inoltre gestisce la visibilità dei componenti in base al ruolo utente.
+     * </p>
+     *
+     * @param location URL del file FXML
+     * @param resources risorse di localizzazione
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -188,16 +211,12 @@ public class RistorantiController implements Initializable {
             }
 
     /**
-     * Carica i dati dei ristoranti da un file CSV.
-     * <p>
-     * Il metodo cerca il file `michelin_my_maps.csv` nella directory `data`. Se la directory
-     * non esiste, la crea. Se il file non esiste, lo crea con un'intestazione predefinita.
-     * Legge ogni riga del file, crea un oggetto {@link Ristorante} e lo aggiunge alla
-     * lista di ristoranti. Eventuali errori di parsing in una riga non bloccano l'intero
-     * processo, ma vengono stampati come avvisi sulla console.
-     * </p>
+     * Carica i dati dei ristoranti dal servizio remoto.
      *
-     * @throws RuntimeException se si verifica un errore di I/O o di validazione del CSV.
+     * <p>
+     * Recupera la lista dei ristoranti dal database in base alla città e allo
+     * stato dell'utente. I risultati vengono aggiunti alla lista osservabile.
+     * </p>
      */
     private void caricadatiSQL() {
         try {
@@ -276,10 +295,9 @@ public class RistorantiController implements Initializable {
     }
 
     /**
-     * Apre la schermata dei dettagli del ristorante selezionato nella stessa finestra.
-     * Mantiene un riferimento al "root" della schermata corrente per poterci tornare indietro.
+     * Apre la schermata dei dettagli di un ristorante.
      *
-     * @param ristorante Il ristorante di cui visualizzare i dettagli.
+     * @param ristorante ristorante selezionato
      */
     private void apriDettagliRistorante(Ristorante ristorante) {
         try {
@@ -304,11 +322,9 @@ public class RistorantiController implements Initializable {
     }
 
     /**
-     * Gestisce il click sul pulsante del profilo utente.
-     * Reindirizza l'utente alla sua pagina profilo se è già loggato, altrimenti
-     * lo porta alla schermata di registrazione.
+     * Gestisce il click sul pulsante profilo.
      *
-     * @param event L'evento di click del pulsante.
+     * @param event evento UI
      */
     @FXML
     private void onProfiloClick(ActionEvent event) {
@@ -334,11 +350,10 @@ public class RistorantiController implements Initializable {
         }
     }
 
-    /**
-     * Gestisce il click sul pulsante che porta alla dashboard del ristoratore.
-     * Questo pulsante è visibile solo per gli utenti con ruolo "ristoratore".
+     /**
+     * Gestisce il click sulla dashboard del ristoratore.
      *
-     * @param event L'evento di click del pulsante.
+     * @param event evento UI
      */
     @FXML
     private void onDashboardClick(ActionEvent event) {
@@ -357,12 +372,9 @@ public class RistorantiController implements Initializable {
     }
 
     /**
-     * Gestisce il click sul pulsante di ricerca.
-     * Filtra la lista dei ristoranti visualizzati nella tabella in base ai
-     * criteri di ricerca inseriti nei campi di testo (nome, località, cucina)
-     * e nel menu a tendina della fascia di prezzo.
+     * Filtra i ristoranti in base ai criteri di ricerca.
      *
-     * @param event L'evento di click del pulsante.
+     * @param event evento UI
      */
     @FXML
     private void onCercaClick(ActionEvent event) {
@@ -390,10 +402,8 @@ public class RistorantiController implements Initializable {
         tabellaRistoranti.setItems(risultati);
     }
 
-    /**
-     * Aggiorna i dati della tabella dei ristoranti.
-     * Svuota la lista corrente, ricarica i dati dal file CSV e ripopola la
-     * {@code TableView} con i dati aggiornati.
+     /**
+     * Ricarica i dati della tabella ristoranti.
      */
     public void refreshData() {
         listaRistoranti.clear();
@@ -414,11 +424,10 @@ public class RistorantiController implements Initializable {
     }
 
     /**
-     * Mostra una finestra di dialogo di errore con un messaggio personalizzato.
+     * Mostra un alert di errore.
      *
-     * @param messaggio Descrizione sintetica dell'errore.
-     * @param e         L'eccezione che ha causato l'errore, il cui messaggio viene
-     * visualizzato come dettaglio.
+     * @param messaggio descrizione errore
+     * @param e eccezione
      */
     private void mostraErrore(String messaggio, Exception e) {
         Alert alert = new Alert(Alert.AlertType.ERROR);

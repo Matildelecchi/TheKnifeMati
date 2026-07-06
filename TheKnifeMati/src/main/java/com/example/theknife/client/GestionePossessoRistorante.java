@@ -7,10 +7,18 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Servizio per la gestione delle propriet� dei ristoranti.
- * Implementa il pattern Singleton e gestisce le associazioni tra ristoratori
- * e i loro ristoranti, mantenendo la persistenza tramite RMI dal server.
+ * Servizio per la gestione delle proprietà dei ristoranti.
+ * <p>
+ * Implementa un pattern Singleton e mantiene in memoria le associazioni tra
+ * ristoratori e ristoranti.
+ * I dati vengono sincronizzati con il database remoto tramite RMI e
+ * memorizzati localmente in una struttura {@link Map}.
+ * </p>
  *
+ * <p>
+ * La classe garantisce una cache locale delle informazioni per ridurre
+ * le chiamate remote e migliorare le prestazioni dell'applicazione.
+ * </p>
  *
  * @author Claudio Bonci, 759939, Sede CO
  * @author Eleonora Anna Caredda, 762576, Sede CO
@@ -21,14 +29,29 @@ import java.util.Map;
  */
 
 public class GestionePossessoRistorante {
+    /** Percorso del file CSV locale di backup delle associazioni. */
     private static final String OWNERSHIP_FILE_PATH = "data/proprietari_ristoranti.csv";
+    
+    /** Header del file CSV. */
     private static final String CSV_HEADER = "username,ristorante";
 
+    /** Istanza Singleton della classe. */
     private static GestionePossessoRistorante instance;
+    
+    /** Mappa username → lista ID ristoranti posseduti. */
     private final Map<String, List<String>> ownershipMap = new HashMap<>();
+    
+     /** Indica se i dati sono già stati inizializzati. */
     private boolean isInitialized = false;
 
+    /** Costruttore privato (Singleton). */
     private GestionePossessoRistorante() {}
+
+    /**
+     * Restituisce l’istanza Singleton del servizio.
+     *
+     * @return istanza unica di {@link GestionePossessoRistorante}
+     */
 
     public static GestionePossessoRistorante getInstance() {
         if (instance == null) {
@@ -36,6 +59,13 @@ public class GestionePossessoRistorante {
         }
         return instance;
     }
+
+ /**
+     * Inizializza il servizio caricando i dati dal server remoto.
+     * <p>
+     * L’operazione viene eseguita una sola volta.
+     * </p>
+     */
 
     public void initialize() {
         if (!isInitialized) {
@@ -45,11 +75,11 @@ public class GestionePossessoRistorante {
     }
 
     /**
-     * Carica i dati di propriet� dal server tramite RMI.
+     * Carica i dati di proprietà dal server remoto tramite RMI.
      * <p>
-     * I dati vengono memorizzati nella mappa {@code ownershipMap},
-     * associando ciascun utente alla lista di ristoranti posseduti.
-     * Se il caricamento fallisce, l'applicazione continua comunque.
+     * I dati vengono salvati nella mappa locale {@code ownershipMap}.
+     * In caso di errore, il sistema continua a funzionare utilizzando
+     * eventuali dati già presenti.
      * </p>
      */
     private void loadOwnershipData() {
@@ -70,15 +100,17 @@ public class GestionePossessoRistorante {
             }
             System.out.println("Ownership data loaded successfully from database");
         } catch (Exception e) {
-            System.err.println("Errore nel caricamento dei dati di propriet� da server: " + e.getMessage());
+            System.err.println("Errore nel caricamento dei dati di proprieta\' da server: " + e.getMessage());
             // Non lanciare eccezione, permettere all'applicazione di continuare
         }
     }
 
-    /**
-     * Crea il file di propriet� con header se non esiste.
-     *@param file file CSV da creare
+     /**
+     * Crea il file CSV se non esiste.
+     *
+     * @param file file da inizializzare
      */
+
     private void createOwnershipFile(File file) {
         File parentDir = file.getParentFile();
         if (parentDir != null && !parentDir.exists()) {
@@ -93,14 +125,11 @@ public class GestionePossessoRistorante {
     }
 
     /**
-     * Processa una singola riga del file di propriet�.
-     * <p>
-     * La riga deve contenere almeno due campi: username e ID del ristorante.
-     * Se il ristorante non esiste nel database, l'associazione viene ignorata.
-     * </p>
+     * Elabora una riga CSV e aggiorna la mappa delle proprietà.
      *
-     * @param line riga del file CSV da processare
+     * @param line riga del file CSV nel formato "username,ristorante"
      */
+
     private void processOwnershipLine(String line) {
         String[] parts = line.split(",");
         if (parts.length >= 2) {
@@ -117,22 +146,29 @@ public class GestionePossessoRistorante {
             }
         }
     }
-    /**
-     * Restituisce la lista degli ID dei ristoranti posseduti da un utente.
+    
+     /**
+     * Restituisce la lista dei ristoranti posseduti da un utente.
      *
      * @param username username del ristoratore
-     * @return lista degli ID dei ristoranti posseduti (vuota se nessuno)
+     * @return lista di ID ristoranti (vuota se nessuno)
      */
+
     public List<String> getOwnedRestaurants(String username) {
         return ownershipMap.getOrDefault(username, new ArrayList<>());
     }
+    
+
     /**
-     * Associa un ristorante a un proprietario, salvando l'associazione
-     * sia nel file CSV che nella mappa {@code ownershipMap}.
+     * Associa un ristorante a un proprietario.
+     * <p>
+     * L’associazione viene salvata sia in locale (CSV) che in memoria.
+     * </p>
      *
-     * @param ristoranteNome nome o ID del ristorante da associare
-     * @param username       nome utente del proprietario
+     * @param ristoranteNome nome o ID del ristorante
+     * @param username username del proprietario
      */
+
     public void associaRistoranteAProprietario(String ristoranteNome, String username) {
         try (FileWriter writer = new FileWriter(OWNERSHIP_FILE_PATH, true)) {
             writer.write(String.format("%s,%s%n", username, ristoranteNome));
@@ -143,7 +179,7 @@ public class GestionePossessoRistorante {
     }
 
     /**
-     * Aggiorna la mappa {@code ownershipMap} rileggendo i dati dal server.
+     * Aggiorna i dati ricaricandoli dal server remoto.
      */
     public void refreshOwnershipData() {
         loadOwnershipData();

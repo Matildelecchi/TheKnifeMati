@@ -28,9 +28,20 @@ import javafx.stage.Stage;
 
 /**
  * Controller per la gestione del login degli utenti.
- * Gestisce l'autenticazione degli utenti e il reindirizzamento alla schermata
- * principale.
- * 
+ * <p>
+ * Questa classe gestisce l'autenticazione degli utenti tramite verifica delle credenziali
+ * recuperate dal server remoto (RMI) e controlla il flusso di navigazione verso la schermata principale.
+ * </p>
+ *
+ * <p>
+ * Supporta anche:
+ * <ul>
+ *   <li>Accesso come ospite</li>
+ *   <li>Navigazione verso la schermata di registrazione</li>
+ *   <li>Cifratura delle password tramite SHA-256</li>
+ * </ul>
+ * </p>
+ *
  * @author Matilde Lecchi, 759875, Sede CO
  * @author Eleonora Anna Caredda, 762576, Sede CO
  * @author Claudio Bonci, 759939, Sede CO
@@ -39,7 +50,10 @@ import javafx.stage.Stage;
  * @since 2026-05-20
  */
 public class LoginController {
+     /** File CSV utenti (non più principale, sostituito da RMI). */
     private static final String USERS_FILE = "data/utenti.csv";
+    
+    /** Path del file CSS dell'interfaccia. */
     private static final String CSS_PATH = "/data/stile.css";
 
     @FXML
@@ -47,13 +61,23 @@ public class LoginController {
     @FXML
     private PasswordField campoPassword;
 
+    /** Callback eseguita dopo login riuscito. */
     private Runnable onLoginSuccess;
+    /** Servizio remoto RMI per autenticazione utenti. */
     private static DBService server;
 
+    /**
+     * Imposta una callback da eseguire dopo login riuscito.
+     *
+     * @param callback azione da eseguire
+     */
     public void setOnLoginSuccess(Runnable callback) {
         this.onLoginSuccess = callback;
     }
 
+    /**
+     * Inizializza il controller e recupera il riferimento al server RMI.
+     */
     @FXML
     private void initialize() {
         try {
@@ -64,9 +88,13 @@ public class LoginController {
     }
 
     /**
-     * Gestisce il processo di login verificando username e password.
+     * Gestisce il login dell’utente.
+     * <p>
+     * Se le credenziali sono corrette, viene inizializzata la sessione utente
+     * e l’utente viene reindirizzato alla schermata principale.
+     * </p>
      *
-     * @param evento evento generato dal click sul pulsante di login
+     * @param evento evento generato dal click sul pulsante login
      */
     @FXML
     private void gestisciAccesso(ActionEvent evento) {
@@ -112,9 +140,9 @@ public class LoginController {
     }
 
     /**
-     * Gestisce l’accesso come ospite senza credenziali.
+     * Consente accesso senza login (utente ospite).
      *
-     * @param evento evento generato dal click sul pulsante di accesso ospite
+     * @param evento evento UI
      */
     @FXML
     private void gestisciAccessoSenzaLogin(ActionEvent evento) {
@@ -129,9 +157,9 @@ public class LoginController {
     }
 
     /**
-     * Gestisce la navigazione alla schermata di registrazione.
+     * Apre la schermata di registrazione.
      *
-     * @param evento evento generato dal click sul pulsante di registrazione
+     * @param evento evento UI
      */
     @FXML
     private void gestisciRegistrazione(ActionEvent evento) {
@@ -161,12 +189,9 @@ public class LoginController {
     }
 
     /**
-     * Autentica un utente verificando le credenziali rispetto al file CSV.
+     * Autentica un utente tramite server RMI.
      *
-     * @param username nome utente
-     * @param password password in chiaro
-     * @return oggetto {@link Utente} se autenticato, altrimenti {@code null}
-     * @throws Exception se si verifica un errore di lettura o cifratura
+     * @return utente autenticato o null
      */
     private Utente autenticaUtente(String username, String password) throws Exception {
         // List<Utente> utenti = caricaUtentiDaCSV();
