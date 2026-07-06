@@ -128,8 +128,8 @@ public class RegistrazioneController {
             String username = campoUsername.getText().trim();
             String password = campoPassword.getText();
             LocalDate dataNascita = campoDataNascita.getValue();
-            String luogoDomicilio = campoLuogoDomicilio.getText().trim();
-            String citta = "";
+            String luogoDomicilio = campoStato.getText().trim();
+            String citta = campoLuogoDomicilio.getText().trim(); 
 
             boolean ruolo = comboRuolo.getValue().equalsIgnoreCase("Ristoratore");
 
