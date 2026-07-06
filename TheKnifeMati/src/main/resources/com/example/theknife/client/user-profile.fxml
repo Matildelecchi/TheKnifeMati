@@ -20,7 +20,7 @@
         <Label fx:id="ruoloLabel" styleClass="profile-role" />
       </VBox>
       <Button fx:id="userDataButton" styleClass="primary-button" text="I tuoi Dati" />
-         <Button fx:id="tornaalMenuButton1" styleClass="primary-button" text="Torna al Menu" />
+         <Button fx:id="tornaalMenuButton" styleClass="primary-button" text="Torna al Menu" />
       <Button fx:id="dashboardButton" styleClass="primary-button" text="Dashboard Ristoratore" />
       <Button fx:id="logoutButton" styleClass="danger-button" text="Logout" />
     </HBox>
