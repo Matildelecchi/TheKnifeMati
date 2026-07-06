@@ -26,18 +26,17 @@ import javafx.scene.control.TextField;
 /**
  * Controller per la gestione dell'interfaccia di inserimento di un nuovo ristorante.
  * <p>
- * Questa classe gestisce l'interazione tra l'interfaccia utente FXML (`ristorante-input.fxml`)
- * e la logica di business per l'aggiunta di nuovi ristoranti nel sistema. Si occupa di:
- * <ul>
- * <li>Inizializzazione dei componenti dell'interfaccia (ComboBox, ListView).</li>
- * <li>Validazione degli input dell'utente per garantire la correttezza dei dati.</li>
- * <li>Creazione di un oggetto {@link Ristorante} a partire dagli input.</li>
- * <li>Salvataggio del nuovo ristorante nel file CSV.</li>
- * <li>Associazione del ristorante all'utente ristoratore corrente.</li>
- * <li>Gestione dei feedback per l'utente, sia in caso di successo che di errore.</li>
- * <li>Gestione della navigazione tramite callback per tornare alla dashboard principale.</li>
- * </ul>
+ * Questa classe collega la view FXML con la logica di business per la creazione
+ * e il salvataggio di un ristorante nel sistema.
  * </p>
+ *
+ * Gestisce:
+ * - inserimento dati ristorante
+ * - validazione input
+ * - creazione oggetto dominio {@link Ristorante}
+ * - salvataggio tramite {@link DBService}
+ * - navigazione verso dashboard tramite callback
+ *
  *
  * @author Claudio Bonci, 759939, Sede CO
  * @author Eleonora Anna Caredda, 762576, Sede CO
@@ -83,9 +82,12 @@ public class RistoranteInputController implements Initializable {
     private final GestioneRistorante gestioneRistorante = GestioneRistorante.getInstance();
     private final GestionePossessoRistorante ownershipService = GestionePossessoRistorante.getInstance();
 
+     /** Callback ritorno dashboard */
     private Runnable tornaAllaDashboardCallback;
+    /** Callback aggiornamento lista ristoranti */
     private Runnable aggiornaDatabaseRistorantiCallback;
 
+    /** Servizio remoto database */
     private static DBService server;
 
     /**
@@ -99,23 +101,28 @@ public class RistoranteInputController implements Initializable {
     }
 
     /**
-     * Imposta il callback da eseguire per forzare l'aggiornamento dei dati
-     * dopo il salvataggio di un nuovo ristorante.
+     * Imposta il callback per aggiornare i dati dei ristoranti.
      *
-     * @param callback L'oggetto {@link Runnable} che esegue l'operazione di aggiornamento.
+     * @param callback azione da eseguire per aggiornare la vista
      */
     public void setAggiornaDatabaseRistorantiCallback(Runnable callback) {
         this.aggiornaDatabaseRistorantiCallback = callback;
     }
 
     /**
-     * Inizializza i componenti dell'interfaccia utente.
-     * Questo metodo è chiamato automaticamente dal framework JavaFX dopo il caricamento
-     * del file FXML. Si occupa di popolare le liste e le ComboBox con i valori
-     * predefiniti e di configurare la modalità di selezione.
+     * Inizializza la view JavaFX dopo il caricamento del file FXML.
      *
-     * @param location L'URL utilizzato per risolvere i percorsi relativi, o {@code null}.
-     * @param resources Le risorse utilizzate per la localizzazione, o {@code null}.
+     * <p>Configura:
+     * <ul>
+     *     <li>valori delle ComboBox</li>
+     *     <li>liste di cucine e servizi</li>
+     *     <li>modalità di selezione multipla</li>
+     *     <li>connessione al server remoto</li>
+     * </ul>
+     * </p>
+     *
+     * @param location URL del file FXML
+     * @param resources risorse di localizzazione
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -157,10 +164,12 @@ public class RistoranteInputController implements Initializable {
     }
 
     /**
-     * Gestisce l'evento di click sul pulsante "Salva".
-     * Esegue la validazione degli input, crea un nuovo oggetto {@link Ristorante},
-     * lo salva in modo persistente nel file CSV e lo associa all'utente ristoratore corrente.
-     * Al termine, mostra un messaggio di successo e naviga verso la dashboard.
+     * Gestisce il salvataggio di un nuovo ristorante.
+     *
+     * <p>
+     * Il metodo valida i dati, crea un oggetto {@link Ristorante},
+     * verifica eventuali duplicati e salva il ristorante nel database remoto.
+     * </p>
      */
     @FXML
     private void handleSalva() {
@@ -245,14 +254,9 @@ public class RistoranteInputController implements Initializable {
     }
 
     /**
-     * Valida tutti gli input forniti dall'utente nei campi di testo e nelle selezioni.
-     * <p>
-     * Questo metodo controlla che i campi obbligatori (nome, indirizzo, località, prezzo,
-     * cucina) non siano vuoti e che le coordinate, se inserite, siano numeri validi.
-     * </p>
+     * Valida i dati inseriti dall'utente nel form.
      *
-     * @return {@code true} se tutti gli input sono validi, {@code false} altrimenti.
-     * In caso di fallimento, mostra un messaggio di errore all'utente.
+     * @return true se i dati sono validi, false altrimenti
      */
     private boolean validaInput() {
         StringBuilder errori = new StringBuilder();
@@ -295,9 +299,7 @@ public class RistoranteInputController implements Initializable {
     }
 
     /**
-     * Gestisce l'evento di click sul pulsante "Annulla".
-     * Abbandona la schermata di inserimento e torna alla dashboard principale
-     * senza salvare alcun dato.
+     * Gestisce il pulsante annulla tornando alla dashboard.
      */
     @FXML
     private void handleAnnulla() {
@@ -307,10 +309,10 @@ public class RistoranteInputController implements Initializable {
     }
 
     /**
-     * Mostra una finestra di dialogo di errore all'utente.
+     * Mostra un messaggio di errore all'utente.
      *
-     * @param titolo Il titolo della finestra di dialogo.
-     * @param messaggio Il messaggio di errore da visualizzare.
+     * @param titolo titolo della finestra
+     * @param messaggio contenuto dell'errore
      */
     private void mostraErrore(String titolo, String messaggio) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -321,15 +323,10 @@ public class RistoranteInputController implements Initializable {
     }
 
     /**
-     * Aggiunge un nuovo ristorante al file CSV `michelin_my_maps.csv`.
-     * <p>
-     * Il metodo scrive i dati del ristorante in una nuova riga del file CSV,
-     * assicurando che i dati vengano persistiti. Utilizza la modalità di append
-     * per non sovrascrivere i dati esistenti.
-     * </p>
+     * Salva il ristorante nel database remoto tramite {@link DBService}.
      *
-     * @param ristorante L'oggetto {@link Ristorante} da salvare.
-     * @throws IOException se si verifica un errore durante la scrittura del file.
+     * @param ristorante oggetto da salvare
+     * @throws IOException in caso di errore di comunicazione
      */
     private void aggiungiRistoranteAlDB(Ristorante ristorante) throws IOException {
         Boolean risultato = server.setRistorante(ristorante, SessioneUtente.getUsernameUtente());

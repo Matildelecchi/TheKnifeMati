@@ -7,9 +7,16 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Servizio per la gestione delle preferenze degli utenti.
- * Implementa il pattern Singleton e gestisce i ristoranti preferiti
- * degli utenti, mantenendo la persistenza su file CSV.
+ * Servizio per la gestione dei ristoranti preferiti degli utenti.
+ * <p>
+ * Implementa il pattern Singleton e mantiene una cache locale delle preferenze
+ * utente, persistite su file CSV.
+ * </p>
+ *
+ * <p>
+ * Le preferenze sono memorizzate in una struttura in memoria
+ * ({@link Map}) che associa ogni utente al proprio insieme di ristoranti preferiti.
+ * </p>
  *
  * @author Claudio Bonci, 759939, Sede CO
  * @author Eleonora Anna Caredda, 762576, Sede CO
@@ -19,20 +26,29 @@ import java.util.Set;
  * @since 2026-05-20
  */
 public class GestionePreferiti {
+    /** Percorso del file CSV di persistenza. */
     private static final String CSV_FILE = "data/preferiti.csv";
+    
+    /** Intestazione del file CSV. */
     private static final String CSV_HEADER = "username,ristoranteId";
 
+    /** Istanza Singleton della classe. */
     private static GestionePreferiti instance;
+   
+   /** Mappa username → insieme ristoranti preferiti. */
     private final Map<String, Set<String>> preferitiPerUtente = new HashMap<>();
 
+    /**
+     * Costruttore privato che carica automaticamente i dati dal file CSV.
+     */
     private GestionePreferiti() {
         caricaPreferiti();
     }
 
     /**
-     * Restituisce l'istanza unica della classe (pattern Singleton).
+     * Restituisce l’istanza Singleton del servizio.
      *
-     * @return istanza unica di {@code GestionePreferiti}
+     * @return istanza unica di {@link GestionePreferiti}
      */
     public static GestionePreferiti getInstance() {
         if (instance == null) {
@@ -41,11 +57,11 @@ public class GestionePreferiti {
         return instance;
     }
 
-    /**
-     * Carica i ristoranti preferiti dal file CSV {@code CSV_FILE}.
+     /**
+     * Carica i dati dei preferiti dal file CSV.
      * <p>
-     * Se il file non esiste, ne crea uno nuovo con l'header predefinito.
-     * I dati vengono salvati in {@code preferitiPerUtente}.
+     * Se il file non esiste, viene creato automaticamente.
+     * I dati vengono caricati nella mappa in memoria.
      * </p>
      */
     private void caricaPreferiti() {
@@ -70,7 +86,7 @@ public class GestionePreferiti {
     /**
      * Crea il file CSV dei preferiti con l'header, se non esiste.
      *
-     * @param file file da creare
+     * @param file file da inizializzare
      */
     private void createPreferitiFile(File file) {
         try {

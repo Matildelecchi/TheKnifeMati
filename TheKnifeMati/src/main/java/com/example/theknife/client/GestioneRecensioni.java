@@ -22,7 +22,17 @@ import javafx.collections.ObservableList;
 
 /**
  * Servizio per la gestione delle recensioni dei ristoranti.
- * Implementa il pattern Singleton per garantire un'unica istanza.
+ * <p>
+ * Implementa il pattern Singleton e gestisce la persistenza delle recensioni
+ * su file CSV, oltre a mantenerle in strutture dati in memoria per accesso
+ * rapido da parte dell’interfaccia grafica.
+ * </p>
+ *
+ * <p>
+ * Le recensioni sono organizzate per ristorante e replicate anche in una lista
+ * globale osservabile {@link ObservableList} per l’integrazione con JavaFX.
+ * </p>
+ *
  * @author Matilde Lecchi, 759875, Sede CO
  * @author Eleonora Anna Caredda, 762576, Sede CO
  * @author Claudio Bonci, 759939, Sede CO
@@ -31,12 +41,22 @@ import javafx.collections.ObservableList;
  * @since 2026-05-20
  */
 public class GestioneRecensioni {
+    /** Percorso del file CSV delle recensioni. */
     private static final String CSV_FILE = "data/recensioni.csv";
+    
+    /** Intestazione del file CSV. */
     private static final String CSV_HEADER = "username,ristorante,stelle,testo,data,risposta";
+    
+    /** Formato data utilizzato per le recensioni. */
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
+    /** Istanza Singleton della classe. */
     private static GestioneRecensioni instance;
+    
+     /** Mappa ristorante → lista recensioni. */
     private final Map<String, List<Recensione>> recensioniMap = new HashMap<>();
+    
+     /** Lista osservabile di tutte le recensioni (JavaFX). */
     private final ObservableList<Recensione> allRecensioni = FXCollections.observableArrayList();
 
     /**
@@ -60,8 +80,11 @@ public class GestioneRecensioni {
     }
 
     /**
-     * Carica tutte le recensioni dal file CSV e le memorizza in
-     * {@link #recensioniMap} e {@link #allRecensioni}.
+     * Carica tutte le recensioni dal file CSV.
+     * <p>
+     * I dati vengono salvati sia nella mappa per ristorante che nella lista
+     * globale osservabile.
+     * </p>
      */
     private void caricaRecensioni() {
         recensioniMap.clear();

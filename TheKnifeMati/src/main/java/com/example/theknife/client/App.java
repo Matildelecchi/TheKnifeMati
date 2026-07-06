@@ -19,7 +19,12 @@ import javafx.stage.Stage;
 
 /**
  * Classe principale dell'applicazione JavaFX "The Knife".
- * Gestisce l'inizializzazione dell'applicazione e il caricamento della prima schermata.
+ * <p>
+ * Responsabile dell'avvio del client, dell'inizializzazione dell'interfaccia grafica
+ * e del caricamento della schermata iniziale di login.
+ * La classe gestisce inoltre la configurazione della finestra principale e il supporto
+ * alla modalità schermo intero.
+ * </p>
  *
  * @author Claudio Bonci, 759939, Sede CO
  * @author Eleonora Anna Caredda, 762576, Sede CO
@@ -30,28 +35,36 @@ import javafx.stage.Stage;
  */
 public class App extends Application {
 
+    /** Larghezza minima della finestra dell'applicazione. */
     private static final double MIN_WIDTH = 800;
+
+    /** Altezza minima della finestra dell'applicazione. */
     private static final double MIN_HEIGHT = 600;
+
+    /** Istanza del client principale dell'applicazione. */
     private static ClientMain client;
+
+    /** Riferimento al servizio remoto del database (RMI). */
     private static DBService server;
-    /**
-     * Avvia l'applicazione JavaFX, inizializzando l'interfaccia utente.
-     *
+    
+   /**
+     * Avvia l'applicazione JavaFX e configura la finestra principale.
      * <p>
-     * Le operazioni eseguite in questo metodo sono:
+     * Il metodo esegue le seguenti operazioni:
      * <ul>
-     *   <li>Utilizzare la classe {@link javafx.stage.Screen} per ottenere le dimensioni del monitor primario;</li>
-     *   <li>Configurare la finestra per adattarsi a diverse risoluzioni e supportare schermo intero;</li>
-     *   <li>Caricare il file FXML "login.fxml" tramite {@link FXMLLoader};</li>
-     *   <li>Creare una {@link Scene} con dimensioni responsive;</li>
-     *   <li>Applicare il foglio di stile CSS e configurare scorciatoie da tastiera;</li>
-     *   <li>Impostare proprietà di ridimensionamento e visualizzare la finestra.</li>
+     *   <li>Recupera le dimensioni dello schermo principale;</li>
+     *   <li>Calcola dimensioni iniziali della finestra in modo responsivo;</li>
+     *   <li>Carica la vista FXML della schermata di login;</li>
+     *   <li>Applica fogli di stile CSS;</li>
+     *   <li>Configura dimensioni minime, massime e posizione della finestra;</li>
+     *   <li>Abilita il supporto alla modalità schermo intero.</li>
      * </ul>
      * </p>
      *
-     * @param stage lo {@link Stage} primario fornito dal framework JavaFX.
-     * @throws IOException se si verifica un errore durante il caricamento delle risorse FXML o CSS.
+     * @param stage lo stage principale fornito da JavaFX
+     * @throws IOException se il caricamento delle risorse FXML o CSS fallisce
      */
+
     @Override
     public void start(Stage stage) throws IOException {
         // Ottieni le dimensioni del monitor primario
@@ -107,11 +120,19 @@ public class App extends Application {
     }
 
     /**
-     * Configura il supporto per la modalità schermo intero.
+     * Configura le scorciatoie da tastiera e il comportamento della modalità fullscreen.
+     * <p>
+     * Shortcut implementate:
+     * <ul>
+     *   <li>F11 → attiva/disattiva schermo intero</li>
+     *   <li>ESC → esce dalla modalità schermo intero (se attiva)</li>
+     * </ul>
+     * </p>
      *
-     * @param stage lo stage principale
-     * @param scene la scena dell'applicazione
+     * @param stage lo stage principale dell'applicazione
+     * @param scene la scena su cui registrare gli eventi da tastiera
      */
+
     private void setupFullScreenSupport(Stage stage, Scene scene) {
         // Scorciatoia F11 per attivare/disattivare schermo intero
         KeyCombination fullScreenKey = new KeyCodeCombination(KeyCode.F11);
@@ -139,15 +160,16 @@ public class App extends Application {
     }
 
     /**
-     * Punto di ingresso principale dell'applicazione.
-     *
+     * Punto di ingresso dell'applicazione.
      * <p>
-     * Il metodo {@code main} invoca il metodo {@link #launch(String...)} che avvia il ciclo di vita
-     * dell'applicazione JavaFX.
+     * Inizializza il client RMI e avvia il ciclo di vita JavaFX.
      * </p>
      *
-     * @param args gli argomenti della riga di comando.
+     * @param args argomenti da riga di comando
+     * @throws RemoteException se fallisce la comunicazione RMI
+     * @throws NotBoundException se il servizio remoto non è disponibile
      */
+    
     public static void main(String[] args) throws RemoteException, NotBoundException {
         client = new ClientMain();
         server = client.getServer();

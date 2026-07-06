@@ -38,14 +38,24 @@ import javafx.util.Callback;
 /**
          * Controller per la gestione delle recensioni di un ristorante.
          * <p>
-         * Permette di:
+         * Questa classe gestisce l'interfaccia grafica relativa alle recensioni e consente
+         * a utenti e ristoratori di interagire con il sistema.
+         * </p>
+         *
+         * <p>Funzionalità principali:</p>
          * <ul>
-         * <li>Visualizzare le recensioni in una TableView</li>
-         * <li>Aggiungere, modificare o eliminare recensioni da parte degli utenti</li>
-         * <li>Rispondere alle recensioni da parte dei ristoratori</li>
-         * <li>Filtrare recensioni per numero di stelle</li>
-         * <li>Mostrare un grafico a torta con la distribuzione delle stelle</li>
+         *   <li>Visualizzazione delle recensioni in una TableView</li>
+         *   <li>Inserimento di nuove recensioni da parte degli utenti autenticati</li>
+         *   <li>Modifica ed eliminazione delle proprie recensioni</li>
+         *   <li>Risposta alle recensioni da parte dei ristoratori proprietari</li>
+         *   <li>Modifica delle risposte già inserite</li>
+         *   <li>Filtraggio delle recensioni in base al numero di stelle</li>
+         *   <li>Visualizzazione statistica tramite PieChart</li>
          * </ul>
+         *
+         * <p>
+         * La comunicazione con il server avviene tramite {@link DBService} (RMI).
+         * L'interfaccia è realizzata in JavaFX.
          * </p>
          *
          * @author Claudio Bonci, 759939, Sede CO
@@ -56,8 +66,13 @@ import javafx.util.Callback;
          * @since 2026-05-20
          */
         public class RecensioniController {
+            /** Grafico a torta per la distribuzione delle stelle */
             @FXML private PieChart pieChart;
+
+            /** CheckComboBox per filtrare recensioni per stelle */
             @FXML private CheckComboBox<Integer> comboBox;
+
+            /** Colonne della tabella */
             @FXML private TableView<Recensione> tableView;
             @FXML private TableColumn<Recensione, Integer> colId;
             @FXML private TableColumn<Recensione, String> colTitolo;
@@ -66,17 +81,27 @@ import javafx.util.Callback;
             @FXML private TableColumn<Recensione, String> colData;
             @FXML private TableColumn<Recensione, String> colUtente;
             @FXML private TableColumn<Recensione, String> colRisposta;
+            
+            /** Area di input recensione */
             @FXML private TextArea recensioneTextArea;
+
+           /** Pulsanti azioni */
             @FXML private Button inviaButton;
             @FXML private Button modificaButton;
             @FXML private Button eliminaButton;
             @FXML private Button rispondiButton;
             @FXML private Button indietroButton;
+            @FXML private Button modificaRispostaButton;
+            
+            /** Area risposta ristoratore */
             @FXML private VBox rispostaBox;
             @FXML private TextArea rispostaTextArea;
+
+            /** UI informazioni */
             @FXML private Label totaleRecensioniLabel;
-            @FXML private Button modificaRispostaButton;
             @FXML private TextField titoloText;
+
+            /** Stelle UI */
             @FXML private Label stelleLabel;
             @FXML private Label star1;
             @FXML private Label star2;
@@ -84,16 +109,28 @@ import javafx.util.Callback;
             @FXML private Label star4;
             @FXML private Label star5;
 
+            /** Stelle selezionate dall’utente */
             private int stelleSelezionate = 3;
 
             //private final GestioneRecensioni gestioneRecensioni = GestioneRecensioni.getInstance();
             private final GestionePossessoRistorante ownershipService = GestionePossessoRistorante.getInstance();
+           
+            /** ID ristorante corrente */
             private String numTelefono;
+            
+             /** Lista principale delle recensioni */
             private ObservableList<Recensione> masterRecensioniList;
+            
+            /** Controller padre (dashboard ristoratore) */
             private RistoratoreDashboardController parentController;
+            
+            /** Root da ripristinare nella navigazione */
             private Parent rootToRestore;
+           
+            /** Callback per ritorno al menu principale */
             private Runnable tornaAlMenuPrincipaleCallback;
 
+            /** Servizio remoto DB */
             private static DBService server;
 
             /**
@@ -114,15 +151,33 @@ import javafx.util.Callback;
                 }
             }
 
+            /**
+            * Imposta la root da ripristinare dopo la navigazione.
+            *
+            * @param root nodo root originale
+            */
             public void setRootToRestore(Parent root) {
                 this.rootToRestore = root;
             }
+
+            /**
+             * Imposta callback per ritorno al menu principale.
+             *
+             * @param callback azione da eseguire
+             */
             public void setTornaAlMenuPrincipaleCallback(Runnable callback) {
                 this.tornaAlMenuPrincipaleCallback = callback;
             }
 
             /**
-             * Inizializza il controller e disabilita il riordino delle colonne.
+             * Inizializza il controller e configura:
+             * <ul>
+             *   <li>Connessione al server RMI</li>
+             *   <li>Tabella recensioni</li>
+             *   <li>Filtro stelle</li>
+             *   <li>UI stelle interattive</li>
+             *   <li>Listener e comportamenti UI</li>
+             * </ul>
              */
             @FXML
             public void initialize() {
@@ -139,9 +194,39 @@ import javafx.util.Callback;
                     e.printStackTrace();
                 }
                 
+                /**
+                 * Configura la visibilità dei componenti UI in base al ruolo utente:
+                 * <ul>
+                 *   <li>Utente normale</li>
+                 *   <li>Ristoratore proprietario</li>
+                 * </ul>
+                 */
                 setupUI();
+
+                /**
+                 * Configura la TableView delle recensioni:
+                 * <ul>
+                 *   <li>Binding colonne</li>
+                 *   <li>Lista osservabile</li>
+                 *   <li>Render stelle grafiche</li>
+                 * </ul>
+                 */
                 setupTable();
+
+                /**
+                 * Configura il filtro per stelle tramite CheckComboBox.
+                 */
                 setupStarFilter();
+
+                /**
+                 * Imposta i listener della tabella recensioni.
+                 * Gestisce:
+                 * <ul>
+                 *   <li>Selezione recensione</li>
+                 *   <li>Abilitazione pulsanti</li>
+                 *   <li>Gestione campi input</li>
+                 * </ul>
+                 */
                 setupListeners();
 
                 // STELLE 
@@ -397,7 +482,7 @@ import javafx.util.Callback;
     }
 
     /**
-     * Aggiorna la lista delle recensioni e il grafico a torta.
+     * Ricarica le recensioni dal server e aggiorna la UI.
      */
     public void refreshData() {
         if (numTelefono != null) {
@@ -407,6 +492,9 @@ import javafx.util.Callback;
         }
     }
 
+    /**
+     * Carica recensioni filtrate per stelle dal server remoto.
+     */
     private void loadFilteredReviewsFromServer() {
         if (server == null) {
             mostraErrore("Errore server", "Servizio recensioni non disponibile.");
@@ -490,7 +578,8 @@ import javafx.util.Callback;
     }
 
     /**
-     * Gestisce l'invio di una nuova recensione.
+     * Gestisce la creazione di una nuova recensione.
+     * Controlla validità input e invia al server.
      */
     @FXML
     private void handleInvia() {
@@ -530,7 +619,7 @@ import javafx.util.Callback;
     }
 
     /**
-     * Gestisce la modifica della recensione selezionata.
+     * Modifica la recensione selezionata dall’utente.
      */
     @FXML
     private void handleModifica() {

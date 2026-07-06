@@ -42,7 +42,6 @@
         <Label text="La tua recensione:" />
         <TextArea fx:id="recensioneTextArea" prefRowCount="3" wrapText="true" />
         <HBox alignment="CENTER_LEFT" spacing="10">
-        <Label fx:id="stelleLabel" text="★★★☆☆" />
           <Label text="Stelle:" />
         <HBox spacing="3">
           <Label fx:id="star1" text="☆" style="-fx-font-size: 18px; -fx-cursor: hand;" />

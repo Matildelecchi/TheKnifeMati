@@ -30,13 +30,22 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+
 /**
  * Controller per la gestione del profilo utente.
  * <p>
- * Questa classe gestisce l'interfaccia utente dedicata al profilo personale,
- * mostrando informazioni dell'utente, i ristoranti preferiti e le recensioni
- * scritte. Fornisce inoltre i meccanismi per il logout, la navigazione
- * verso altre schermate e l'accesso alla dashboard del ristoratore.
+ * Questa classe gestisce l’interfaccia del profilo personale dell’utente,
+ * mostrando informazioni anagrafiche, recensioni scritte e ristoranti
+ * preferiti (se presenti). Permette inoltre la navigazione tra le varie
+ * schermate dell’applicazione e il logout.
+ * </p>
+ *
+ * <p>
+ * Supporta due ruoli principali:
+ * <ul>
+ *   <li>Cliente: visualizza recensioni e preferiti</li>
+ *   <li>Ristoratore: accesso alla dashboard dedicata</li>
+ * </ul>
  * </p>
  *
  * @author Claudio Bonci, 759939, Sede CO
@@ -76,6 +85,7 @@ public class UserProfileController implements Initializable {
      */
     @FXML private TableColumn<Recensione, String> dataColumn;
 
+    /** Colonna titolo recensione. */
     @FXML private TableColumn<Recensione, String> titoloColumn;
     /**
      * Contenitore per la sezione dei ristoranti preferiti, visibile solo per i clienti.
@@ -94,6 +104,7 @@ public class UserProfileController implements Initializable {
      */
     @FXML private Button dashboardButton;
 
+    /** Pulsante accesso dati utente. */
     @FXML private Button userDataButton;
     
     //@FXML private Label emailLabel;
@@ -103,28 +114,34 @@ public class UserProfileController implements Initializable {
     //private final GestionePreferiti gestionePreferiti = com.example.theknife.client.GestionePreferiti.getInstance();
     //private final GestioneRistorante gestioneRistorante = GestioneRistorante.getInstance();
 
+    /** Tabella ristoranti preferiti. */
     @FXML private TableView<Ristorante> preferitiList;
 
+     /** Colonna nome ristorante preferito. */
     @FXML private TableColumn<Ristorante, String> ristoranteColumn1;
 
+    /** Colonna città ristorante preferito. */
     @FXML private TableColumn<Ristorante, String> cittaColumn;
 
+     /** Colonna stelle ristorante preferito. */
     @FXML private TableColumn<Ristorante, String> stelleColumn1;
 
+    /** Colonna stato ristorante preferito. */
     @FXML private TableColumn<Ristorante, String> statoColumn;
 
+    /** Colonna cucina ristorante preferito. */
     @FXML private TableColumn<Ristorante, String> cucinaColumn;
     
     //private final GestioneRecensioni gestioneRecensioni = GestioneRecensioni.getInstance();
     //private final GestionePreferiti gestionePreferiti = com.example.theknife.client.GestionePreferiti.getInstance();
     //private final GestioneRistorante gestioneRistorante = GestioneRistorante.getInstance();
 
+    /** Servizio remoto DB (RMI). */
     private static DBService server;
     /**
-     * Applica il foglio di stile CSS principale alla scena per uniformare l'aspetto dell'interfaccia utente.
-     * Questo metodo verifica prima se lo stile è già stato applicato per evitare duplicazioni.
+     * Aggiunge il foglio di stile CSS alla scena.
      *
-     * @param scene La scena JavaFX alla quale applicare lo stile.
+     * @param scene scena JavaFX
      */
     private void addStylesheet(Scene scene) {
         try {
@@ -138,13 +155,11 @@ public class UserProfileController implements Initializable {
     }
 
     /**
-     * Inizializza il controller dopo che il file FXML è stato caricato.
-     * Questo metodo viene chiamato automaticamente dal framework JavaFX.
-     * Configura le informazioni e le viste del profilo utente in base al ruolo dell'utente,
-     * imposta i gestori degli eventi per i pulsanti e le tabelle, e carica i dati iniziali.
+     * Inizializza il controller dopo il caricamento FXML.
+     * Configura UI, tabelle, eventi e carica i dati utente.
      *
-     * @param location L'URL utilizzato per risolvere percorsi relativi per l'oggetto root, o {@code null} se non noto.
-     * @param resources Le risorse utilizzate per localizzare l'oggetto root, o {@code null} se l'oggetto root non è stato localizzato.
+     * @param location URL FXML
+     * @param resources risorse internazionalizzazione
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -299,8 +314,7 @@ public class UserProfileController implements Initializable {
     }
 
     /**
-     * Aggiorna la lista dei ristoranti preferiti dell'utente corrente.
-     * Recupera i preferiti dalla classe di gestione e aggiorna la {@link ListView}.
+     * Aggiorna lista ristoranti preferiti.
      */
     private void aggiornaListaPreferiti() {
         /*preferitiList.setItems(FXCollections.observableArrayList(
@@ -318,10 +332,7 @@ public class UserProfileController implements Initializable {
     }
 
     /**
-     * Gestisce l'evento di click sul pulsante "Torna al menu principale".
-     * Riporta l'utente alla schermata iniziale di visualizzazione dei ristoranti ({@code lista.fxml}).
-     *
-     * @throws IOException se il file FXML della schermata principale non viene trovato.
+     * Ritorna al menu principale.
      */
     @FXML
     private void handleTornaAlMenu() {
@@ -344,10 +355,7 @@ public class UserProfileController implements Initializable {
     }
 
     /**
-     * Gestisce l'operazione di logout dell'utente.
-     * Resetta la sessione utente e riporta l'applicazione alla schermata di login ({@code login.fxml}).
-     *
-     * @throws IOException se il file FXML della schermata di login non viene trovato.
+     * Logout utente.
      */
     @FXML
     private void handleLogout() {
@@ -479,11 +487,11 @@ public class UserProfileController implements Initializable {
         aggiornaListaPreferiti();
     }
 
-    /**
-     * Mostra una finestra di dialogo di errore all'utente.
+   /**
+     * Mostra errore.
      *
-     * @param header Il titolo dell'errore.
-     * @param content Il messaggio descrittivo dell'errore.
+     * @param header titolo
+     * @param content messaggio
      */
     private void showError(String header, String content) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
