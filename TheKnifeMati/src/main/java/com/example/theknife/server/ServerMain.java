@@ -18,6 +18,33 @@ import com.example.theknife.common.DBService;
 import com.example.theknife.common.Recensione;
 import com.example.theknife.common.Ristorante;
 import com.example.theknife.common.Utente;
+/**
+ * Classe principale del server RMI dell'applicazione "The Knife".
+ * <p>
+ * Si occupa dell'inizializzazione del server, della connessione al database
+ * PostgreSQL e della pubblicazione del servizio remoto {@link DBService}
+ * tramite Java RMI.
+ * </p>
+ *
+ * <p>
+ * La classe implementa l'interfaccia {@link DBService}, fornendo i metodi
+ * necessari per la gestione di utenti, ristoranti, recensioni, preferiti
+ * e delle altre operazioni richieste dai client dell'applicazione.
+ * </p>
+ *
+ * <p>
+ * All'avvio il server inizializza le strutture del database necessarie,
+ * esporta l'oggetto remoto, crea il registry RMI e registra il servizio
+ * con il nome "TimeService", rendendolo disponibile ai client.
+ * </p>
+ *
+ * @author Claudio Bonci, 759939, Sede CO
+ * @author Eleonora Anna Caredda, 762576, Sede CO
+ * @author Filippo Crippa, 762174, Sede CO
+ * @author Matilde Lecchi, 759875, Sede CO
+ * @version 1.0
+ * @since 2026-05-20
+ */
 
 public class ServerMain implements DBService {
     static int PORT = 1234;
