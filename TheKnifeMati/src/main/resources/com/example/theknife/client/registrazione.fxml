@@ -25,7 +25,7 @@
                                 <Label styleClass="login-title" text="Registrazione" />
 
                                 <!-- Sottotitolo -->
-                                <Label style="-fx-font-size: 12px; -fx-text-fill: #666666;" text="Compila tutti i campi per creare il tuo account" />
+                                <Label style="-fx-font-size: 12px; -fx-text-fill: #666666;" text="Compila e crea il tuo account!" />
 
                                 <!-- Campo Nome -->
                                 <VBox spacing="5">
@@ -59,13 +59,6 @@
                                         <TextField fx:id="campoEmail" maxWidth="350" promptText="Inserisci la tua email" styleClass="login-textfield" />
                                          <Label style="-fx-font-size: 10px; -fx-text-fill: #888888;" text="Esempio: nome@email.com" />
                                      </children>
-                                </VBox>
-                                <!-- Campo Nazione -->  
-                                <VBox spacing="5">
-                                  <children>
-                                        <Label style="-fx-font-weight: bold; -fx-font-size: 12px;" text="Nazione *" />
-                                        <TextField fx:id="campoStato" maxWidth="350" promptText="Es: Italia" styleClass="login-textfield" />
-                                     </children>        
                                 </VBox>
 
                                 <!-- Campo Password -->
@@ -104,6 +97,14 @@
                                     </children>
                                 </VBox>
 
+                                <!-- Campo Nazione -->  
+                                <VBox spacing="5">
+                                  <children>
+                                        <Label style="-fx-font-weight: bold; -fx-font-size: 12px;" text="Nazione *" />
+                                        <TextField fx:id="campoStato" maxWidth="350" promptText="Es: Italia" styleClass="login-textfield" />
+                                     </children>        
+                                </VBox>
+
                                 <!-- Campo Ruolo -->
                                 <VBox spacing="5">
                                     <children>
@@ -112,8 +113,6 @@
                                         <Label maxWidth="350" style="-fx-font-size: 10px; -fx-text-fill: #888888; -fx-wrap-text: true;" text="Cliente: puoi recensire ristoranti | Ristoratore: puoi gestire il tuo ristorante" />
                                     </children>
                                 </VBox>
-
-
 
                                 <!-- Separatore -->
                                 <VBox alignment="CENTER" spacing="10">
