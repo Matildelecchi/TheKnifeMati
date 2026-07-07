@@ -210,39 +210,6 @@ public class LoginController {
     }
 
     /**
-     * Carica la lista degli utenti dal file CSV.
-     *
-     * @return lista di {@link Utente}
-     * @throws IOException se si verifica un errore di lettura del file
-     */
-    /*
-     * private List<Utente> caricaUtentiDaCSV() throws IOException {
-     * List<Utente> utenti = new ArrayList<>();
-     * File csvFile = new File(USERS_FILE);
-     * 
-     * if (!csvFile.exists()) {
-     * createUsersFile(csvFile);
-     * return utenti;
-     * }
-     * 
-     * try (BufferedReader lettore = new BufferedReader(
-     * new FileReader(csvFile, StandardCharsets.UTF_8))) {
-     * 
-     * String riga = lettore.readLine(); // Skip header
-     * while ((riga = lettore.readLine()) != null) {
-     * if (!riga.trim().isEmpty()) {
-     * Utente utente = parseUserFromCsv(riga);
-     * if (utente != null) {
-     * utenti.add(utente);
-     * }
-     * }
-     * }
-     * }
-     * return utenti;
-     * }
-     */
-
-    /**
      * Crea il file utenti con l’header se non esiste.
      *
      * @param file file CSV da creare
@@ -258,25 +225,6 @@ public class LoginController {
             writer.append("nome,cognome,username,passwordHash,dataNascita,luogoDomicilio,ruolo\n");
         }
     }
-
-    /**
-     * Converte una riga CSV in un oggetto {@link Utente}.
-     *
-     * @param riga stringa CSV contenente i dati di un utente
-     * @return oggetto {@link Utente} oppure {@code null} se i dati non sono validi
-     */
-    /*
-     * private Utente parseUserFromCsv(String riga) {
-     * String[] parti = riga.split(",");
-     * if (parti.length >= 7) {
-     * return new Utente(
-     * parti[0].trim(), parti[1].trim(), parti[2].trim(),
-     * parti[3].trim(), parti[4].trim(), parti[5].trim(), parti[6].trim()
-     * );
-     * }
-     * return null;
-     * }
-     */
 
     /**
      * Cifra una password in SHA-256.

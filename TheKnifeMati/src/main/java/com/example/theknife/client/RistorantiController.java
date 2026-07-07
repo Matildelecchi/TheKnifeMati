@@ -239,65 +239,6 @@ public class RistorantiController implements Initializable {
         } catch(RemoteException | SQLException e) {
             e.printStackTrace();
         }
-        /* 
-        String filePath = "data/michelin_my_maps.csv";
-        File csvFile = new File(filePath);
-
-        File parentDir = csvFile.getParentFile();
-        if (parentDir != null && !parentDir.exists()) {
-            parentDir.mkdirs();
-            System.out.println("DEBUG: Cartella 'data' creata.");
-        }
-
-        if (!csvFile.exists()) {
-            System.err.println("File CSV non trovato. Creazione di un nuovo file.");
-            try (FileWriter writer = new FileWriter(csvFile)) {
-                writer.append("nome,indirizzo,citta,prezzo,cucina,longitudine,latitudine,numeroTelefono,url,sitoWeb,premio,stellaVerde,servizi,descrizione\n");
-                System.out.println("DEBUG: Nuovo file CSV creato con header.");
-            } catch (IOException e) {
-                System.err.println("Errore durante la creazione del file CSV: " + e.getMessage());
-                e.printStackTrace();
-                return;
-            }
-        }
-
-        try (FileReader reader = new FileReader(csvFile);
-             CSVReader csvReader = new CSVReader(reader)) {
-
-            csvReader.readNext(); // Salta l'intestazione
-
-            String[] riga;
-            while ((riga = csvReader.readNext()) != null) {
-                try {
-                    String nome = riga[0];
-                    String indirizzo = riga[1];
-                    String citta = riga[2];
-                    String prezzo = riga[3];
-                    String cucina = riga[4];
-                    double longitudine = Double.parseDouble(riga[5]);
-                    double latitudine = Double.parseDouble(riga[6]);
-                    String numeroTelefono = riga[7];
-                    String url = riga[8];
-                    String sitoWeb = riga[9];
-                    String premio = riga[10];
-                    String stellaVerde = riga[11];
-                    String servizi = riga[12];
-                    String descrizione = riga[13];
-
-                    Ristorante ristorante = new Ristorante(
-                            nome, indirizzo, citta, prezzo, cucina,
-                            longitudine, latitudine, numeroTelefono,
-                            url, sitoWeb, premio, stellaVerde,
-                            servizi, descrizione
-                    );
-                    listaRistoranti.add(ristorante);
-                } catch (Exception e) {
-                    System.err.println("Errore nella riga: " + Arrays.toString(riga) + " - " + e.getMessage());
-                }
-            }
-        } catch (IOException | CsvValidationException e) {
-            throw new RuntimeException("Errore di I/O o di validazione nel caricamento del CSV.", e);
-        }*/
     }
 
     /**
@@ -415,18 +356,6 @@ public class RistorantiController implements Initializable {
         listaRistoranti.clear();
         caricadatiSQL();
         tabellaRistoranti.setItems(listaRistoranti);
-        /*new Thread(() -> {
-            try {
-                var risultato = server.getRistoranti();
-                Platform.runLater(() -> {
-                    listaRistoranti.setAll(risultato);
-                    tabellaRistoranti.setItems(listaRistoranti);
-                });
-            } catch (RemoteException | SQLException e) {
-                e.printStackTrace();
-                Platform.runLater(() -> mostraErrore("Errore nel caricamento dei ristoranti", e));
-            }
-        }).start();*/
     }
 
     /**

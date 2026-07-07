@@ -662,31 +662,6 @@ public class RistoranteDetailController implements Initializable {
     }
 
     /**
-     * Gestisce l'evento di click sull'hyperlink del sito web.
-     * Aggiunge un protocollo HTTPS se mancante e tenta di aprire l'URL esterno.
-     */
-
-    /*@FXML
-    private void handleSitoWebClick() {
-        if (ristorante == null || ristorante.getUrl() == null ||
-                ristorante.getUrl().trim().isEmpty()) {
-            System.out.println("Nessun sito web disponibile");
-            showAlert("Attenzione", "Nessun sito web disponibile per questo ristorante.");
-            return;
-        }
-
-        String url = ristorante.getUrl().trim();
-
-        // Assicurati che l'URL abbia il protocollo
-        if (!url.startsWith("http://") && !url.startsWith("https://")) {
-            url = "https://" + url;
-        }
-
-        System.out.println("Tentativo di apertura URL: " + url);
-        openExternalUrl(url);
-    }
-
-    /**
      * Gestisce l'evento di click sul numero di telefono.
      * Copia il numero di telefono del ristorante negli appunti di sistema e notifica l'utente con un {@link Alert}.
      */

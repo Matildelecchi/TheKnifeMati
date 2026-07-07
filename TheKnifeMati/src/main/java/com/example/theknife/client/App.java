@@ -9,8 +9,8 @@ import com.example.theknife.common.DBService;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -91,6 +91,20 @@ public class App extends Application {
         // Configura lo stage
         stage.setTitle("TheKnife");
         stage.setScene(scene);
+
+        // Aggiunta l'icona all'applicazione
+        try {
+            java.io.InputStream is = getClass().getResourceAsStream("/data/IMG/LOGO.png");
+            if (is == null) {
+                System.err.println("ERRORE: Icona non trovata! Path: /data/IMG/LOGO.png");
+                System.err.println("Controlla che il file sia in src/main/resources/data/IMG/LOGO.png");
+            } else {
+                stage.getIcons().add(new Image(is));
+            }
+        } catch (Exception e) {
+            System.err.println("Errore nel caricamento dell'icona: " + e.getMessage());
+            e.printStackTrace();
+        }
 
         // Imposta dimensioni iniziali
         stage.setWidth(windowWidth);

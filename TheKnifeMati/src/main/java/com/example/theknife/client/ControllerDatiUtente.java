@@ -24,7 +24,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
@@ -112,21 +111,6 @@ public class ControllerDatiUtente implements Initializable {
     }
 
     /**
-     * Carica un'icona da risorsa e la assegna, rendendola visibile, a un
-     * {@link ImageView}.
-     *
-     * @param view         L'ImageView di destinazione.
-     * @param resourcePath Il percorso classpath dell'immagine.
-     */
-    private void loadIcona(ImageView view, String resourcePath) {
-        URL risorsa = getClass().getResource(resourcePath);
-        if (risorsa != null && view != null) {
-            view.setImage(new javafx.scene.image.Image(risorsa.toExternalForm()));
-            view.setVisible(true);
-        }
-    }
-
-    /**
      * Inizializza il controller dopo il caricamento del file FXML.
      * Carica le icone, recupera il riferimento al server RMI e popola
      * i campi con i dati dell'utente in sessione.
@@ -202,98 +186,6 @@ public class ControllerDatiUtente implements Initializable {
         }
         return nomeCompleto.substring(nomeCompleto.indexOf(" ") + 1).trim();
     }
-
-    /**
-     * Recupera dal server l'oggetto {@link Utente} completo corrispondente
-     * all'utente in sessione, necessario per preservare i campi non presenti
-     * in {@link SessioneUtente} (es. password hash, data di nascita) al momento
-     * del salvataggio.
-     *
-     * @return L'utente completo, oppure {@code null} se non trovato o in caso di
-     *         errore.
-     */
-    private Utente recuperaUtenteCorrente() {
-        try {
-            ArrayList<Utente> risultati = server.getUtenti(SessioneUtente.getUsernameUtente());
-            for (Utente u : risultati) {
-                if (u.getUsername().equals(SessioneUtente.getUsernameUtente())) {
-                    return u;
-                }
-            }
-        } catch (RemoteException | SQLException e) {
-            System.err.println("Errore nel recupero dell'utente corrente: " + e.getMessage());
-        }
-        return null;
-    }
-
-    /**
-     * Salva sul server l'utente aggiornato e allinea la sessione corrente
-     * ai nuovi dati anagrafici (esclusa la password, non mantenuta in sessione).
-     *
-     * @param utenteAggiornato L'utente con i dati aggiornati da salvare.
-     * @return {@code true} se il salvataggio è andato a buon fine.
-     */
-    /*
-     * private boolean salvaUtente(Utente utenteAggiornato) {
-     * try {
-     * Boolean esito = server.setUtente(utenteAggiornato);
-     * if (Boolean.TRUE.equals(esito)) {
-     * SessioneUtente.impostaUtenteCorrente(
-     * utenteAggiornato.getNome(),
-     * utenteAggiornato.getCognome(),
-     * utenteAggiornato.getUsername(),
-     * utenteAggiornato.isRuolo(),
-     * utenteAggiornato.getCitta(),
-     * utenteAggiornato.getStato(),
-     * utenteAggiornato.getEmail());
-     * return true;
-     * }
-     * } catch (RemoteException e) {
-     * System.err.println("Errore di connessione al server durante il salvataggio: "
-     * + e.getMessage());
-     * }
-     * return false;
-     * }
-     */
-
-    // ----- Handler dei pulsanti di modifica campo -----
-
-    /*
-     * @FXML
-     * private void changeNomeData() throws IOException {
-     * changeData("Nome");
-     * }
-     * 
-     * @FXML
-     * private void changeCognomeData() throws IOException {
-     * changeData("Cognome");
-     * }
-     * 
-     * @FXML
-     * private void changeCittaData() throws IOException {
-     * changeData("Citta");
-     * }
-     * 
-     * @FXML
-     * private void changeIndirizzoData() throws IOException {
-     * changeData("Indirizzo");
-     * }
-     * 
-     * @FXML
-     * private void changeStatoData() throws IOException {
-     * changeData("Stato");
-     * }
-     * 
-     * @FXML
-     * private void changeEamilData() throws IOException {
-     * changeData("Email");
-     * }
-     * 
-     * @FXML
-     * private void changePasswordData() throws IOException {
-     * changePsw();
-     * }
-     */
 
     /**
      * Mostra un alert all’utente.
@@ -454,124 +346,8 @@ public class ControllerDatiUtente implements Initializable {
         }
 
         setText(field);
-        /*
-         * FXMLLoader loader = new
-         * FXMLLoader(getClass().getResource("ChangeDataUser.fxml"));
-         * Parent root = loader.load();
-         * Stage smallStage = new Stage();
-         * Scene scene = new Scene(root, 433, 482);
-         * addStylesheet(scene);
-         * smallStage.setScene(scene);
-         * smallStage.initModality(Modality.APPLICATION_MODAL);
-         * 
-         * ControllerChangeDataUser controller = loader.getController();
-         * controller.setMyStage(smallStage);
-         * controller.setValue(field, false);
-         * smallStage.showAndWait();
-         * 
-         * String nuovoValore = controller.getNuovoValore();
-         * if (nuovoValore == null) {
-         * // Operazione annullata dall'utente.
-         * return;
-         * }
-         * 
-         * Utente utenteCorrente = recuperaUtenteCorrente();
-         * if (utenteCorrente == null) {
-         * showError("Errore", "Impossibile recuperare i dati dell'utente dal server.");
-         * return;
-         * }
-         * 
-         * switch (field) {
-         * case "Nome" -> utenteCorrente.setNome(nuovoValore);
-         * case "Cognome" -> utenteCorrente.setCognome(nuovoValore);
-         * case "Citta" -> utenteCorrente.setCitta(nuovoValore);
-         * case "Indirizzo" -> utenteCorrente.setLuogoDomicilio(nuovoValore);
-         * case "Stato" -> utenteCorrente.setStato(nuovoValore);
-         * case "Email" -> utenteCorrente.setEmail(nuovoValore);
-         * default -> {
-         * return;
-         * }
-         * }
-         * 
-         * if (salvaUtente(utenteCorrente)) {
-         * setText();
-         * } else {
-         * showError("Errore", "Impossibile salvare le modifiche sul server.");
-         * }
-         */
-
+        
     }
-
-    /**
-     * Apre la finestra di dialogo per la modifica della password, quindi salva
-     * il nuovo hash sul server.
-     * <p>
-     * NOTA: si assume che {@code ControllerChangePasswordUser} esponga un metodo
-     * {@code getNuovaPasswordHash()} che restituisce il nuovo hash calcolato
-     * (o {@code null} se l'operazione è stata annullata).
-     * </p>
-     *
-     * @throws IOException se il file FXML del dialogo non viene trovato.
-     */
-    /*
-     * private void changePsw() throws IOException {
-     * FXMLLoader loader = new
-     * FXMLLoader(getClass().getResource("ChangePasswordUser.fxml"));
-     * Parent root = loader.load();
-     * 
-     * Stage smallStage = new Stage();
-     * Scene scene = new Scene(root, 433, 545);
-     * addStylesheet(scene);
-     * smallStage.setTitle("Cambiare Password");
-     * smallStage.setScene(scene);
-     * smallStage.initModality(Modality.APPLICATION_MODAL);
-     * 
-     * ControllerChangePasswordUser controller = loader.getController();
-     * controller.setMyStage(smallStage);
-     * smallStage.showAndWait();
-     * 
-     * String nuovaPasswordHash = controller.getNuovaPasswordHash();
-     * if (nuovaPasswordHash == null) {
-     * return;
-     * }
-     * 
-     * Utente utenteCorrente = recuperaUtenteCorrente();
-     * if (utenteCorrente == null) {
-     * showError("Errore", "Impossibile recuperare i dati dell'utente dal server.");
-     * return;
-     * }
-     * utenteCorrente.setPasswordHash(nuovaPasswordHash);
-     * 
-     * if (!salvaUtente(utenteCorrente)) {
-     * showError("Errore", "Impossibile aggiornare la password sul server.");
-     * }
-     * }
-     */
-
-    // ----- Navigazione -----
-
-    /**
-     * Riporta l'utente alla schermata del ristoratore
-     * ("ristoratore-dashboard.fxml").
-     *
-     * @throws IOException se il file FXML non viene trovato.
-     */
-    /*
-     * @FXML
-     * private void switchRistoratore() throws IOException {
-     * URL resourceUrl = getClass().getResource("ristoratore-dashboard.fxml");
-     * if (resourceUrl == null) {
-     * throw new IOException("FXML file not found: ristoratore-dashboard.fxml");
-     * }
-     * FXMLLoader loader = new FXMLLoader(resourceUrl);
-     * Parent root = loader.load();
-     * Stage currentStage = (Stage) propriRistoranti.getScene().getWindow();
-     * Scene scene = new Scene(root);
-     * addStylesheet(scene);
-     * currentStage.setScene(scene);
-     * currentStage.show();
-     * }
-     */
 
     /**
      * Effettua il logout dell'utente e torna alla schermata di login.

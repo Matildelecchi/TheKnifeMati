@@ -173,8 +173,6 @@ public class RistoratoreDashboardController implements Initializable {
         }
 
     //private final GestioneRistorante gestioneRistorante = GestioneRistorante.getInstance();
-    /** Servizio gestione proprietà ristoranti. */
-    private final GestionePossessoRistorante ownershipService = GestionePossessoRistorante.getInstance();
     //private final GestioneRecensioni gestioneRecensioni = GestioneRecensioni.getInstance();
     private Ristorante selectedRistorante;
     /** Servizio remoto database. */
@@ -202,7 +200,6 @@ public class RistoratoreDashboardController implements Initializable {
             System.out.println("errore con il server");
             e.printStackTrace();
         }
-        ownershipService.initialize();
         // Configura le viste (tabelle, liste)
         setupRistorantiTable();
         setupRecensioniList();
@@ -222,9 +219,6 @@ public class RistoratoreDashboardController implements Initializable {
      */
     public void refreshData() {
         System.out.println("Debug: Inizio refreshData");
-
-        //gestioneRistorante.caricaRistoranti();
-        ownershipService.refreshOwnershipData();
 
         loadRistoranti();
         System.out.println("Debug: Ristoranti ricaricati");
@@ -316,7 +310,7 @@ public class RistoratoreDashboardController implements Initializable {
 
         ristorantiTable.getItems().clear();
 
-        ArrayList<Ristorante> ownedRestaurants = null;//ownershipService.getOwnedRestaurants(currentUser);
+        ArrayList<Ristorante> ownedRestaurants = null;
         try {
             ownedRestaurants = server.getRistorantiByUsername(currentUser);
         } catch(RemoteException | SQLException e) {

@@ -110,9 +110,6 @@ import javafx.util.StringConverter;
 
             /** Stelle selezionate dall’utente */
             private int stelleSelezionate = 3;
-
-            //private final GestioneRecensioni gestioneRecensioni = GestioneRecensioni.getInstance();
-            private final GestionePossessoRistorante ownershipService = GestionePossessoRistorante.getInstance();
            
             /** ID ristorante corrente */
             private String numTelefono;

@@ -31,8 +31,6 @@ import com.example.theknife.common.DBService;
 
 public class ClientMain
 {
-    /** Istanza singleton del client (attualmente non utilizzata). */
-    private static ClientMain client = null;
     
     /** Stub remoto del servizio DB ottenuto tramite RMI. */
     private static DBService stub = null;

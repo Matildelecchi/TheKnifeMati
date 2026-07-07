@@ -79,9 +79,6 @@ public class RistoranteInputController implements Initializable {
     /** Pulsante per annullare l'operazione. */
     @FXML private Button annullaButton;
 
-    private final GestioneRistorante gestioneRistorante = GestioneRistorante.getInstance();
-    private final GestionePossessoRistorante ownershipService = GestionePossessoRistorante.getInstance();
-
      /** Callback ritorno dashboard */
     private Runnable tornaAllaDashboardCallback;
     /** Callback aggiornamento lista ristoranti */
@@ -225,11 +222,6 @@ public class RistoranteInputController implements Initializable {
 
             aggiungiRistoranteAlDB(nuovoRistorante);
 
-            String username = SessioneUtente.getUsernameUtente();
-            if (username != null && SessioneUtente.isRistoratore()) {
-                ownershipService.associaRistoranteAProprietario(nome, username);
-            }
-
             Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
             successAlert.setTitle("Successo");
             successAlert.setHeaderText(null);
@@ -237,10 +229,6 @@ public class RistoranteInputController implements Initializable {
             successAlert.showAndWait();
 
             System.out.println("Debug: Salvataggio ristorante completato");
-
-            // Aggiorna i servizi dopo il salvataggio
-            //gestioneRistorante.caricaRistoranti();
-            GestionePossessoRistorante.getInstance().refreshOwnershipData();
 
             // Esegue il callback per tornare alla dashboard
             if (tornaAllaDashboardCallback != null) {

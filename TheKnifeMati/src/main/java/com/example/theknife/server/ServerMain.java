@@ -113,46 +113,6 @@ public class ServerMain implements DBService {
     }
 
 /**
- * Inizializza le strutture del database necessarie al funzionamento
- * dell'applicazione.
- *
- * <p>
- * Se non esiste, viene creata la tabella che associa gli utenti ai
- * ristoranti di loro proprietà e vengono creati gli indici necessari
- * per velocizzare le operazioni di ricerca.
- */
-
-    private void initializeDatabase() {
-        try (Connection conn = getConnection()) {
-            String createTableSQL = "CREATE TABLE IF NOT EXISTS proprietari_ristoranti (" +
-                    "id SERIAL PRIMARY KEY, " +
-                    "username VARCHAR(255) NOT NULL, " +
-                    "ristorante VARCHAR(255) NOT NULL, " +
-                    "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
-                    "UNIQUE(username, ristorante))";
-            
-            try (PreparedStatement ps = conn.prepareStatement(createTableSQL)) {
-                ps.execute();
-                System.out.println("proprietari_ristoranti table initialized");
-            }
-            
-            String createIndexSQL1 = "CREATE INDEX IF NOT EXISTS idx_proprietari_username ON proprietari_ristoranti(username)";
-            String createIndexSQL2 = "CREATE INDEX IF NOT EXISTS idx_proprietari_ristorante ON proprietari_ristoranti(ristorante)";
-            
-            try (PreparedStatement ps = conn.prepareStatement(createIndexSQL1)) {
-                ps.execute();
-            }
-            try (PreparedStatement ps = conn.prepareStatement(createIndexSQL2)) {
-                ps.execute();
-            }
-            System.out.println("Database indexes initialized");
-        } catch (SQLException e) {
-            System.err.println("Errore durante l'inizializzazione del database: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
-/**
  * Avvia il server RMI dell'applicazione.
  *
  * <p>
@@ -169,7 +129,7 @@ public class ServerMain implements DBService {
         DBService stub = null;
 
         ServerMain obj = new ServerMain();
-        obj.initializeDatabase();
+        //obj.initializeDatabase();
         try {
             stub = (DBService) UnicastRemoteObject.exportObject(
                     obj, PORT_STUB);
