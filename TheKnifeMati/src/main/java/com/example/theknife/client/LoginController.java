@@ -31,16 +31,13 @@ import javafx.stage.Stage;
  * <p>
  * Questa classe gestisce l'autenticazione degli utenti tramite verifica delle credenziali
  * recuperate dal server remoto (RMI) e controlla il flusso di navigazione verso la schermata principale.
- * </p>
  *
- * <p>
  * Supporta anche:
  * <ul>
  *   <li>Accesso come ospite</li>
  *   <li>Navigazione verso la schermata di registrazione</li>
  *   <li>Cifratura delle password tramite SHA-256</li>
  * </ul>
- * </p>
  *
  * @author Matilde Lecchi, 759875, Sede CO
  * @author Eleonora Anna Caredda, 762576, Sede CO

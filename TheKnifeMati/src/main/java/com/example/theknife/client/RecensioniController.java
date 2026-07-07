@@ -512,9 +512,9 @@ import javafx.util.Callback;
     }
 
     /**
-     * Imposta l'ID del ristorante corrente e aggiorna i dati.
+     * Imposta il numero di telefono del ristorante corrente e aggiorna i dati.
      *
-     * @param id ID del ristorante
+     * @param tel il numero di telefono del ristorante
      */
     public void setRistoranteTel(String tel) {
         this.numTelefono = tel;

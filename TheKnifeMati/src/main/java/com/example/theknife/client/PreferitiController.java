@@ -34,10 +34,9 @@ import javafx.scene.layout.HBox;
  *     <li>Rimuovere ristoranti dalla lista dei preferiti</li>
  *     <li>Aggiornare dinamicamente la lista in caso di modifiche</li>
  * </ul>
- * </p>
+ *
  * I dati vengono ottenuti dal servizio {@link GestionePreferiti}
  * e arricchiti tramite {@link GestioneRistorante}.
- * </p>
  *
  * @author Claudio Bonci, 759939, Sede CO
  * @author Eleonora Anna Caredda, 762576, Sede CO
