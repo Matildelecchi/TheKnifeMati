@@ -60,14 +60,14 @@ public class Ristorante implements Serializable {
     private String cucina;
 
     /**
-     * La longitudine della posizione del ristorante.
+     * Commentata: La longitudine della posizione del ristorante.
+     * private double longitudine;
      */
-    private double longitudine;
 
     /**
-     * La latitudine della posizione del ristorante.
+     * Commentata: La latitudine della posizione del ristorante.
+     * private double latitudine;
      */
-    private double latitudine;
 
     /**
      * Il numero di telefono del ristorante.
@@ -220,18 +220,18 @@ public class Ristorante implements Serializable {
      *
      * @return la longitudine.
      */
-    public double getLongitudine() {
+    /*public double getLongitudine() {
         return longitudine;
-    }
+    }*/
 
     /**
      * Restituisce la latitudine della posizione del ristorante.
      *
      * @return la latitudine.
      */
-    public double getLatitudine() {
+    /*public double getLatitudine() {
         return latitudine;
-    }
+    }*/
 
     /**
      * Restituisce il numero di telefono del ristorante.
@@ -360,8 +360,8 @@ public class Ristorante implements Serializable {
                 ", localita='" + localita + '\'' +
                 ", prezzo='" + prezzo + '\'' +
                 ", cucina='" + cucina + '\'' +
-                ", longitudine=" + longitudine +
-                ", latitudine=" + latitudine +
+                //", longitudine=" + longitudine + 
+                //", latitudine=" + latitudine + 
                 ", numeroTelefono='" + numeroTelefono + '\'' +
                 ", url='" + url + '\'' +
                 ", sitoWeb='" + sitoWeb + '\'' +
