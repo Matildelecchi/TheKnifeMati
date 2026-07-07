@@ -28,9 +28,12 @@
     </properties>
 
 
+
     <dependencies>
 
+
         <!-- JavaFX -->
+
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
@@ -56,7 +59,9 @@
         </dependency>
 
 
+
         <!-- ControlsFX -->
+
         <dependency>
             <groupId>org.controlsfx</groupId>
             <artifactId>controlsfx</artifactId>
@@ -64,7 +69,9 @@
         </dependency>
 
 
+
         <!-- OpenCSV -->
+
         <dependency>
             <groupId>com.opencsv</groupId>
             <artifactId>opencsv</artifactId>
@@ -72,7 +79,9 @@
         </dependency>
 
 
+
         <!-- PostgreSQL -->
+
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
@@ -80,13 +89,16 @@
         </dependency>
 
 
+
         <!-- JUnit -->
+
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
+
 
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -99,44 +111,64 @@
     </dependencies>
 
 
+
+
     <build>
 
         <plugins>
 
 
-            <!-- Compilazione Java 22 -->
+
+            <!-- Compilatore Java 22 -->
+
             <plugin>
+
                 <groupId>org.apache.maven.plugins</groupId>
+
                 <artifactId>maven-compiler-plugin</artifactId>
+
                 <version>3.13.0</version>
 
                 <configuration>
+
                     <release>${java.version}</release>
+
                 </configuration>
 
             </plugin>
 
 
 
-            <!-- Avvio JavaFX -->
+
+            <!-- JavaFX -->
+
             <plugin>
+
                 <groupId>org.openjfx</groupId>
+
                 <artifactId>javafx-maven-plugin</artifactId>
+
                 <version>0.0.8</version>
 
                 <configuration>
+
                     <mainClass>${main.class}</mainClass>
+
                 </configuration>
 
             </plugin>
 
 
 
-            <!-- Creazione JAR eseguibile -->
+
+            <!-- JAR eseguibile -->
+
             <plugin>
 
                 <groupId>org.apache.maven.plugins</groupId>
+
                 <artifactId>maven-shade-plugin</artifactId>
+
                 <version>3.5.3</version>
 
 
@@ -147,26 +179,33 @@
                         <phase>package</phase>
 
                         <goals>
+
                             <goal>shade</goal>
+
                         </goals>
 
 
                         <configuration>
 
+
                             <createDependencyReducedPom>false</createDependencyReducedPom>
+
 
 
                             <transformers>
 
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
 
+
                                     <mainClass>
                                         com.example.theknife.client.App
                                     </mainClass>
 
+
                                 </transformer>
 
                             </transformers>
+
 
 
                             <filters>
@@ -174,6 +213,7 @@
                                 <filter>
 
                                     <artifact>*:*</artifact>
+
 
                                     <excludes>
 
@@ -184,6 +224,7 @@
 
                                     </excludes>
 
+
                                 </filter>
 
                             </filters>
@@ -191,30 +232,56 @@
 
                         </configuration>
 
+
                     </execution>
 
+
                 </executions>
+
 
             </plugin>
 
 
 
-            <!-- Test JUnit -->
+
+            <!-- Test -->
+
             <plugin>
 
                 <groupId>org.apache.maven.plugins</groupId>
+
                 <artifactId>maven-surefire-plugin</artifactId>
+
                 <version>3.2.5</version>
 
             </plugin>
 
 
 
-            <!-- Generazione Javadoc -->
+
+        </plugins>
+
+
+    </build>
+
+
+
+
+    <!-- REPORT MAVEN -->
+
+    <reporting>
+
+        <plugins>
+
+
+            <!-- JAVADOC -->
+
             <plugin>
 
                 <groupId>org.apache.maven.plugins</groupId>
+
                 <artifactId>maven-javadoc-plugin</artifactId>
+
                 <version>3.11.2</version>
 
 
@@ -222,13 +289,13 @@
 
                     <release>22</release>
 
-                    <failOnError>false</failOnError>
-
                     <doclint>none</doclint>
 
-                    <show>public</show>
+                    <failOnError>false</failOnError>
+
 
                 </configuration>
+
 
             </plugin>
 
@@ -236,7 +303,8 @@
         </plugins>
 
 
-    </build>
+    </reporting>
+
 
 
 </project>
