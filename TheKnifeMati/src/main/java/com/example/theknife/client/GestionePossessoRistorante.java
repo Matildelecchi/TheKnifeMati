@@ -1,10 +1,16 @@
 package com.example.theknife.client;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.example.theknife.common.DBService;
 
 /**
  * Servizio per la gestione delle proprietà dei ristoranti.
@@ -44,6 +50,8 @@ public class GestionePossessoRistorante {
      /** Indica se i dati sono già stati inizializzati. */
     private boolean isInitialized = false;
 
+    private static DBService server;
+
     /** Costruttore privato (Singleton). */
     private GestionePossessoRistorante() {}
 
@@ -69,6 +77,12 @@ public class GestionePossessoRistorante {
 
     public void initialize() {
         if (!isInitialized) {
+            try {
+                server = ClientMain.getServer();
+            } catch (RemoteException | NotBoundException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
             loadOwnershipData();
             isInitialized = true;
         }
@@ -86,9 +100,10 @@ public class GestionePossessoRistorante {
         ownershipMap.clear();
         
         try {
-            ArrayList<String> remoteOwnership = RMIService.getService().getOwnership(
-                    "SELECT username, ristorante FROM proprietari_ristoranti"
-            );
+            /*ArrayList<String> remoteOwnership = RMIService.getService().getOwnership(
+                    "SELECT proprietario, nome FROM ristoranti"
+            );*/
+            ArrayList<String> remoteOwnership = server.getOwnership("SELECT proprietario, nome FROM ristoranti");
             
             if (remoteOwnership != null) {
                 for (String row : remoteOwnership) {

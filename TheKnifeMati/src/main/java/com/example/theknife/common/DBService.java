@@ -86,5 +86,7 @@ public interface DBService extends Remote {
     Utente getUtenteByUsername(String username) throws RemoteException, SQLException;
     /** Modifica un campo specifico dell’utente (es. email, password, ecc.). */
     boolean modifyUsernameCampo(String username, String field, String set) throws RemoteException, SQLException;
+
+    ArrayList<String> getNumeriTelefonoRisoranti(String user) throws RemoteException, SQLException;
 }
 

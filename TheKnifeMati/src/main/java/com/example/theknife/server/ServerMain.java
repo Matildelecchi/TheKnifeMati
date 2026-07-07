@@ -64,7 +64,7 @@ import com.example.theknife.common.Utente;
  * @since 2026-05-20
  */
 
-public class ServerMain implements DBService {
+public class ServerMain implements DBService { 
     /**
      * Porta utilizzata dal registro RMI.
      */
@@ -224,7 +224,7 @@ public class ServerMain implements DBService {
         ArrayList<Ristorante> results = new ArrayList<>();
         //System.out.println(stato);
         String query;
-        if (citta == null || citta.trim().isEmpty()) {
+        if (citta == null || citta.trim().isEmpty() || stato == null || stato.trim().isEmpty()) {
             query = "SELECT * FROM ristoranti";
         } else {
             query = "SELECT * FROM ristoranti ORDER BY CASE " +
@@ -269,6 +269,33 @@ public class ServerMain implements DBService {
         } catch (SQLException e) {
             System.err.println("Errore DB getRistoranti: " + e.getMessage());
             throw e;
+        }
+
+        return results;
+    }
+
+    @Override
+    public ArrayList<String> getNumeriTelefonoRisoranti(String user) throws RemoteException, SQLException{
+        ArrayList<String> results = new ArrayList<>();
+        //System.out.println(stato);
+        if (user == null || user.trim().isEmpty()) {
+            return null;
+        }
+
+        String query = "SELECT num_tel FROM ristoranti WHERE proprietario = ?";
+
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
+            
+            ps.setString(1, user);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                results.add(rs.getString("num_tel"));
+            }
+            rs.close();
+
+        } catch (SQLException e) {
+            System.err.println("Errore DB getRistoranti: " + e.getMessage());
         }
 
         return results;

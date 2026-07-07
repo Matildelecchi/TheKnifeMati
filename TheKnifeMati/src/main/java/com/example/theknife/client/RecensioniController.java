@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.controlsfx.control.CheckComboBox;
+
 import com.example.theknife.common.DBService;
 import com.example.theknife.common.Recensione;
 
@@ -22,6 +24,7 @@ import javafx.scene.chart.PieChart;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
@@ -29,10 +32,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
-
-import org.controlsfx.control.CheckComboBox;
-import javafx.scene.control.TableCell;
-import javafx.util.Callback;
 
 
 /**
@@ -297,28 +296,37 @@ import javafx.util.Callback;
                 boolean isProprietario = false;
                 if (isRistoratore && numTelefono != null) {
                     String currentUser = SessioneUtente.getUsernameUtente();
-                    List<String> ownedRestaurants = ownershipService.getOwnedRestaurants(currentUser);
-                    isProprietario = ownedRestaurants.contains(numTelefono);
+                    //List<String> ownedRestaurants = ownershipService.getOwnedRestaurants(currentUser);
+                    //isProprietario = ownedRestaurants.contains(numTelefono);
+                    try {
+                        ArrayList<String> numRistoranti = server.getNumeriTelefonoRisoranti(currentUser);
+                        isProprietario = numRistoranti.contains(numTelefono);
+                    } catch(RemoteException | SQLException e) {
+                        e.printStackTrace();
+                    }
                 }
 
                 boolean puo_recensire = isUtenteLoggato && (!isRistoratore || !isProprietario);
 
                 // Nasconde o mostra i bottoni in base al ruolo dell'utente
-                inviaButton.setVisible(puo_recensire);
+                inviaButton.setVisible(puo_recensire && !isProprietario);
                 modificaButton.setVisible(false);
                 eliminaButton.setVisible(false);
                 indietroButton.setVisible(false);
                 rispondiButton.setVisible(isRistoratore && isProprietario);
                 modificaRispostaButton.setVisible(false); // Inizialmente nascosto
                 rispostaBox.setVisible(isRistoratore && isProprietario);
-
+                //rispostaBox.setVisible(false);
+                //rispostaTextArea.setVisible(false);
+                
                 // I campi di input per le recensioni sono visibili per chi può recensire
-                recensioneTextArea.setVisible(puo_recensire);
-                star1.setVisible(puo_recensire);
+                //recensioneTextArea.setVisible(false);
+                /*star1.setVisible(puo_recensire);
                 star2.setVisible(puo_recensire);
                 star3.setVisible(puo_recensire);
                 star4.setVisible(puo_recensire);
-                star5.setVisible(puo_recensire);            }
+                star5.setVisible(puo_recensire);*/            
+            }
             /**
              * Inizializza la tabella delle recensioni configurando le colonne
              * e preparando le liste osservabili necessarie per filtrare i dati.
@@ -404,8 +412,12 @@ import javafx.util.Callback;
             // Verifica se il ristoratore possiede questo ristorante
             boolean isProprietario = false;
             if (isRistoratore && numTelefono != null && currentUser != null) {
-                List<String> ownedRestaurants = ownershipService.getOwnedRestaurants(currentUser);
-                isProprietario = ownedRestaurants.contains(numTelefono);
+                try {
+                    ArrayList<String> numRistoranti = server.getNumeriTelefonoRisoranti(currentUser);
+                    isProprietario = numRistoranti.contains(numTelefono);
+                } catch(RemoteException | SQLException e) {
+                    e.printStackTrace();
+                }
             }
 
             boolean puo_recensire = SessioneUtente.isUtenteLoggato() && (!isRistoratore || !isProprietario);
@@ -422,7 +434,7 @@ import javafx.util.Callback;
                 // Visibilità per ristoratore proprietario
                 rispondiButton.setVisible(isRistoratore && isProprietario && !hasRisposta);
                 modificaRispostaButton.setVisible(isRistoratore && isProprietario && hasRisposta);
-                rispostaBox.setVisible(isRistoratore && isProprietario);
+                //rispostaBox.setVisible(isRistoratore && isProprietario);
 
                 // Precompila i campi se è l'autore della recensione
                 recensioneTextArea.setText(newVal.getTesto());
@@ -464,10 +476,31 @@ import javafx.util.Callback;
                 }*/
 
                 // Precompila la risposta se il ristoratore proprietario ha già risposto
-                if (isRistoratore && isProprietario && hasRisposta) {
+                /*if (isRistoratore && isProprietario && hasRisposta) {
                     rispostaTextArea.setText(newVal.getRisposta());
                 } else if (isRistoratore && isProprietario) {
                     rispostaTextArea.clear();
+                }*/
+
+                if(hasRisposta) {
+                    rispostaBox.setVisible(true);
+                    rispostaTextArea.setText(newVal.getRisposta());
+                    if(isProprietario && isRistoratore) {
+                        modificaRispostaButton.setVisible(true);
+                        rispondiButton.setVisible(false);
+                        rispostaTextArea.setDisable(false);
+                    } else {
+                        rispostaTextArea.setDisable(true);
+                        modificaRispostaButton.setVisible(false);
+                        rispondiButton.setVisible(false);
+                    }
+                } else {
+                    if(isProprietario && isRistoratore) {
+                        modificaRispostaButton.setVisible(false);
+                        rispondiButton.setVisible(true);
+                    } else {
+                        rispostaBox.setVisible(false);
+                    }   
                 }
 
             } else {
@@ -747,7 +780,13 @@ import javafx.util.Callback;
 
         // Verifica che il ristoratore sia proprietario del ristorante
         String currentUser = SessioneUtente.getUsernameUtente();
-        List<String> ownedRestaurants = ownershipService.getOwnedRestaurants(currentUser);
+        //List<String> ownedRestaurants = ownershipService.getOwnedRestaurants(currentUser);
+        ArrayList<String> ownedRestaurants = null;
+        try {
+            ownedRestaurants = server.getNumeriTelefonoRisoranti(currentUser);
+        } catch(RemoteException | SQLException e) {
+            e.printStackTrace();
+        }
         if (!ownedRestaurants.contains(numTelefono)) {
             mostraErrore("Errore", "Puoi modificare le risposte solo nei tuoi ristoranti.");
             return;
