@@ -597,10 +597,7 @@ import javafx.util.Callback;
             return;
         }
         // Controllo se l'utente ha già recensito questo ristorante
-        if (masterRecensioniList.stream().anyMatch(r -> Objects.equals(r.getUsername(), SessioneUtente.getUsernameUtente()))) {
-            mostraErrore("Errore", "Hai già recensito questo ristorante. Puoi modificare o eliminare la tua recensione esistente.");
-            return;
-        }
+        
 
         /*Recensione recensione = new Recensione(
                 (int) stelleSlider.getValue(),

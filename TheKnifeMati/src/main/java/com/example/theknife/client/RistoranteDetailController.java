@@ -89,6 +89,8 @@ public class RistoranteDetailController implements Initializable {
     @FXML private Label telefonoLabel;
     /** Hyperlink per navigare al sito web ufficiale del ristorante. */
     @FXML private Hyperlink sitoWebLink;
+
+    @FXML private Hyperlink sitoWebLink1;
     /** Pulsante per aprire la posizione del ristorante su Google Maps. */
     @FXML private Button posizioneButton;
     /** Etichetta per visualizzare l'eventuale premio Michelin del ristorante. */
