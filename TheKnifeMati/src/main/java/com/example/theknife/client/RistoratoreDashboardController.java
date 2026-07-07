@@ -258,6 +258,17 @@ public class RistoratoreDashboardController implements Initializable {
         // Aggiunge un listener alla selezione della tabella
         ristorantiTable.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> onRistoranteSelected(newValue));
+
+        // Apre i dettagli del ristorante con doppio click su una riga
+        ristorantiTable.setRowFactory(tableView -> {
+            javafx.scene.control.TableRow<Ristorante> row = new javafx.scene.control.TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && !row.isEmpty()) {
+                    apriDettagliRistorante(row.getItem());
+                }
+            });
+            return row;
+        });
     }
 
     /**
@@ -622,6 +633,32 @@ public class RistoratoreDashboardController implements Initializable {
             scene.setRoot(recensioniRoot);
         } catch (IOException e) {
             showError("Errore nell'apertura della finestra delle recensioni", e);
+        }
+    }
+    /**
+     * Apre la schermata dei dettagli di un ristorante.
+     *
+     * @param ristorante ristorante selezionato
+     */
+    private void apriDettagliRistorante(Ristorante ristorante) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("ristorante-detail.fxml"));
+            Parent root = loader.load();
+            RistoranteDetailController controller = loader.getController();
+            controller.setRistorante(ristorante);
+
+            Scene scene = ristorantiTable.getScene();
+            Parent rootToRestore = ristorantiTable.getScene().getRoot();
+            controller.setRootToRestore(rootToRestore);
+            controller.setTornaAlMenuPrincipaleCallback(() -> {
+                //Scene scene = root.getScene();
+                scene.setRoot(rootToRestore);
+                this.refreshData();
+            });
+
+            scene.setRoot(root);
+        } catch (IOException e) {
+            showError("Errore nell'apertura della finestra dei dettagli del ristorante.", e);
         }
     }
 
