@@ -66,7 +66,8 @@
     <columns>
       <TableColumn fx:id="colonnaNome" editable="false" sortable="false" text="Nome"/>
       <TableColumn fx:id="colonnaIndirizzo" editable="false" sortable="false" text="Indirizzo"/>
-      <TableColumn fx:id="colonnacitta" editable="false" sortable="false" text="Citta/Nazione"/>
+      <TableColumn fx:id="colonnacitta" editable="false" sortable="false" text="Città"/>
+      <TableColumn fx:id="colonnastato" editable="false" sortable="false" text="Nazione"/>
       <TableColumn fx:id="colonnaPrezzo" editable="false" sortable="false" text="Prezzo"/>
       <TableColumn fx:id="colonnaCucina" editable="false" sortable="false" text="Cucina"/>
     </columns>

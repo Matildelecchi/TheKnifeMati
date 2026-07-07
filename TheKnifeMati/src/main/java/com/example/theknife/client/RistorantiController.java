@@ -83,7 +83,11 @@ public class RistorantiController implements Initializable {
      */
     @FXML private TableColumn<Ristorante, String> colonnacitta;
     /**
-     * Colonna della tabella per la fascia di prezzo del ristorante.
+     * Colonna della tabella per la città del ristorante.
+     */
+    @FXML private TableColumn<Ristorante, String> colonnastato;
+    /**
+     * Colonna della tabella per lo stato del ristorante.
      */
     @FXML private TableColumn<Ristorante, String> colonnaPrezzo;
     /**
@@ -149,6 +153,7 @@ public class RistorantiController implements Initializable {
         colonnaNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
         colonnaIndirizzo.setCellValueFactory(new PropertyValueFactory<>("indirizzo"));
         colonnacitta.setCellValueFactory(new PropertyValueFactory<>("citta"));
+        colonnastato.setCellValueFactory(new PropertyValueFactory<>("stato"));
         colonnaPrezzo.setCellValueFactory(new PropertyValueFactory<>("prezzo"));
         colonnaCucina.setCellValueFactory(new PropertyValueFactory<>("cucina"));
 
@@ -156,6 +161,7 @@ public class RistorantiController implements Initializable {
         colonnaNome.setReorderable(false);
         colonnaIndirizzo.setReorderable(false);
         colonnacitta.setReorderable(false);
+        colonnastato.setReorderable(false);
         colonnaPrezzo.setReorderable(false);
         colonnaCucina.setReorderable(false);
 
