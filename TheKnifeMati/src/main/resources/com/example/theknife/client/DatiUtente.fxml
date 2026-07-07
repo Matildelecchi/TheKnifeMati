@@ -19,31 +19,31 @@
       <content>
         <VBox alignment="TOP_CENTER" spacing="10.0">
           <padding>
-            <Insets bottom="30.0" left="20.0" right="20.0" top="20.0"/>
+            <Insets bottom="30.0" left="20.0" right="20.0" top="20.0" />
           </padding>
           <children>
             <VBox alignment="TOP_CENTER" maxWidth="Infinity" spacing="20" styleClass="login-card-2">
               <children>
                 <VBox prefHeight="30.0">
                   <VBox.margin>
-                    <Insets top="20.0"/>
+                    <Insets top="20.0" />
                   </VBox.margin>
                 </VBox>
                 <Label fx:id="usernameLabel" graphicTextGap="9.0" styleClass="login-title" text="username">
                   <font>
-                    <Font name="System Bold" size="25.0"/>
+                    <Font name="System Bold" size="25.0" />
                   </font>
                 </Label>
                 <Label graphicTextGap="0.0" styleClass="login-title" text="Account &amp; Settings">
                   <font>
-                    <Font size="16.0"/>
+                    <Font size="16.0" />
                   </font>
                 </Label>
                 <HBox alignment="CENTER_LEFT">
                   <children>
                     <Label graphicTextGap="0.0" styleClass="login-title" text="Dati account - Non modificabili">
                       <font>
-                        <Font name="System Italic" size="14.0"/>
+                        <Font name="System Italic" size="14.0" />
                       </font>
                     </Label>
                   </children>
@@ -52,52 +52,52 @@
                   <children>
                     <VBox spacing="5" HBox.hgrow="ALWAYS">
                       <children>
-                        <Label style="-fx-font-weight: bold; -fx-font-size: 12px;" text="Email"/>
+                        <Label style="-fx-font-weight: bold; -fx-font-size: 12px;" text="Email" />
                         <Text fx:id="campoEmail" strokeType="OUTSIDE" strokeWidth="0.0" text="email">
                           <font>
-                            <Font size="20.0"/>
+                            <Font size="20.0" />
                           </font>
                         </Text>
                       </children>
                     </VBox>
                   </children>
                 </HBox>
-                <Separator/>
+                <Separator />
                 <HBox alignment="CENTER_LEFT">
                   <children>
                     <VBox spacing="5" HBox.hgrow="ALWAYS">
                       <children>
-                        <Label style="-fx-font-weight: bold; -fx-font-size: 12px;" text="Data di nascita"/>
+                        <Label style="-fx-font-weight: bold; -fx-font-size: 12px;" text="Data di nascita" />
                         <Text fx:id="campoData" strokeType="OUTSIDE" strokeWidth="0.0" text="data">
                           <font>
-                            <Font size="20.0"/>
+                            <Font size="20.0" />
                           </font>
                         </Text>
                       </children>
                     </VBox>
                   </children>
                 </HBox>
-                <Separator/>
+                <Separator />
                 <HBox alignment="CENTER_LEFT">
                   <children>
                     <VBox spacing="5" HBox.hgrow="ALWAYS">
                       <children>
-                        <Label style="-fx-font-weight: bold; -fx-font-size: 12px;" text="Ruolo"/>
+                        <Label style="-fx-font-weight: bold; -fx-font-size: 12px;" text="Ruolo" />
                         <Text fx:id="campoRuolo" strokeType="OUTSIDE" strokeWidth="0.0" text="ruolo">
                           <font>
-                            <Font size="20.0"/>
+                            <Font size="20.0" />
                           </font>
                         </Text>
                       </children>
                     </VBox>
                   </children>
                 </HBox>
-                <Separator/>
+                <Separator />
                 <VBox spacing="5">
                   <children>
                     <Label graphicTextGap="0.0" styleClass="login-title" text="Informazioni account - Modificabili">
                       <font>
-                        <Font name="System Italic" size="14.0"/>
+                        <Font name="System Italic" size="14.0" />
                       </font>
                     </Label>
                   </children>
@@ -106,84 +106,72 @@
                   <children>
                     <VBox spacing="5" HBox.hgrow="ALWAYS">
                       <children>
-                        <Label style="-fx-font-weight: bold; -fx-font-size: 12px;" text="Nome"/>
-                        <TextField fx:id="nomeField" maxWidth="Infinity"/>
+                        <Label style="-fx-font-weight: bold; -fx-font-size: 12px;" text="Nome" />
+                        <TextField fx:id="nomeField" maxWidth="Infinity" />
                       </children>
                     </VBox>
-                    <Button fx:id="buttonNome" mnemonicParsing="false" onAction="#cambiaNome" text="Cambia"/>
+                    <Button fx:id="buttonNome" mnemonicParsing="false" onAction="#cambiaNome" text="Cambia" />
                   </children>
                 </HBox>
-                <Separator/>
+                <Separator />
                 <HBox alignment="CENTER">
                   <children>
                     <VBox spacing="5" HBox.hgrow="ALWAYS">
                       <children>
-                        <Label style="-fx-font-weight: bold; -fx-font-size: 12px;" text="Cognome"/>
-                        <TextField fx:id="cognomeField" maxWidth="Infinity"/>
+                        <Label style="-fx-font-weight: bold; -fx-font-size: 12px;" text="Cognome" />
+                        <TextField fx:id="cognomeField" maxWidth="Infinity" />
                       </children>
                     </VBox>
-                    <Button fx:id="buttonCognome" mnemonicParsing="false" onAction="#cambiaCognome" text="Cambia"/>
+                    <Button fx:id="buttonCognome" mnemonicParsing="false" onAction="#cambiaCognome" text="Cambia" />
                   </children>
                 </HBox>
-                <Separator/>
+                <Separator />
                 <HBox alignment="CENTER">
                   <children>
                     <VBox spacing="5" HBox.hgrow="ALWAYS">
                       <children>
-                        <Label style="-fx-font-weight: bold; -fx-font-size: 12px;" text="Indirizzo"/>
-                        <TextField fx:id="indirizzoField" maxWidth="Infinity"/>
+                        <Label style="-fx-font-weight: bold; -fx-font-size: 12px;" text="Stato" />
+                        <TextField fx:id="statoField" maxWidth="Infinity" />
                       </children>
                     </VBox>
-                    <Button fx:id="buttonIndirizzo" mnemonicParsing="false" onAction="#cambiaIndirizzo" text="Cambia"/>
+                    <Button fx:id="buttonStato" mnemonicParsing="false" onAction="#cambiaStato" text="Cambia" />
                   </children>
                 </HBox>
-                <Separator/>
+                <Separator />
                 <HBox alignment="CENTER">
                   <children>
                     <VBox spacing="5" HBox.hgrow="ALWAYS">
                       <children>
-                        <Label style="-fx-font-weight: bold; -fx-font-size: 12px;" text="Stato"/>
-                        <TextField fx:id="statoField" maxWidth="Infinity"/>
-                      </children>
-                    </VBox>
-                    <Button fx:id="buttonStato" mnemonicParsing="false" onAction="#cambiaStato" text="Cambia"/>
-                  </children>
-                </HBox>
-                <Separator/>
-                <HBox alignment="CENTER">
-                  <children>
-                    <VBox spacing="5" HBox.hgrow="ALWAYS">
-                      <children>
-                        <Label style="-fx-font-weight: bold; -fx-font-size: 12px;" text="Città"/>
+                        <Label style="-fx-font-weight: bold; -fx-font-size: 12px;" text="Città" />
                         <TextField fx:id="cittaField" maxWidth="Infinity" prefHeight="30.0">
                           <font>
-                            <Font size="14.0"/>
+                            <Font size="14.0" />
                           </font>
                         </TextField>
                       </children>
                     </VBox>
-                    <Button fx:id="buttonCitta" mnemonicParsing="false" onAction="#cambiaCitta" text="Cambia"/>
+                    <Button fx:id="buttonCitta" mnemonicParsing="false" onAction="#cambiaCitta" text="Cambia" />
                   </children>
                 </HBox>
-                <Separator/>
+                <Separator />
                 <HBox alignment="CENTER_LEFT">
                   <children>
                     <VBox spacing="5" HBox.hgrow="ALWAYS">
                       <children>
-                        <Label style="-fx-font-weight: bold; -fx-font-size: 12px;" text="Password "/>
-                        <PasswordField fx:id="vecchiaPassword" maxWidth="Infinity" promptText="Inserisci la vecchia password" styleClass="login-textfield"/>
-                        <PasswordField fx:id="nuovaPassword" maxWidth="Infinity" promptText="Inserisci la nuova password" styleClass="login-textfield"/>
-                        <PasswordField fx:id="confermaPassword" maxWidth="Infinity" promptText="Conferma nuova password" styleClass="login-textfield"/>
+                        <Label style="-fx-font-weight: bold; -fx-font-size: 12px;" text="Password " />
+                        <PasswordField fx:id="vecchiaPassword" maxWidth="Infinity" promptText="Inserisci la vecchia password" styleClass="login-textfield" />
+                        <PasswordField fx:id="nuovaPassword" maxWidth="Infinity" promptText="Inserisci la nuova password" styleClass="login-textfield" />
+                        <PasswordField fx:id="confermaPassword" maxWidth="Infinity" promptText="Conferma nuova password" styleClass="login-textfield" />
                       </children>
                     </VBox>
-                    <Button fx:id="buttonPsw" mnemonicParsing="false" onAction="#cambiaPsw" text="Cambia"/>
+                    <Button fx:id="buttonPsw" mnemonicParsing="false" onAction="#cambiaPsw" text="Cambia" />
                   </children>
                 </HBox>
-                <Separator/>
+                <Separator />
                 <VBox alignment="CENTER" spacing="10">
                   <children>
-                    <Button fx:id="buttonIndietro" maxWidth="350" onAction="#handleTornaAlMenu" styleClass="primary-button" text="Indietro"/>
-                    <Button fx:id="buttonLogout" maxWidth="350" onAction="#switchHomeNotLogged" styleClass="secondary-button" text="Log out"/>
+                    <Button fx:id="buttonIndietro" maxWidth="350" onAction="#handleTornaAlMenu" styleClass="primary-button" text="Indietro" />
+                    <Button fx:id="buttonLogout" maxWidth="350" onAction="#switchHomeNotLogged" styleClass="secondary-button" text="Log out" />
                   </children>
                 </VBox>
               </children>

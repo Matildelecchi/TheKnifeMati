@@ -65,8 +65,6 @@ public class ControllerDatiUtente implements Initializable {
     @FXML
     private TextField cognomeField;
     @FXML
-    private TextField indirizzoField;
-    @FXML
     private TextField statoField;
     @FXML
     private TextField cittaField;
@@ -81,8 +79,6 @@ public class ControllerDatiUtente implements Initializable {
     private Button buttonNome;
     @FXML
     private Button buttonCognome;
-    @FXML
-    private Button buttonIndirizzo;
     @FXML
     private Button buttonStato;
     @FXML
@@ -175,7 +171,6 @@ public class ControllerDatiUtente implements Initializable {
         if(field.equals("all")) {
             nomeField.setText(user.getNome());
             cognomeField.setText(user.getCognome());
-            indirizzoField.setText(user.getLuogoDomicilio());
             statoField.setText(user.getStato());
             cittaField.setText(user.getCitta());
         } else if(field.equals("nome")) {
@@ -186,8 +181,6 @@ public class ControllerDatiUtente implements Initializable {
             cittaField.setText(user.getCitta());
         } else if(field.equals("stato")) {
             statoField.setText(user.getStato());
-        } else if(field.equals("indirizzo")) {
-            indirizzoField.setText(user.getLuogoDomicilio());
         } else if(field.equals("password_hash")) {
             clearPsw();
         }
@@ -337,17 +330,6 @@ public class ControllerDatiUtente implements Initializable {
         } else {
             changeData("cognome", cognomeField.getText());
             SessioneUtente.setCognome(cognomeField.getText());
-        }
-    }
-
-    @FXML
-    private void cambiaIndirizzo() throws IOException {
-        if (SessioneUtente.getIndirizzo().equals(indirizzoField.getText())) {
-            mostraAvviso("Errore di modifica",
-                    "Indirizzo non è stato cambiato", Alert.AlertType.ERROR);
-        } else {
-            changeData("indirizzo", indirizzoField.getText());
-            SessioneUtente.setIndirizzo(indirizzoField.getText());
         }
     }
 
