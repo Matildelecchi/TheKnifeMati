@@ -53,26 +53,28 @@
                     <CheckBox fx:id="stellaVerdeCheckBox" text="Stella Verde Michelin" />
                 </VBox>
 
-                <!-- Coordinate -->
+                <!-- Coordinate - Commentato-->
+                <!--
                 <Label text="Coordinate:" GridPane.rowIndex="7" />
                 <HBox spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="7">
                     <TextField fx:id="longitudineField" prefHeight="26.0" prefWidth="171.0" promptText="Longitudine" />
                     <TextField fx:id="latitudineField" prefHeight="26.0" prefWidth="170.0" promptText="Latitudine" />
                 </HBox>
+                -->
 
                 <!-- Telefono -->
-                <Label text="Telefono:" GridPane.rowIndex="8" />
+                <Label text="Telefono:" GridPane.rowIndex="7" />
                 <TextField fx:id="telefonoField" promptText="Numero di telefono" GridPane.columnIndex="1" GridPane.rowIndex="8" />
 
                 <!-- URL -->
-                <Label prefHeight="17.0" prefWidth="143.0" text="Sito nella Guida Michelin" GridPane.rowIndex="9" />
+                <Label prefHeight="17.0" prefWidth="143.0" text="Sito nella Guida Michelin" GridPane.rowIndex="8" />
                 <TextField fx:id="urlField" promptText="URL della pagina web nella Guida Michelin" GridPane.columnIndex="1" GridPane.rowIndex="9" />
 
                 <!-- Sito Web -->
-                <Label text="Sito Web del Ristorante:" GridPane.rowIndex="10" />
+                <Label text="Sito Web del Ristorante:" GridPane.rowIndex="9" />
                 <TextField fx:id="sitoWebField" promptText="Sito web del ristorante" GridPane.columnIndex="1" GridPane.rowIndex="10" />
             <rowConstraints>
-               <RowConstraints />
+               <!--<RowConstraints /> Commentato quello delle coordinate che non serve più -->
                <RowConstraints />
                <RowConstraints />
                <RowConstraints />

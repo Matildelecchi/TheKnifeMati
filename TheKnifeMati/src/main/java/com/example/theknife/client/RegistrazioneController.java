@@ -317,19 +317,18 @@ public class RegistrazioneController {
             errori.add("Data di nascita non valida");
         }
 
-        // Valida stato (nazione)
-        if (campoStato.getText().trim().isEmpty()) {
-          errori.add("La nazione è obbligatoria");
-        } 
-
-
-
+        
         // Valida luogo di domicilio
         if (campoLuogoDomicilio.getText().trim().isEmpty()) {
             errori.add("Il luogo di domicilio è obbligatorio");
         } else if (campoLuogoDomicilio.getText().trim().length() < 2) {
             errori.add("Il luogo di domicilio deve avere almeno 2 caratteri");
         }
+
+        // Valida stato (nazione)
+        if (campoStato.getText().trim().isEmpty()) {
+          errori.add("La nazione è obbligatoria");
+        } 
 
         // Valida ruolo
         if (comboRuolo.getValue() == null) {

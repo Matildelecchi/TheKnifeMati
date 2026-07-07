@@ -6,34 +6,29 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
 /**
- * Utility class per la gestione della connessione RMI al servizio remoto {@link DBService}.
- *
+ * Classe di utilità per la gestione della connessione al server RMI
+ * dell'applicazione "The Knife".
  * <p>
- * Questa classe fornisce un punto centralizzato per ottenere l’istanza del servizio remoto
- * esposto tramite RMI (Remote Method Invocation). Il servizio viene recuperato dal registry
- * RMI utilizzando host, porta e nome del servizio predefiniti.
+ * Si occupa di stabilire la connessione con il registry RMI,
+ * recuperare lo stub del servizio remoto {@link DBService}
+ * ed esporlo alle altre classi del client.
  * </p>
  *
  * <p>
- * L’implementazione segue un pattern di tipo singleton lazy:
- * lo stub viene inizializzato solo alla prima richiesta e poi riutilizzato
- * per tutte le chiamate successive, evitando lookup ripetuti al registry.
+ * La classe implementa un meccanismo di inizializzazione lazy:
+ * lo stub remoto viene ottenuto solo alla prima richiesta e
+ * successivamente riutilizzato per tutte le chiamate, evitando
+ * lookup ripetuti al registry RMI.
  * </p>
  *
  * <p>
- * La classe è thread-safe grazie alla sincronizzazione del metodo di accesso.
+ * Essendo una classe di utilità, non può essere istanziata.
  * </p>
- *  *
- * <p>
- * Configurazione della connessione RMI:
- * </p>
- * <ul>
- *     <li>HOST: 127.0.0.1 (localhost)</li>
- *     <li>PORT: 1234</li>
- *     <li>SERVICE_NAME: TimeService</li>
- * </ul>
  *
  * @author Claudio Bonci, 759939, Sede CO
+ * @author Eleonora Anna Caredda, 762576, Sede CO
+ * @author Filippo Crippa, 762174, Sede CO
+ * @author Matilde Lecchi, 759875, Sede CO
  * @version 1.0
  * @since 2026-05-20
  */

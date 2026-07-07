@@ -15,7 +15,6 @@ import java.io.Serializable;
  * <li><b>ristoratore</b>: può aggiungere e modificare i propri ristoranti e rispondere alle recensioni ricevute.</li>
  * <li><b>ospite</b>: può solo visualizzare le informazioni pubbliche dei ristoranti senza poter interagire.</li>
  * </ul>
- * </p>
  *
  * @author Claudio Bonci, 759939, Sede CO
  * @author Eleonora Anna Caredda, 762576, Sede CO
@@ -26,6 +25,11 @@ import java.io.Serializable;
  */
 public class Utente  implements Serializable {
 
+    /**
+ * Identificatore della versione della classe utilizzato durante il processo
+ * di serializzazione. Consente di verificare la compatibilità tra versioni
+ * differenti della classe {@code Utente} durante la deserializzazione.
+ */
     private static final long serialVersionUID = 1L;
 
     private String nome;
@@ -40,42 +44,75 @@ public class Utente  implements Serializable {
     private String stato;
 
 
+    /**
+     * Restituisce la città di residenza dell'utente.
+     *
+     * @return La città di residenza dell'utente.
+     */
     public String getCitta() {
         return citta;
     }
 
+    /**
+     * Imposta la città di residenza dell'utente.
+     *
+     * @param citta La nuova città di residenza.
+     */
     public void setCitta(String citta) {
         this.citta = citta;
     }
 
+    /**
+     * Restituisce lo Stato di residenza dell'utente.
+     *
+     * @return Lo Stato di residenza dell'utente.
+     */
     public String getStato() {
         return stato;
     }
 
+    /**
+     * Imposta lo Stato di residenza dell'utente.
+     *
+     * @param stato Il nuovo Stato di residenza.
+     */
     public void setStato(String stato) {
         this.stato = stato;
     }
 
+    /**
+     * Restituisce l'indirizzo di posta elettronica dell'utente.
+     *
+     * @return L'indirizzo email dell'utente.
+     */
     public String getEmail() {
         return email;
     }
 
+    /**
+     * Imposta l'indirizzo di posta elettronica dell'utente.
+     *
+     * @param email Il nuovo indirizzo email.
+     */
     public void setEmail(String email) {
         this.email = email;
     }
 
-    /**
-     * Costruttore completo per inizializzare un nuovo utente con tutti i parametri necessari.
-     * Questo costruttore è utilizzato per la registrazione e il caricamento dei dati da database.
-     *
-     * @param nome Il nome dell'utente.
-     * @param cognome Il cognome dell'utente.
-     * @param username Lo username univoco utilizzato per l'accesso e l'identificazione.
-     * @param passwordHash L'hash della password dell'utente, generato tramite algoritmo di hashing sicuro.
-     * @param dataNascita La data di nascita dell'utente in formato YYYY-MM-DD. Può essere una stringa vuota se non fornita.
-     * @param luogoDomicilio La città o il luogo di domicilio dell'utente.
-     * @param ruolo Il ruolo assegnato all'utente, che definisce i suoi permessi all'interno del sistema (es. "cliente", "ristoratore", "ospite").
-     */
+/**
+ * Costruttore completo per inizializzare un nuovo utente con tutti i parametri necessari.
+ * Questo costruttore è utilizzato per la registrazione e il caricamento dei dati da database.
+ *
+ * @param username Lo username univoco utilizzato per l'accesso e l'identificazione.
+ * @param nome Il nome dell'utente.
+ * @param cognome Il cognome dell'utente.
+ * @param email L'indirizzo email dell'utente.
+ * @param passwordHash L'hash della password dell'utente.
+ * @param indirizzo Il luogo di domicilio dell'utente.
+ * @param stato Lo Stato di residenza dell'utente.
+ * @param citta La città di residenza dell'utente.
+ * @param data_nascita La data di nascita dell'utente in formato YYYY-MM-DD.
+ * @param ruolo Il ruolo assegnato all'utente.
+ */
     public Utente(String username, String nome, String cognome,String email, String passwordHash,
                   String indirizzo, String stato,String citta,String data_nascita, boolean ruolo) {
         this.nome = nome;
@@ -157,7 +194,7 @@ public class Utente  implements Serializable {
     /**
      * Restituisce il ruolo dell'utente.
      *
-     * @param ruolo true se ristoratore, false se cliente
+     * @return {@code true} se l'utente è un ristoratore, {@code false} se è un cliente.
      */
     public boolean isRuolo() {
         return ruolo;
@@ -307,6 +344,14 @@ public class Utente  implements Serializable {
         return username != null ? username.hashCode() : 0;
     }
 
+    /**
+     * Restituisce la data di nascita dell'utente come oggetto {@link java.sql.Date}.
+     * La conversione viene effettuata a partire dalla stringa memorizzata nel formato
+     * {@code YYYY-MM-DD}. Se il formato non è valido, viene restituito {@code null}.
+     *
+     * @return La data di nascita come {@code java.sql.Date}, oppure {@code null}
+     *         se la conversione non è possibile.
+     */
     public java.sql.Date getDataNascitaSql() {
         java.sql.Date sqlDate = null;
         try {

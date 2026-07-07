@@ -8,16 +8,18 @@ import java.sql.SQLException;
 import com.example.theknife.client.ClientMain;
 
 /**
- * La classe {@code Ristorante} rappresenta un'entità che contiene tutte le informazioni relative
- * ad un ristorante, quali il nome, l'indirizzo, la località, il prezzo, la tipologia di cucina, le coordinate
- * geografiche e altre informazioni utili. <br>
- * Viene utilizzata per mappare i dati caricati da un file CSV e per popolare la {@code TableView} nell'interfaccia
- * grafica dell'applicazione "TheKnife".
+ * Rappresenta un ristorante dell'applicazione TheKnife.
  *
  * <p>
- * La classe fornisce un costruttore per inizializzare tutti gli attributi e una serie di metodi getter per
- * accedere ai dati. Inoltre, il metodo {@link #toString()} restituisce una rappresentazione testuale dell'oggetto,
- * utile per scopi di debug e logging.
+ * Questa classe contiene tutte le informazioni identificative e descrittive
+ * di un ristorante, comprese le informazioni di contatto, la localizzazione,
+ * la tipologia di cucina, i servizi offerti, gli eventuali riconoscimenti
+ * Michelin e il proprietario del locale.
+ * </p>
+ *
+ * <p>
+ * La classe implementa {@link Serializable} per consentire il trasferimento
+ * degli oggetti tramite Java RMI tra client e server.
  * </p>
  *
  * @author Claudio Bonci, 759939, Sede CO
@@ -29,6 +31,7 @@ import com.example.theknife.client.ClientMain;
  */
 public class Ristorante implements Serializable {
 
+    /** Identificatore per la serializzazione della classe. */
     private static final long serialVersionUID = 1L;
 
     /**
@@ -57,14 +60,14 @@ public class Ristorante implements Serializable {
     private String cucina;
 
     /**
-     * La longitudine della posizione del ristorante.
+     * Commentata: La longitudine della posizione del ristorante.
+     * private double longitudine;
      */
-    private double longitudine;
 
     /**
-     * La latitudine della posizione del ristorante.
+     * Commentata: La latitudine della posizione del ristorante.
+     * private double latitudine;
      */
-    private double latitudine;
 
     /**
      * Il numero di telefono del ristorante.
@@ -100,30 +103,52 @@ public class Ristorante implements Serializable {
      * Una descrizione del ristorante.
      */
     private String descrizione;
+
+    /**
+     * La città in cui si trova il ristorante.
+     */
     private String citta;
+
+    /**
+     * Lo stato in cui si trova il ristorante.
+     */
     private String stato;
+
+    /**
+     * Indica se il ristorante offre il servizio di consegna.
+     */
     private boolean consegna;
+
+    /**
+     * Indica se il ristorante offre il servizio di prenotazione.
+     */
     private boolean prenotazione;
+
+    /**
+     * Il proprietario del ristorante.
+     */
     private String proprietario;
 
     /**
-     * Crea un nuovo oggetto {@code Ristorante} con i dettagli specificati.
+     * Costruisce un nuovo oggetto {@code Ristorante}.
      *
-     * @param nome           il nome del ristorante.
-     * @param indirizzo      l'indirizzo del ristorante.
-     * @param localita       la località in cui si trova il ristorante.
-     * @param prezzo         il prezzo medio espresso come stringa.
-     * @param cucina         il tipo di cucina offerto.
-     * @param longitudine    la longitudine della posizione del ristorante.
-     * @param latitudine     la latitudine della posizione del ristorante.
-     * @param numeroTelefono il numero di telefono del ristorante.
-     * @param url            l'URL associato al ristorante.
-     * @param sitoWeb        il sito web del ristorante.
-     * @param premio         il premio inglobato nel riconoscimento.
-     * @param stellaVerde    il riconoscimento "stella verde" assegnato.
-     * @param servizi        i servizi offerti dal ristorante.
-     * @param descrizione    una descrizione del ristorante.
+     * @param numeroTelefono numero di telefono del ristorante
+     * @param nome nome del ristorante
+     * @param indirizzo indirizzo del ristorante
+     * @param stato stato in cui è situato
+     * @param citta città in cui è situato
+     * @param servizi servizi offerti
+     * @param sitoWeb sito web del ristorante
+     * @param premio premio Michelin assegnato
+     * @param cucina tipologia di cucina
+     * @param stelle valore della Stella Verde Michelin
+     * @param prezzo fascia di prezzo
+     * @param prenotazione indica se il ristorante accetta prenotazioni
+     * @param consegna indica se il ristorante effettua consegne
+     * @param descrizione descrizione del ristorante
+     * @param proprietario username del proprietario
      */
+     
     public Ristorante(String numeroTelefono, String nome, String indirizzo, String stato, String citta, String servizi, 
                       String sitoWeb, String premio, String cucina,double stelle, String prezzo, 
                       boolean prenotazione,boolean consegna, String descrizione, String proprietario) {
@@ -195,18 +220,18 @@ public class Ristorante implements Serializable {
      *
      * @return la longitudine.
      */
-    public double getLongitudine() {
+    /*public double getLongitudine() {
         return longitudine;
-    }
+    }*/
 
     /**
      * Restituisce la latitudine della posizione del ristorante.
      *
      * @return la latitudine.
      */
-    public double getLatitudine() {
+    /*public double getLatitudine() {
         return latitudine;
-    }
+    }*/
 
     /**
      * Restituisce il numero di telefono del ristorante.
@@ -253,9 +278,25 @@ public class Ristorante implements Serializable {
         return stelle;
     }
 
+     /**
+     * Restituisce il valore associato alla Stella Verde.
+     *
+     * @return il valore della Stella Verde
+     */
     public double getStelle() {
         return stelle;
     }
+
+    /**
+     * Recupera dal server la media delle stelle assegnate al ristorante.
+     *
+     * <p>
+     * Il metodo effettua una chiamata remota al server RMI per ottenere
+     * la valutazione media del ristorante identificato dal numero di telefono.
+     * </p>
+     *
+     * @return la media delle stelle oppure {@code 0} in caso di errore
+     */
     public double getStelleByTel() {
         DBService server;
         double val = 0;
@@ -270,11 +311,20 @@ public class Ristorante implements Serializable {
         return val;
     }
 
-
+    /**
+     * Restituisce lo stato del ristorante.
+     *
+     * @return lo stato
+     */
     public String getStato() {
         return stato;
     }
 
+    /**
+     * Restituisce la città del ristorante.
+     *
+     * @return la città
+     */
     public String getCitta() {
         return citta;
     }
@@ -298,9 +348,9 @@ public class Ristorante implements Serializable {
     }
 
     /**
-     * Restituisce una rappresentazione testuale dell'oggetto {@code Ristorante}, utile per scopi di debug.
+     * Restituisce una rappresentazione testuale dell'oggetto.
      *
-     * @return una stringa che descrive il ristorante e le sue proprietà.
+     * @return una stringa contenente tutte le informazioni principali del ristorante
      */
     @Override
     public String toString() {
@@ -310,8 +360,8 @@ public class Ristorante implements Serializable {
                 ", localita='" + localita + '\'' +
                 ", prezzo='" + prezzo + '\'' +
                 ", cucina='" + cucina + '\'' +
-                ", longitudine=" + longitudine +
-                ", latitudine=" + latitudine +
+                //", longitudine=" + longitudine + 
+                //", latitudine=" + latitudine + 
                 ", numeroTelefono='" + numeroTelefono + '\'' +
                 ", url='" + url + '\'' +
                 ", sitoWeb='" + sitoWeb + '\'' +

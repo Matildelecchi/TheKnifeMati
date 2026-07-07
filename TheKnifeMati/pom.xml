@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  Questo file pom.xml è configurato per includere le dipendenze di OpenJFX per JDK 22
-  e per usare il maven-shade-plugin per creare un "fat JAR" eseguibile che include tutte le dipendenze.
-  Include anche il JavaFX Maven Plugin per facilitare l'esecuzione durante lo sviluppo.
--->
+
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.example</groupId>
@@ -15,35 +12,40 @@
     <name>TheKnife</name>
     <packaging>jar</packaging>
 
+
     <properties>
+
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <junit.version>5.10.2</junit.version>
+
+        <java.version>22</java.version>
+
         <javafx.version>22.0.1</javafx.version>
-        <!-- Imposta la versione del JDK, in questo caso 22 -->
-        <maven.compiler.source>22</maven.compiler.source>
-        <maven.compiler.target>22</maven.compiler.target>
-        <!-- Classe principale dell'applicazione JavaFX -->
-        <javafx.mainClass>com.example.theknife.Main</javafx.mainClass>
+
+        <junit.version>5.10.2</junit.version>
+
+        <main.class>com.example.theknife.client.App</main.class>
+
     </properties>
 
+
+
     <dependencies>
-        <!-- Dipendenze OpenJFX per JavaFX -->
+
+
+        <!-- JavaFX -->
+
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
             <version>${javafx.version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
             <version>${javafx.version}</version>
         </dependency>
-        <!-- Aggiunta per supporto pieno di JavaFX -->
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-base</artifactId>
-            <version>${javafx.version}</version>
-        </dependency>
+
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-graphics</artifactId>
@@ -51,38 +53,53 @@
         </dependency>
 
         <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-base</artifactId>
+            <version>${javafx.version}</version>
+        </dependency>
+
+
+
+        <!-- ControlsFX -->
+
+        <dependency>
             <groupId>org.controlsfx</groupId>
             <artifactId>controlsfx</artifactId>
             <version>11.2.1</version>
         </dependency>
 
-        <!-- Dipendenze per piattaforme specifiche (opzionale per maggiore compatibilità) -->
+
+
+        <!-- OpenCSV -->
+
         <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-controls</artifactId>
-            <version>${javafx.version}</version>
-            <classifier>mac</classifier>
-        </dependency>
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-controls</artifactId>
-            <version>${javafx.version}</version>
-            <classifier>win</classifier>
-        </dependency>
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-controls</artifactId>
-            <version>${javafx.version}</version>
-            <classifier>linux</classifier>
+            <groupId>com.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>5.7.1</version>
         </dependency>
 
-        <!-- Dipendenze per i test con JUnit -->
+
+
+        <!-- PostgreSQL -->
+
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.7.4</version>
+        </dependency>
+
+
+
+        <!-- JUnit -->
+
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
+
+
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
@@ -90,91 +107,204 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Dipendenza per OpenCSV -->
-        <dependency>
-            <groupId>com.opencsv</groupId>
-            <artifactId>opencsv</artifactId>
-            <version>5.7.1</version>
-        </dependency>
 
-        <dependency>
-    <groupId>org.postgresql</groupId>
-        <artifactId>postgresql</artifactId>
-        <version>42.7.4</version> <!-- o l'ultima disponibile -->
-    </dependency>
-  </dependencies>
+    </dependencies>
+
+
 
 
     <build>
+
         <plugins>
-            <!-- Maven Compiler Plugin per compilare con JDK 22 -->
+
+
+
+            <!-- Compilatore Java 22 -->
+
             <plugin>
+
                 <groupId>org.apache.maven.plugins</groupId>
+
                 <artifactId>maven-compiler-plugin</artifactId>
+
                 <version>3.13.0</version>
+
                 <configuration>
-                    <source>${maven.compiler.source}</source>
-                    <target>${maven.compiler.target}</target>
+
+                    <release>${java.version}</release>
+
                 </configuration>
+
             </plugin>
 
-            <!-- JavaFX Maven Plugin per esecuzione facilitata durante lo sviluppo -->
+
+
+
+            <!-- JavaFX -->
+
             <plugin>
+
                 <groupId>org.openjfx</groupId>
+
                 <artifactId>javafx-maven-plugin</artifactId>
+
                 <version>0.0.8</version>
+
                 <configuration>
-                    <mainClass>${javafx.mainClass}</mainClass>
+
+                    <mainClass>${main.class}</mainClass>
+
                 </configuration>
+
             </plugin>
 
-            <!-- Plugin per creare il "fat JAR" con tutte le dipendenze -->
+
+
+
+            <!-- JAR eseguibile -->
+
             <plugin>
+
                 <groupId>org.apache.maven.plugins</groupId>
+
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.4.1</version>
+
+                <version>3.5.3</version>
+
+
                 <executions>
+
                     <execution>
+
                         <phase>package</phase>
+
                         <goals>
+
                             <goal>shade</goal>
+
                         </goals>
+
+
                         <configuration>
+
+
                             <createDependencyReducedPom>false</createDependencyReducedPom>
+
+
+
                             <transformers>
+
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>com.example.theknife.client.App</mainClass>
+
+
+                                    <mainClass>
+                                        com.example.theknife.client.App
+                                    </mainClass>
+
+
                                 </transformer>
+
                             </transformers>
-                            <!-- Filtri per evitare conflitti con i file di firma -->
+
+
+
                             <filters>
+
                                 <filter>
+
                                     <artifact>*:*</artifact>
+
+
                                     <excludes>
+
                                         <exclude>META-INF/*.SF</exclude>
                                         <exclude>META-INF/*.DSA</exclude>
                                         <exclude>META-INF/*.RSA</exclude>
                                         <exclude>module-info.class</exclude>
+
                                     </excludes>
+
+
                                 </filter>
+
                             </filters>
+
+
                         </configuration>
+
+
                     </execution>
+
+
                 </executions>
+
+
             </plugin>
 
-            <!-- Surefire Plugin per i test -->
+
+
+
+            <!-- Test -->
+
             <plugin>
+
                 <groupId>org.apache.maven.plugins</groupId>
+
                 <artifactId>maven-surefire-plugin</artifactId>
+
                 <version>3.2.5</version>
-                <configuration>
-                    <!-- Argomenti JVM per JavaFX nei test se necessario -->
-                    <argLine>
-                        --add-exports javafx.graphics/com.sun.javafx.application=ALL-UNNAMED
-                    </argLine>
-                </configuration>
+
             </plugin>
+
+
+
+
         </plugins>
+
+
     </build>
+
+
+
+
+    <!-- REPORT MAVEN -->
+
+    <reporting>
+
+        <plugins>
+
+
+            <!-- JAVADOC -->
+
+            <plugin>
+
+                <groupId>org.apache.maven.plugins</groupId>
+
+                <artifactId>maven-javadoc-plugin</artifactId>
+
+                <version>3.11.2</version>
+
+
+                <configuration>
+
+                    <release>22</release>
+
+                    <doclint>none</doclint>
+
+                    <failOnError>false</failOnError>
+
+
+                </configuration>
+
+
+            </plugin>
+
+
+        </plugins>
+
+
+    </reporting>
+
+
+
 </project>

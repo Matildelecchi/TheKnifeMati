@@ -61,9 +61,9 @@ public class RistoranteInputController implements Initializable {
     /** CheckBox per indicare la presenza della stella verde. */
     @FXML private CheckBox stellaVerdeCheckBox;
     /** Campo di testo per la longitudine. */
-    @FXML private TextField longitudineField;
+    /** @FXML private TextField longitudineField; Coordinate commentate */
     /** Campo di testo per la latitudine. */
-    @FXML private TextField latitudineField;
+    /**  @FXML private TextField latitudineField; Coordinate commentate */
     /** Campo di testo per il numero di telefono. */
     @FXML private TextField telefonoField;
     /** Campo di testo per l'URL del ristorante. */
@@ -178,8 +178,9 @@ public class RistoranteInputController implements Initializable {
         }
 
         try {
-            double longitudine = longitudineField.getText().isEmpty() ? 0.0 : Double.parseDouble(longitudineField.getText());
-            double latitudine = latitudineField.getText().isEmpty() ? 0.0 : Double.parseDouble(latitudineField.getText());
+            /** Gestione delle coordinate commentata */
+            /** double longitudine = longitudineField.getText().isEmpty() ? 0.0 : Double.parseDouble(longitudineField.getText()); */
+            /** double latitudine = latitudineField.getText().isEmpty() ? 0.0 : Double.parseDouble(latitudineField.getText()); */
 
             String tel = telefonoField.getText().trim();
             String nome = nomeField.getText().trim();
@@ -275,7 +276,8 @@ public class RistoranteInputController implements Initializable {
         if (cucinaListView.getSelectionModel().getSelectedItems().isEmpty()) {
             errori.append("- Il tipo di cucina è obbligatorio\n");
         }
-        if (!longitudineField.getText().trim().isEmpty() || !latitudineField.getText().trim().isEmpty()) {
+        /** Gestione delle coordinate commentata */
+        /** if (!longitudineField.getText().trim().isEmpty() || !latitudineField.getText().trim().isEmpty()) {
             try {
                 if (!longitudineField.getText().trim().isEmpty()) {
                     Double.parseDouble(longitudineField.getText());
@@ -286,7 +288,7 @@ public class RistoranteInputController implements Initializable {
             } catch (NumberFormatException e) {
                 errori.append("- Le coordinate devono essere numeri validi\n");
             }
-        }
+        }*/
         if (errori.length() > 0) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Errore");
