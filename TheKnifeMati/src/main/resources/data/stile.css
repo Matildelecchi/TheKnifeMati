@@ -936,3 +936,78 @@
     -fx-background-radius: -radius-md;
     -fx-effect: -shadow-xs;
 }
+
+/* ============================================================
+   ACCOUNT / PROFILE PAGE
+   ============================================================ */
+
+/* Intestazioni sezione (es. "Dati account – Non modificabili") */
+.profile-section-header {
+    -fx-font-size: 0.78em;
+    -fx-font-weight: 700;
+    -fx-text-fill: -neutral-500;
+    -fx-padding: 0.6em 0 0.1em 0;
+    -fx-wrap-text: true;
+}
+
+/* Pulsante inline "Cambia" */
+.profile-change-btn {
+    -fx-background-color: -brand-100;
+    -fx-text-fill: -brand-700;
+    -fx-font-size: 0.8em;
+    -fx-font-weight: 700;
+    -fx-border-color: -brand-300;
+    -fx-border-width: 1px;
+    -fx-border-radius: -radius-sm;
+    -fx-background-radius: -radius-sm;
+    -fx-padding: 0.45em 1.1em;
+    -fx-cursor: hand;
+    -fx-min-width: 70px;
+}
+
+.profile-change-btn:hover {
+    -fx-background-color: -brand-300;
+    -fx-border-color: -brand-500;
+    -fx-text-fill: -brand-900;
+    -fx-effect: -shadow-xs;
+}
+
+.profile-change-btn:pressed {
+    -fx-background-color: -brand-500;
+    -fx-text-fill: -white;
+    -fx-effect: none;
+    -fx-translate-y: 1px;
+}
+
+.profile-change-btn:disabled {
+    -fx-opacity: 0.5;
+    -fx-cursor: default;
+}
+
+/* Log out button nel profilo */
+.profile-logout-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #c0392b;
+    -fx-font-size: 0.9em;
+    -fx-font-weight: 700;
+    -fx-border-color: #c0392b;
+    -fx-border-width: 1.5px;
+    -fx-border-radius: -radius-sm;
+    -fx-background-radius: -radius-sm;
+    -fx-padding: 0.6em 1.4em;
+    -fx-cursor: hand;
+    -fx-max-width: infinity;
+    -fx-alignment: center;
+}
+
+.profile-logout-btn:hover {
+    -fx-background-color: #fdecea;
+    -fx-border-color: #a93226;
+    -fx-text-fill: #a93226;
+}
+
+.profile-logout-btn:pressed {
+    -fx-background-color: #f5b7b1;
+    -fx-effect: none;
+    -fx-translate-y: 1px;
+}
