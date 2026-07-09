@@ -23,8 +23,6 @@
 
         <junit.version>5.10.2</junit.version>
 
-        <main.class>com.example.theknife.client.ClientMain</main.class>
-
     </properties>
 
 
@@ -189,7 +187,7 @@
 
 
                                     <mainClass>
-                                        com.example.theknife.client.App
+                                        ${main.class}                                    
                                     </mainClass>
 
 
@@ -296,6 +294,27 @@
 
     </reporting>
 
+<profiles>
 
+    <profile>
+        <id>client</id>
+
+        <properties>
+            <main.class>com.example.theknife.client.ClientMain</main.class>
+        </properties>
+
+    </profile>
+
+
+    <profile>
+        <id>server</id>
+
+        <properties>
+            <main.class>com.example.theknife.server.ServerMain</main.class>
+        </properties>
+
+    </profile>
+
+</profiles>
 
 </project>
