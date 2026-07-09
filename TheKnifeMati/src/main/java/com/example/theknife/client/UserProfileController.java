@@ -23,7 +23,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -34,19 +33,18 @@ import javafx.stage.Stage;
 /**
  * Controller per la gestione del profilo utente.
  * <p>
- * Questa classe gestisce l’interfaccia del profilo personale dell’utente,
+ * Questa classe gestisce l'interfaccia del profilo personale dell'utente,
  * mostrando informazioni anagrafiche, recensioni scritte e ristoranti
  * preferiti (se presenti). Permette inoltre la navigazione tra le varie
- * schermate dell’applicazione e il logout.
+ * schermate dell'applicazione e il logout.
  * </p>
- *
  * <p>
  * Supporta due ruoli principali:
+ * </p>
  * <ul>
  *   <li>Cliente: visualizza recensioni e preferiti</li>
  *   <li>Ristoratore: accesso alla dashboard dedicata</li>
  * </ul>
- * </p>
  *
  * @author Claudio Bonci, 759939, Sede CO
  * @author Eleonora Anna Caredda, 762576, Sede CO
@@ -293,6 +291,11 @@ public class UserProfileController implements Initializable {
         });
     }
 
+    /**
+     * Gestisce la navigazione alla schermata di gestione dei dati utente.
+     * Carica il file FXML {@code DatiUtente.fxml} e visualizza la schermata
+     * per modificare le informazioni personali dell'utente.
+     */
     @FXML 
     private void handleDatiUtente() {
         try {
@@ -317,11 +320,6 @@ public class UserProfileController implements Initializable {
      * Aggiorna lista ristoranti preferiti.
      */
     private void aggiornaListaPreferiti() {
-        /*preferitiList.setItems(FXCollections.observableArrayList(
-                gestionePreferiti.getPreferiti(SessioneUtente.getUsernameUtente())
-        ));*/
-        //ObservableList<Ristorante> listaRistoranti = FXCollections.observableArrayList();
-
         try {
             preferitiList.setItems(FXCollections.observableArrayList(
                 server.getPreferiti(SessioneUtente.getUsernameUtente())

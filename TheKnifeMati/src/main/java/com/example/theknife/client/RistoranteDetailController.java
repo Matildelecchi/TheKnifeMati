@@ -43,6 +43,7 @@ import javafx.scene.layout.VBox;
  * <p>
  * Questa classe gestisce l'interfaccia utente che mostra tutte le informazioni
  * di un ristorante selezionato, incluse:
+ * </p>
  * <ul>
  *   <li>informazioni generali (nome, indirizzo, città, cucina, contatti)</li>
  *   <li>sito web e posizione su Google Maps</li>
@@ -50,18 +51,16 @@ import javafx.scene.layout.VBox;
  *   <li>premi e riconoscimenti (es. Michelin, Stella Verde)</li>
  *   <li>recensioni recenti</li>
  * </ul>
- * </p>
  * <p>
  * Permette inoltre di:
+ * </p>
  * <ul>
  *   <li>aggiungere o rimuovere il ristorante dai preferiti</li>
  *   <li>aprire il sito web o la posizione su Maps</li>
  *   <li>visualizzare la schermata completa delle recensioni</li>
  *   <li>copiarsi il numero di telefono</li>
  * </ul>
- * </p>
- *
- *  * <p>
+ * <p>
  * Il controller utilizza {@link DBService} per comunicare con il server remoto
  * tramite RMI e recuperare preferiti e recensioni.
  * </p>

@@ -364,6 +364,16 @@ import javafx.util.StringConverter;
             });
         }
 
+    /**
+     * Configura il {@link CheckComboBox} utilizzato per filtrare le recensioni
+     * in base al numero di stelle.
+     * <p>
+     * Il metodo popola la combo box con i valori da 1 a 5, imposta un
+     * {@link StringConverter} per visualizzare le stelle in formato grafico
+     * (es. "★★★") e aggiunge un listener che aggiorna i dati visualizzati
+     * nella tabella ad ogni modifica della selezione.
+     * </p>
+     */
     private void setupStarFilter() {
         comboBox.getItems().setAll(1, 2, 3, 4, 5);
         comboBox.setConverter(new StringConverter<>() {
@@ -570,6 +580,14 @@ import javafx.util.StringConverter;
         }
     }
 
+    /**
+     * Gestisce il pulsante "Indietro" all'interno della schermata delle recensioni.
+     * <p>
+     * Ripristina la visibilità e l'abilitazione dei campi di input per la
+     * recensione (titolo, testo e stelle), pulisce i campi e nasconde il
+     * pulsante "Indietro" stesso, tornando allo stato iniziale di inserimento.
+     * </p>
+     */
     @FXML
     private void handleIndietro() {
         pulisciCampi();

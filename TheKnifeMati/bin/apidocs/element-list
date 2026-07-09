@@ -1,0 +1,4 @@
+module:com.example.theknife
+com.example.theknife.client
+com.example.theknife.common
+com.example.theknife.server

@@ -108,15 +108,15 @@ public class RistoranteInputController implements Initializable {
 
     /**
      * Inizializza la view JavaFX dopo il caricamento del file FXML.
-     *
-     * <p>Configura:
+     * <p>
+     * Configura:
+     * </p>
      * <ul>
      *     <li>valori delle ComboBox</li>
      *     <li>liste di cucine e servizi</li>
      *     <li>modalità di selezione multipla</li>
      *     <li>connessione al server remoto</li>
      * </ul>
-     * </p>
      *
      * @param location URL del file FXML
      * @param resources risorse di localizzazione

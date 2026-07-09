@@ -6,7 +6,7 @@ import java.io.Serializable;
  * Rappresenta una recensione associata a un ristorante.
  *
  * <p>
- * Ogni recensione contiene informazioni relative all’esperienza di un utente
+ * Ogni recensione contiene informazioni relative all'esperienza di un utente
  * presso un ristorante, includendo valutazione, testo, data e un eventuale
  * riscontro da parte del ristorante.
  * </p>
@@ -16,13 +16,13 @@ import java.io.Serializable;
  * e la persistenza dei dati tra client e server.
  * </p>
  *
- * <h3>Informazioni contenute:</h3>
+ * <p><strong>Informazioni contenute:</strong></p>
  * <ul>
  *     <li>Numero di stelle (1–5)</li>
  *     <li>Titolo della recensione</li>
  *     <li>Testo della recensione</li>
  *     <li>Identificativo del ristorante (telefono)</li>
- *     <li>Username dell’utente autore</li>
+ *     <li>Username dell'utente autore</li>
  *     <li>Data e ora di pubblicazione</li>
  *     <li>Risposta del ristoratore (opzionale)</li>
  * </ul>

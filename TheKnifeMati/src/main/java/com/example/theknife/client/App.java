@@ -51,6 +51,7 @@ public class App extends Application {
      * Avvia l'applicazione JavaFX e configura la finestra principale.
      * <p>
      * Il metodo esegue le seguenti operazioni:
+     * </p>
      * <ul>
      *   <li>Recupera le dimensioni dello schermo principale;</li>
      *   <li>Calcola dimensioni iniziali della finestra in modo responsivo;</li>
@@ -59,12 +60,10 @@ public class App extends Application {
      *   <li>Configura dimensioni minime, massime e posizione della finestra;</li>
      *   <li>Abilita il supporto alla modalità schermo intero.</li>
      * </ul>
-     * </p>
      *
      * @param stage lo stage principale fornito da JavaFX
      * @throws IOException se il caricamento delle risorse FXML o CSS fallisce
      */
-
     @Override
     public void start(Stage stage) throws IOException {
         // Ottieni le dimensioni del monitor primario
@@ -137,16 +136,15 @@ public class App extends Application {
      * Configura le scorciatoie da tastiera e il comportamento della modalità fullscreen.
      * <p>
      * Shortcut implementate:
+     * </p>
      * <ul>
      *   <li>F11 → attiva/disattiva schermo intero</li>
      *   <li>ESC → esce dalla modalità schermo intero (se attiva)</li>
      * </ul>
-     * </p>
      *
      * @param stage lo stage principale dell'applicazione
      * @param scene la scena su cui registrare gli eventi da tastiera
      */
-
     private void setupFullScreenSupport(Stage stage, Scene scene) {
         // Scorciatoia F11 per attivare/disattivare schermo intero
         KeyCombination fullScreenKey = new KeyCodeCombination(KeyCode.F11);

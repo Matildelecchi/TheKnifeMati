@@ -203,6 +203,15 @@ public class ControllerDatiUtente implements Initializable {
         avviso.showAndWait();
     }
 
+    /**
+     * Gestisce la modifica del nome dell'utente.
+     * <p>
+     * Se il nome inserito è diverso da quello attuale, aggiorna il dato sul server
+     * e nella sessione utente, altrimenti mostra un messaggio di errore.
+     * </p>
+     *
+     * @throws IOException se si verifica un errore durante l'aggiornamento dei dati.
+     */
     @FXML
     private void cambiaNome() throws IOException {
         if (SessioneUtente.getNome().equals(nomeField.getText())) {
@@ -214,6 +223,15 @@ public class ControllerDatiUtente implements Initializable {
         }
     }
 
+    /**
+     * Gestisce la modifica del cognome dell'utente.
+     * <p>
+     * Se il cognome inserito è diverso da quello attuale, aggiorna il dato sul server
+     * e nella sessione utente, altrimenti mostra un messaggio di errore.
+     * </p>
+     *
+     * @throws IOException se si verifica un errore durante l'aggiornamento dei dati.
+     */
     @FXML
     private void cambiaCognome() throws IOException {
         if (SessioneUtente.getCognome().equals(cognomeField.getText())) {
@@ -225,6 +243,15 @@ public class ControllerDatiUtente implements Initializable {
         }
     }
 
+    /**
+     * Gestisce la modifica dello stato di residenza dell'utente.
+     * <p>
+     * Se lo stato inserito è diverso da quello attuale, aggiorna il dato sul server
+     * e nella sessione utente, altrimenti mostra un messaggio di errore.
+     * </p>
+     *
+     * @throws IOException se si verifica un errore durante l'aggiornamento dei dati.
+     */
     @FXML
     private void cambiaStato() throws IOException {
         if (SessioneUtente.getStato().equals(statoField.getText())) {
@@ -236,6 +263,15 @@ public class ControllerDatiUtente implements Initializable {
         }
     }
 
+    /**
+     * Gestisce la modifica della città di residenza dell'utente.
+     * <p>
+     * Se la città inserita è diversa da quella attuale, aggiorna il dato sul server
+     * e nella sessione utente, altrimenti mostra un messaggio di errore.
+     * </p>
+     *
+     * @throws IOException se si verifica un errore durante l'aggiornamento dei dati.
+     */
     @FXML
     private void cambiaCitta() throws IOException {
         if (SessioneUtente.getCitta().equals(cittaField.getText())) {
@@ -247,6 +283,15 @@ public class ControllerDatiUtente implements Initializable {
         }
     }
 
+    /**
+     * Gestisce la modifica della password dell'utente.
+     * <p>
+     * Verifica che la vecchia password inserita sia corretta, valida la complessità 
+     * della nuova password e la sua conferma, e infine aggiorna la password sul server.
+     * </p>
+     *
+     * @throws NoSuchAlgorithmException se l'algoritmo di hashing SHA-256 non è disponibile.
+     */
     @FXML
     private void cambiaPsw() throws NoSuchAlgorithmException {
         String vPassword = cifraPassword(vecchiaPassword.getText());
@@ -303,6 +348,9 @@ public class ControllerDatiUtente implements Initializable {
         }
     }
 
+    /**
+     * Ripulisce i campi di testo relativi all'inserimento e alla conferma della nuova password.
+     */
     private void clearPsw() {
         vecchiaPassword.setText("");
         confermaPassword.setText("");

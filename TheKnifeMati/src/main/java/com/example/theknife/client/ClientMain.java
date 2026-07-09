@@ -42,6 +42,7 @@ public class ClientMain
      * Punto di ingresso del client.
      * <p>
      * Esegue le seguenti operazioni:
+     * </p>
      * <ul>
      *   <li>Connette al registry RMI sulla porta configurata;</li>
      *   <li>Esegue il lookup del servizio remoto "TimeService";</li>
@@ -49,11 +50,9 @@ public class ClientMain
      *   <li>Testa la connessione stampando data e ora dal server;</li>
      *   <li>Avvia l'applicazione JavaFX {@link App}.</li>
      * </ul>
-     * </p>
      *
      * @param args argomenti da riga di comando
      */
-
     public static void main(String[] args) {
 
         try {
@@ -75,13 +74,6 @@ public class ClientMain
 
     }
 
-    /*public static synchronized ClientMain getIstanza() throws RemoteException, NotBoundException {
-        if (client == null) {
-            client = new ClientMain();
-        }
-        return client;
-    }*/
-
      /**
      * Restituisce lo stub del server remoto.
      * <p>
@@ -93,7 +85,6 @@ public class ClientMain
      * @throws RemoteException se si verifica un errore di comunicazione RMI
      * @throws NotBoundException se il servizio non è registrato nel registry
      */
-
     public static synchronized DBService getServer() throws RemoteException, NotBoundException {
         return stub;
     }

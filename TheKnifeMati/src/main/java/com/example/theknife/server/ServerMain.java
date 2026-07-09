@@ -1,15 +1,15 @@
 package com.example.theknife.server;
 
-import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -316,6 +316,16 @@ public class ServerMain implements DBService {
         return results;
     }
 
+    /**
+     * Restituisce l'elenco dei numeri di telefono dei ristoranti di proprietà
+     * di un determinato utente.
+     *
+     * @param user lo username del proprietario dei ristoranti.
+     * @return una lista contenente i numeri di telefono dei ristoranti associati
+     *         all'utente, oppure {@code null} se l'utente non è valido.
+     * @throws RemoteException se si verifica un errore nella comunicazione remota.
+     * @throws SQLException se si verifica un errore durante l'accesso al database.
+     */
     @Override
     public ArrayList<String> getNumeriTelefonoRisoranti(String user) throws RemoteException, SQLException{
         ArrayList<String> results = new ArrayList<>();
