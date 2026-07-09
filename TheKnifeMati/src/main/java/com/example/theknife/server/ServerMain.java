@@ -1,12 +1,10 @@
 package com.example.theknife.server;
 
-import java.io.BufferedReader;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
+import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
 import java.rmi.RemoteException;
+import org.postgresql.PGConnection;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
@@ -192,44 +190,86 @@ public class ServerMain implements DBService {
             return;
         }
 
-        // Popola il database eseguendo il dump SQL tramite psql
+        // Popola il database eseguendo il dump SQL tramite JDBC
         InputStream sqlStream = ServerMain.class.getResourceAsStream("/data/theknife.sql");
         if (sqlStream == null) {
             System.err.println("File 'theknife.sql' non trovato nelle risorse del progetto.");
             return;
         }
 
-        Path tempSql = null;
-        try {
-            tempSql = Files.createTempFile("theknife_", ".sql");
-            Files.copy(sqlStream, tempSql, StandardCopyOption.REPLACE_EXISTING);
-
-            ProcessBuilder pb = new ProcessBuilder(
-                    "psql", "-U", USER, "-d", "theknife", "-f", tempSql.toAbsolutePath().toString());
-            pb.environment().put("PGPASSWORD", PASSWORD);
-            pb.redirectErrorStream(true);
-
-            Process process = pb.start();
-            try (BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(process.getInputStream()))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    System.out.println("[psql] " + line);
-                }
-            }
-
-            int exitCode = process.waitFor();
-            if (exitCode == 0) {
-                System.out.println("Database inizializzato con successo.");
-            } else {
-                System.err.println("psql terminato con codice di uscita " + exitCode);
-            }
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD)) {
+            String content = new String(sqlStream.readAllBytes(), StandardCharsets.UTF_8);
+            executeSqlScript(conn, content);
+            System.out.println("Database inizializzato con successo.");
         } catch (Exception e) {
             System.err.println("Errore durante l'inizializzazione del database: " + e.getMessage());
             e.printStackTrace();
-        } finally {
-            if (tempSql != null) {
-                try { Files.deleteIfExists(tempSql); } catch (Exception ignored) {}
+        }
+    }
+
+/**
+ * Esegue uno script SQL su una connessione JDBC attiva.
+ * Gestisce istruzioni DDL standard e blocchi COPY ... FROM stdin
+ * (tipici dei dump pg_dump) tramite il CopyManager PostgreSQL.
+ * Le righe che iniziano con '\' (meta-comandi psql) vengono ignorate.
+ *
+ * @param conn   connessione al database.
+ * @param script contenuto testuale dello script SQL.
+ * @throws Exception se si verifica un errore di I/O o SQL.
+ */
+    private static void executeSqlScript(Connection conn, String script) throws Exception {
+        String[] lines = script.split("\n");
+        StringBuilder currentStatement = new StringBuilder();
+        boolean inCopyBlock = false;
+        StringBuilder copyData = new StringBuilder();
+        String copyStatement = null;
+
+        for (String rawLine : lines) {
+            String trimmed = rawLine.trim();
+
+            if (inCopyBlock) {
+                if ("\\.".equals(trimmed)) {
+                    // Fine blocco COPY: esegui tramite CopyManager
+                    try {
+                        conn.unwrap(PGConnection.class)
+                                .getCopyAPI()
+                                .copyIn(copyStatement, new StringReader(copyData.toString()));
+                    } catch (Exception e) {
+                        System.err.println("[COPY] Errore: " + e.getMessage());
+                    }
+                    inCopyBlock = false;
+                    copyData.setLength(0);
+                    copyStatement = null;
+                } else {
+                    copyData.append(rawLine).append("\n");
+                }
+                continue;
+            }
+
+            // Salta i meta-comandi psql (righe che iniziano con '\')
+            if (trimmed.startsWith("\\")) {
+                continue;
+            }
+
+            currentStatement.append(rawLine).append("\n");
+
+            if (trimmed.endsWith(";")) {
+                String sql = currentStatement.toString().trim();
+                if (!sql.isEmpty()) {
+                    if (sql.toUpperCase().contains("FROM STDIN")) {
+                        // Istruzione COPY ... FROM stdin: entra nel blocco dati
+                        copyStatement = sql.substring(0, sql.lastIndexOf(';')).trim();
+                        inCopyBlock = true;
+                    } else {
+                        try (Statement stmt = conn.createStatement()) {
+                            stmt.execute(sql);
+                        } catch (SQLException e) {
+                            System.err.println("[SQL] Errore: " + e.getMessage()
+                                + " -> " + sql.substring(0, Math.min(80, sql.length())).replace('\n', ' '));
+                        }
+                    }
+                }
+                currentStatement.setLength(0);
             }
         }
     }

@@ -31,6 +31,7 @@ module com.example.theknife {
     requires transitive javafx.graphics;
     requires java.net.http;
     requires java.sql;
+    requires org.postgresql.jdbc;
     requires org.controlsfx.controls;
 
     opens com.example.theknife.client to javafx.fxml;
