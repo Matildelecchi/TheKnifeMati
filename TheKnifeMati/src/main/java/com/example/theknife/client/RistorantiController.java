@@ -11,6 +11,7 @@ import java.util.ResourceBundle;
 import com.example.theknife.common.DBService;
 import com.example.theknife.common.Ristorante;
 
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -27,6 +28,9 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;        
 import javafx.stage.Stage;
 import javafx.stage.Window;
 
@@ -119,6 +123,8 @@ public class RistorantiController implements Initializable {
      */
     @FXML private Button profiloButton;
 
+    @FXML private HBox headerBar; 
+
     /** Lista osservabile dei ristoranti caricati. */
     private final ObservableList<Ristorante> listaRistoranti = FXCollections.observableArrayList();
     /** Fascia di prezzo selezionata per il filtro. */
@@ -149,6 +155,10 @@ public class RistorantiController implements Initializable {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+
+        loadLogo();
+
+
         // Collega le colonne della tabella alle proprietà dell'oggetto Ristorante
         colonnaNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
         colonnaIndirizzo.setCellValueFactory(new PropertyValueFactory<>("indirizzo"));
@@ -215,6 +225,28 @@ public class RistorantiController implements Initializable {
 
         this.onCercaClick(null);
             }
+
+        private void loadLogo() {
+        try {
+        if (headerBar != null) {
+            Image logo = new Image(Objects.requireNonNull(
+                    getClass().getResourceAsStream("/data/IMG/LOGO.png")
+            ));
+
+            ImageView logoView = new ImageView(logo);
+            logoView.setFitHeight(60);
+            logoView.setPreserveRatio(true);
+
+            headerBar.getChildren().add(0, logoView);
+            System.out.println("Logo caricato!");
+        } else {
+            System.err.println("headerBar è null");
+        }
+    } catch (Exception e) {
+        System.err.println("Errore caricamento logo: " + e.getMessage());
+        e.printStackTrace();
+    }
+}
 
     /**
      * Carica i dati dei ristoranti dal servizio remoto.

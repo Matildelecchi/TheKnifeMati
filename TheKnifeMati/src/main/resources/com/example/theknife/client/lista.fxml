@@ -16,15 +16,10 @@
 
 <VBox spacing="10" stylesheets="/data/stile.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.theknife.client.RistorantiController">
   <!-- Barra di navigazione -->
-  <HBox alignment="CENTER_LEFT" prefHeight="73.0" prefWidth="500.0" spacing="10" styleClass="header-bar">
+  <HBox fx:id="headerBar" alignment="CENTER_LEFT" prefHeight="73.0" prefWidth="500.0" spacing="10" styleClass="header-bar">
     <padding>
       <Insets bottom="10" left="20" right="20" top="10"/>
     </padding>
-    <ImageView fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
-      <image>
-        <Image url="@../../../data/IMG/LOGO.png"/>
-      </image>
-    </ImageView>
     <Region HBox.hgrow="ALWAYS"/>
     <Button fx:id="profiloButton" onAction="#onProfiloClick" styleClass="nav-button" text="Il Mio Profilo"/>
     <Button fx:id="dashboardButton" managed="false" onAction="#onDashboardClick" styleClass="nav-button" text="Dashboard Ristoratore" visible="false"/>
