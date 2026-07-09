@@ -526,15 +526,18 @@ public class ServerMain implements DBService {
         
         String query = "INSERT INTO preferiti(username, num_tel) VALUES(?, ?);";
         //query = query.replace("?",""+id_rec+"");
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(query)) {
-            ps.setString(1, username);
-            ps.setString(2, num_tel);
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            System.err.println("Errore DB savePreferiti: " + e.getMessage());
-            //throw e;
+        synchronized(this) {
+            try (Connection conn = getConnection();
+                 PreparedStatement ps = conn.prepareStatement(query)) {
+                ps.setString(1, username);
+                ps.setString(2, num_tel);
+                return ps.executeUpdate() > 0;
+            } catch (SQLException e) {
+                System.err.println("Errore DB savePreferiti: " + e.getMessage());
+                //throw e;
+            }
         }
+        
         return false;
     }
 
@@ -556,14 +559,16 @@ public class ServerMain implements DBService {
         
         String query = "DELETE FROM preferiti WHERE username = ? AND num_tel = ?;";
         //query = query.replace("?",""+id_rec+"");
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(query)) {
-            ps.setString(1, username);
-            ps.setString(2, num_tel);
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            System.err.println("Errore DB removePreferiti: " + e.getMessage());
-            //throw e;
+        synchronized(this) {
+            try (Connection conn = getConnection();
+                 PreparedStatement ps = conn.prepareStatement(query)) {
+                ps.setString(1, username);
+                ps.setString(2, num_tel);
+                return ps.executeUpdate() > 0;
+            } catch (SQLException e) {
+                System.err.println("Errore DB removePreferiti: " + e.getMessage());
+                //throw e;
+            }
         }
         return false;
     }
@@ -596,7 +601,7 @@ public class ServerMain implements DBService {
             }
             rs.close();
         } catch (SQLException e) {
-            System.err.println("Errore DB getPreferiti: " + e.getMessage());
+            System.err.println("Errore DB isPreferito: " + e.getMessage());
             throw e;
         }
         return false;
@@ -620,28 +625,30 @@ public class ServerMain implements DBService {
         if (string == null || string.trim().isEmpty() || ristorante == null) {
             return false;
         }
+        synchronized(this) {
+            try (Connection conn = getConnection();
+                PreparedStatement ps = conn.prepareStatement(string)) {
+                ps.setString(1, ristorante.getNome());
+                ps.setString(2, ristorante.getIndirizzo());
+                ps.setString(3, ristorante.getCitta());
+                ps.setString(4, ristorante.getPrezzo());
+                ps.setString(5, ristorante.getCucina());
+                ps.setString(6, ristorante.getNumeroTelefono());
+                
+                ps.setString(7, ristorante.getSitoWeb());
+                ps.setString(8, ristorante.getPremio());
+                ps.setDouble(9, ristorante.getStelle());
+                ps.setString(10, ristorante.getServizi());
+                ps.setString(11, ristorante.getDescrizione());
+                ps.setString(12, ristorante.getStato());
 
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(string)) {
-            ps.setString(1, ristorante.getNome());
-            ps.setString(2, ristorante.getIndirizzo());
-            ps.setString(3, ristorante.getCitta());
-            ps.setString(4, ristorante.getPrezzo());
-            ps.setString(5, ristorante.getCucina());
-            ps.setString(6, ristorante.getNumeroTelefono());
-            
-            ps.setString(7, ristorante.getSitoWeb());
-            ps.setString(8, ristorante.getPremio());
-            ps.setDouble(9, ristorante.getStelle());
-            ps.setString(10, ristorante.getServizi());
-            ps.setString(11, ristorante.getDescrizione());
-            ps.setString(12, ristorante.getStato());
-
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            System.err.println("Errore DB saveRistorante: " + e.getMessage());
-            return false;
+                return ps.executeUpdate() > 0;
+            } catch (SQLException e) {
+                System.err.println("Errore DB saveRistorante: " + e.getMessage());
+                return false;
+            }
         }
+        
     }
 
     /**
@@ -660,15 +667,18 @@ public class ServerMain implements DBService {
             return false;
         }
 
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(string)) {
-            ps.setString(1, username);
-            ps.setString(2, nome);
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            System.err.println("Errore DB saveOwnership: " + e.getMessage());
-            return false;
+        synchronized(this) {
+            try (Connection conn = getConnection();
+                 PreparedStatement ps = conn.prepareStatement(string)) {
+                ps.setString(1, username);
+                ps.setString(2, nome);
+                return ps.executeUpdate() > 0;
+            } catch (SQLException e) {
+                System.err.println("Errore DB saveOwnership: " + e.getMessage());
+                return false;
+            }
         }
+        
     }
 
 /**
@@ -686,25 +696,28 @@ public class ServerMain implements DBService {
 
         String insertQuery = "INSERT INTO utenti (username, nome, cognome, email, password_hash, indirizzo, stato, citta, data_nascita, ruolo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(insertQuery)) {
+        synchronized(this) {
+            try (Connection conn = getConnection();
+                PreparedStatement ps = conn.prepareStatement(insertQuery)) {
 
-            ps.setString(1, utente.getUsername());
-            ps.setString(2, utente.getNome());
-            ps.setString(3, utente.getCognome());
-            ps.setString(4, utente.getEmail());
-            ps.setString(5, utente.getPasswordHash());
-            ps.setString(6, utente.getLuogoDomicilio());
-            ps.setString(7, utente.getStato());
-            ps.setString(8, utente.getCitta());
-            ps.setDate(9, utente.getDataNascitaSql());
-            ps.setBoolean(10, utente.isRistoratore());
+                ps.setString(1, utente.getUsername());
+                ps.setString(2, utente.getNome());
+                ps.setString(3, utente.getCognome());
+                ps.setString(4, utente.getEmail());
+                ps.setString(5, utente.getPasswordHash());
+                ps.setString(6, utente.getLuogoDomicilio());
+                ps.setString(7, utente.getStato());
+                ps.setString(8, utente.getCitta());
+                ps.setDate(9, utente.getDataNascitaSql());
+                ps.setBoolean(10, utente.isRistoratore());
 
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            System.err.println("Errore DB setUtente: " + e.getMessage());
-            return false;
+                return ps.executeUpdate() > 0;
+            } catch (SQLException e) {
+                System.err.println("Errore DB setUtente: " + e.getMessage());
+                return false;
+            }
         }
+        
     }
 
 /**
@@ -730,30 +743,33 @@ public class ServerMain implements DBService {
         // Aggiunta della foreign key 'username' che punta alla tabella 'utenti'
         String insertQuery = "INSERT INTO ristoranti (nome, indirizzo, citta, prezzo, cucina, num_tel, sito, sitoPremio, premi, stelle, servizi, descrizione, proprietario, stato) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        try (Connection conn = getConnection();
+        synchronized(this) {
+            try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(insertQuery)) {
 
-            ps.setString(1, ristorante.getNome());
-            ps.setString(2, ristorante.getIndirizzo());
-            ps.setString(3, ristorante.getCitta());
-            ps.setString(4, ristorante.getPrezzo());
-            ps.setString(5, ristorante.getCucina());
-            ps.setString(6, ristorante.getNumeroTelefono());
-            ps.setString(7, ristorante.getSitoWeb());
-            ps.setString(8, ristorante.getUrl());
-            ps.setString(9, ristorante.getPremio());
-            ps.setDouble(10, ristorante.getStellaVerde());
-            ps.setString(11, ristorante.getServizi());
-            ps.setString(12, ristorante.getDescrizione());
-            // Imposta la foreign key verso l'utente proprietario (username)
-            ps.setString(13, utente);
-            ps.setString(14, ristorante.getStato());
+                ps.setString(1, ristorante.getNome());
+                ps.setString(2, ristorante.getIndirizzo());
+                ps.setString(3, ristorante.getCitta());
+                ps.setString(4, ristorante.getPrezzo());
+                ps.setString(5, ristorante.getCucina());
+                ps.setString(6, ristorante.getNumeroTelefono());
+                ps.setString(7, ristorante.getSitoWeb());
+                ps.setString(8, ristorante.getUrl());
+                ps.setString(9, ristorante.getPremio());
+                ps.setDouble(10, ristorante.getStellaVerde());
+                ps.setString(11, ristorante.getServizi());
+                ps.setString(12, ristorante.getDescrizione());
+                // Imposta la foreign key verso l'utente proprietario (username)
+                ps.setString(13, utente);
+                ps.setString(14, ristorante.getStato());
 
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            System.err.println("Errore DB setRistorante: " + e.getMessage());
-            return false;
+                return ps.executeUpdate() > 0;
+            } catch (SQLException e) {
+                System.err.println("Errore DB setRistorante: " + e.getMessage());
+                return false;
+            }
         }
+        
     }
 
 /**
@@ -988,20 +1004,25 @@ public class ServerMain implements DBService {
     @Override
     public boolean saveRisposta(int id_rec, String testo) throws RemoteException, SQLException {
         //ArrayList results = new ArrayList<>();
-        if (id_rec <= 0 || existRisposta(id_rec)) {
+        if (id_rec <= 0) {
             // TODO: implement SQL query execution for recensioni
             return false;
         }
-        String query = "INSERT INTO risposte(id_rec, testo) VALUES(?, ?);";
-        //query = query.replace("?",""+id_rec+"");
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(query)) {
-            ps.setInt(1, id_rec);
-            ps.setString(2, testo);
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            System.err.println("Errore DB saveRisposta: " + e.getMessage());
-            throw e;
+        synchronized(this) {
+            if (existRisposta(id_rec)) {
+                return false;
+            }
+            String query = "INSERT INTO risposte(id_rec, testo) VALUES(?, ?);";
+            //query = query.replace("?",""+id_rec+"");
+            try (Connection conn = getConnection();
+                PreparedStatement ps = conn.prepareStatement(query)) {
+                ps.setInt(1, id_rec);
+                ps.setString(2, testo);
+                return ps.executeUpdate() > 0;
+            } catch (SQLException e) {
+                System.err.println("Errore DB saveRisposta: " + e.getMessage());
+                throw e;
+            }
         }
         //return true;
     }
@@ -1018,19 +1039,24 @@ public class ServerMain implements DBService {
     @Override
     public boolean removeRisposta(int id_rec) throws RemoteException, SQLException {
         //ArrayList results = new ArrayList<>();
-        if (id_rec <= 0 || !existRisposta(id_rec)) {
+        if (id_rec <= 0) {
             // TODO: implement SQL query execution for recensioni
             return false;
         }
-        String query = "DELETE FROM risposte WHERE id_rec = ?;";
-        //query = query.replace("?",""+id_rec+"");
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(query)) {
-            ps.setInt(1, id_rec);
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            System.err.println("Errore DB removeRisposta: " + e.getMessage());
-            throw e;
+        synchronized(this) {
+            if (!existRisposta(id_rec)) {
+                return false;
+            }
+            String query = "DELETE FROM risposte WHERE id_rec = ?;";
+            //query = query.replace("?",""+id_rec+"");
+            try (Connection conn = getConnection();
+                PreparedStatement ps = conn.prepareStatement(query)) {
+                ps.setInt(1, id_rec);
+                return ps.executeUpdate() > 0;
+            } catch (SQLException e) {
+                System.err.println("Errore DB removeRisposta: " + e.getMessage());
+                throw e;
+            }
         }
         //return true;
     }
@@ -1048,20 +1074,25 @@ public class ServerMain implements DBService {
     @Override
     public boolean modifyRisposta(int id_rec, String testo) throws RemoteException, SQLException {
         //ArrayList results = new ArrayList<>();
-        if (id_rec <= 0 || !existRisposta(id_rec)) {
+        if (id_rec <= 0) {
             // TODO: implement SQL query execution for recensioni
             return false;
         }
-        String query = "UPDATE risposte SET testo = ? WHERE id_rec = ?;";
-        //query = query.replace("?",""+id_rec+"");
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(query)) {
-            ps.setString(1, testo);
-            ps.setInt(2, id_rec);
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            System.err.println("Errore DB modifyRisposta: " + e.getMessage());
-            throw e;
+        synchronized(this) {
+            if (!existRisposta(id_rec)) {
+                return false;
+            }
+            String query = "UPDATE risposte SET testo = ? WHERE id_rec = ?;";
+            //query = query.replace("?",""+id_rec+"");
+            try (Connection conn = getConnection();
+                PreparedStatement ps = conn.prepareStatement(query)) {
+                ps.setString(1, testo);
+                ps.setInt(2, id_rec);
+                return ps.executeUpdate() > 0;
+            } catch (SQLException e) {
+                System.err.println("Errore DB modifyRisposta: " + e.getMessage());
+                throw e;
+            }
         }
         //return true;
     }
@@ -1090,37 +1121,26 @@ public class ServerMain implements DBService {
         String query = "INSERT INTO recensioni(titolo,testo,stelle,num_tel,username)" +
                        "VALUES(?,?,?,?,?);";
         //query = query.replace("?",""+id_rec+"");
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(query)) {
-            ps.setString(1, titolo);
-            ps.setString(2, testo);
-            ps.setDouble(3, stelle);
-            ps.setString(4, num_tel);
-            ps.setString(5, username);
+        synchronized(this) {
+            try (Connection conn = getConnection();
+                PreparedStatement ps = conn.prepareStatement(query)) {
+                ps.setString(1, titolo);
+                ps.setString(2, testo);
+                ps.setDouble(3, stelle);
+                ps.setString(4, num_tel);
+                ps.setString(5, username);
 
-            //ps.executeUpdate();
-            //return true;
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            System.err.println("Errore DB saveRecensione: " + e.getMessage());
-            throw e;
+                //ps.executeUpdate();
+                //return true;
+                return ps.executeUpdate() > 0;
+            } catch (SQLException e) {
+                System.err.println("Errore DB saveRecensione: " + e.getMessage());
+                throw e;
+            }
         }
+        
         //return false;
     }
-
-    /*public int nextRecensioneId() {
-        String query = "SELECT COALESCE(MAX(id_rec), 0) + 1 AS next_id FROM recensioni";
-        try (Connection conn = getConnection();
-            PreparedStatement ps = conn.prepareStatement(query);
-            ResultSet rs = ps.executeQuery()) {
-            if (rs.next()) {
-                return rs.getInt("next_id");
-            }
-        } catch (SQLException e) {
-            System.err.println("Errore DB nextRecensioneId: " + e.getMessage());
-        }
-        return 1;
-    }*/
 
 /**
  * Verifica se una recensione con l'identificativo specificato è presente
@@ -1170,16 +1190,19 @@ public class ServerMain implements DBService {
         }
         String query = "UPDATE recensioni SET testo = ?, titolo = ?, stelle = ? WHERE id_rec = ?;";
         //query = query.replace("?",""+id_rec+"");
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(query)) {
-            ps.setString(1, testo);
-            ps.setString(2, titolo);
-            ps.setDouble(3, stelle);
-            ps.setInt(4,id_rec);
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            System.err.println("Errore DB modifyRecensione: " + e.getMessage());
-            throw e;
+        synchronized(this) {
+            if (!existRecensione(id_rec)) return false;
+            try (Connection conn = getConnection();
+                PreparedStatement ps = conn.prepareStatement(query)) {
+                ps.setString(1, testo);
+                ps.setString(2, titolo);
+                ps.setDouble(3, stelle);
+                ps.setInt(4,id_rec);
+                return ps.executeUpdate() > 0;
+            } catch (SQLException e) {
+                System.err.println("Errore DB modifyRecensione: " + e.getMessage());
+                throw e;
+            }
         }
         //return true;
     }
@@ -1196,19 +1219,23 @@ public class ServerMain implements DBService {
     @Override
     public boolean removeRecensione(int id_rec) throws RemoteException, SQLException {
         //ArrayList results = new ArrayList<>();
-        if (id_rec <= 0 || !existRecensione(id_rec)) {
+        if (id_rec <= 0) {
             // TODO: implement SQL query execution for recensioni
             return false;
         }
         String query = "DELETE FROM recensioni WHERE id_rec = ?;";
+
         //query = query.replace("?",""+id_rec+"");
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(query)) {
-            ps.setInt(1, id_rec);
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            System.err.println("Errore DB removeRecensione: " + e.getMessage());
-            throw e;
+        synchronized(this) {
+            if(!existRecensione(id_rec)) return false;
+            try (Connection conn = getConnection();
+                PreparedStatement ps = conn.prepareStatement(query)) {
+                ps.setInt(1, id_rec);
+                return ps.executeUpdate() > 0;
+            } catch (SQLException e) {
+                System.err.println("Errore DB removeRecensione: " + e.getMessage());
+                throw e;
+            }
         }
         //return false;
     }
@@ -1283,14 +1310,16 @@ public class ServerMain implements DBService {
         }
 
         String query = "UPDATE utenti SET " + field + " = ? WHERE username = ?;";
-        try (Connection conn = getConnection();
+        synchronized(this) {
+            try (Connection conn = getConnection();
                 PreparedStatement ps = conn.prepareStatement(query)) {
-            ps.setString(1, set);
-            ps.setString(2, username);
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            System.err.println("Errore DB modifyRecensione: " + e.getMessage());
-            throw e;
+                ps.setString(1, set);
+                ps.setString(2, username);
+                return ps.executeUpdate() > 0;
+            } catch (SQLException e) {
+                System.err.println("Errore DB modifyRecensione: " + e.getMessage());
+                throw e;
+            }
         }
     }
 
