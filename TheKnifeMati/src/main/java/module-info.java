@@ -27,7 +27,6 @@ module com.example.theknife {
     requires javafx.fxml;
     requires java.xml;
     requires java.rmi;
-    requires com.opencsv;
     requires java.desktop;
     requires transitive javafx.graphics;
     requires java.net.http;

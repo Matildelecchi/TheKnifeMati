@@ -47,9 +47,6 @@ import javafx.stage.Stage;
  * @since 2026-05-20
  */
 public class LoginController {
-     /** File CSV utenti (non più principale, sostituito da RMI). */
-    private static final String USERS_FILE = "data/utenti.csv";
-    
     /** Path del file CSS dell'interfaccia. */
     private static final String CSS_PATH = "/data/stile.css";
 
