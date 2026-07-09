@@ -189,10 +189,10 @@ Per eseguire il progetto:
 
 Progetto realizzato da:
 
-- Claudio Bonci
-- Eleonora Anna Caredda
-- Filippo Crippa
-- Matilde Lecchi
+Claudio Bonci, 759939, Sede CO
+Anna Eleonora Caredda, 762576, Sede CO
+Filippo Crippa, 762174, Sede CO
+Matilde Lecchi, 759875, Sede CO
 
 ---
 
