@@ -105,42 +105,43 @@ I ristoratori possono accedere a una dashboard dedicata per gestire le informazi
 ---
 
 # Struttura del progetto
-TheKnife
+TheKnife <br>
 │
-├── client
+├── client <br>
 │ │
-│ ├── App.java
-│ ├── ClientMain.java
-│ ├── LoginController.java
-│ ├── RegistrazioneController.java
-│ ├── ControllerDatiUtenti.java
-│ ├── RecensioniController.java
-│ ├── RistoranteDetailController.java
-│ ├── RistoranteInputController.java
-│ ├── RistoratoreDashboardController.java
-│ ├── UserProfileController.java
-│ ├── SessioneUtente.java
-│ └── Gestione interfaccia grafica e logica client
+│ ├── App.java <br>
+│ ├── ClientMain.java <br>
+│ ├── LoginController.java <br>
+│ ├── RegistrazioneController.java <br>
+│ ├── ControllerDatiUtenti.java <br>
+│ ├── RecensioniController.java <br>
+│ ├── RistoranteDetailController.java <br>
+│ ├── RistoranteInputController.java <br>
+│ ├── RistoratoreDashboardController.java <br>
+│ ├── UserProfileController.java <br>
+│ ├── SessioneUtente.java <br>
+│ └── Gestione interfaccia grafica e logica client <br>
 │
-├── common
+├── common <br>
 │ │
-│ ├── DBService.java
-│ ├── Ristorante.java
-│ ├── Recensione.java
-│ └── Utente.java
+│ ├── DBService.java <br>
+│ ├── Ristorante.java <br>
+│ ├── Recensione.java <br>
+│ └── Utente.java <br>
 │
-├── server
+├── server <br>
 │ │
-│ └── ServerMain.java
+│ └── ServerMain.java <br>
 │
-├── resources
+├── resources <br>
 │ │
-│ └── File FXML delle schermate JavaFX
+│ └── File FXML delle schermate JavaFX <br>
 │
-└── data
+└── data <br>
 |    │
-|    └── img
-|        └── logo.png
+|    └── img <br>
+|        └── logo.png <br>
+
 
 
 ---
@@ -189,10 +190,11 @@ Per eseguire il progetto:
 
 Progetto realizzato da:
 
-Claudio Bonci, 759939, Sede CO
-Anna Eleonora Caredda, 762576, Sede CO
-Filippo Crippa, 762174, Sede CO
-Matilde Lecchi, 759875, Sede CO
+Claudio Bonci, 759939, Sede CO <br>
+Anna Eleonora Caredda, 762576, Sede CO <br>
+Filippo Crippa, 762174, Sede CO <br>
+Matilde Lecchi, 759875, Sede CO <br>
+
 
 ---
 
