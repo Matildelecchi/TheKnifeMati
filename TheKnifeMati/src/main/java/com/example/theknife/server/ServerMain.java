@@ -4,11 +4,18 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -126,6 +133,7 @@ public class ServerMain implements DBService {
  */
     public static void main(String[] args) throws RemoteException {
         System.out.println("Hello from Server!");
+        ensureDatabaseExists();
         DBService stub = null;
 
         ServerMain obj = new ServerMain();
@@ -150,6 +158,80 @@ public class ServerMain implements DBService {
             e.printStackTrace();
         }
         System.err.println("Server ready");
+    }
+
+/**
+ * Verifica che il database 'theknife' esista; se non esiste lo crea e lo
+ * popola eseguendo il dump SQL incluso nelle risorse del progetto.
+ */
+    private static void ensureDatabaseExists() {
+        System.out.println("Verifica esistenza database 'theknife'...");
+        boolean dbExists = false;
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD)) {
+            dbExists = true;
+            System.out.println("Database 'theknife' trovato.");
+        } catch (SQLException e) {
+            if ("3D000".equals(e.getSQLState())) {
+                System.out.println("Database 'theknife' non trovato. Inizializzazione in corso...");
+            } else {
+                System.err.println("Errore connessione al database: " + e.getMessage());
+                return;
+            }
+        }
+
+        if (dbExists) return;
+
+        // Crea il database vuoto
+        String postgresUrl = "jdbc:postgresql://localhost:5432/postgres";
+        try (Connection conn = DriverManager.getConnection(postgresUrl, USER, PASSWORD);
+             Statement stmt = conn.createStatement()) {
+            stmt.execute("CREATE DATABASE theknife");
+            System.out.println("Database 'theknife' creato.");
+        } catch (SQLException e) {
+            System.err.println("Errore durante la creazione del database: " + e.getMessage());
+            return;
+        }
+
+        // Popola il database eseguendo il dump SQL tramite psql
+        InputStream sqlStream = ServerMain.class.getResourceAsStream("/data/theknife.sql");
+        if (sqlStream == null) {
+            System.err.println("File 'theknife.sql' non trovato nelle risorse del progetto.");
+            return;
+        }
+
+        Path tempSql = null;
+        try {
+            tempSql = Files.createTempFile("theknife_", ".sql");
+            Files.copy(sqlStream, tempSql, StandardCopyOption.REPLACE_EXISTING);
+
+            ProcessBuilder pb = new ProcessBuilder(
+                    "psql", "-U", USER, "-d", "theknife", "-f", tempSql.toAbsolutePath().toString());
+            pb.environment().put("PGPASSWORD", PASSWORD);
+            pb.redirectErrorStream(true);
+
+            Process process = pb.start();
+            try (BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(process.getInputStream()))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    System.out.println("[psql] " + line);
+                }
+            }
+
+            int exitCode = process.waitFor();
+            if (exitCode == 0) {
+                System.out.println("Database inizializzato con successo.");
+            } else {
+                System.err.println("psql terminato con codice di uscita " + exitCode);
+            }
+        } catch (Exception e) {
+            System.err.println("Errore durante l'inizializzazione del database: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            if (tempSql != null) {
+                try { Files.deleteIfExists(tempSql); } catch (Exception ignored) {}
+            }
+        }
     }
 
 /**
