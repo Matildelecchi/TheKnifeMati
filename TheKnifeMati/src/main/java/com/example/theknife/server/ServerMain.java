@@ -89,7 +89,7 @@ public class ServerMain implements DBService {
     /**
      * Password utilizzata per la connessione al database.
      */
-    private static final String PASSWORD = "password";
+    private static final String PASSWORD = "1234";
 
     
 
