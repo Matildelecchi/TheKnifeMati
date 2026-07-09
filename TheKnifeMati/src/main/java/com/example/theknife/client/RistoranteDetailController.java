@@ -110,6 +110,8 @@ public class RistoranteDetailController implements Initializable {
     /** Contenitore VBox per la stella verde. Utilizzato per la visibilità condizionale. */
     @FXML private VBox stellaVerdeContainer;
     /** Pulsante per aggiungere o rimuovere il ristorante dai preferiti dell'utente. */
+    @FXML private VBox premiContainer;
+    @FXML private Label stelleLabel;
     @FXML private Button preferitoButton;
     /** ListView per visualizzare le recensioni più recenti del ristorante. */
     @FXML private ListView<Recensione> recensioniRecentList;
@@ -336,6 +338,7 @@ public class RistoranteDetailController implements Initializable {
             return;
         }
 
+
         Platform.runLater(() -> {
             try {
                 // Informazioni base
@@ -394,19 +397,36 @@ public class RistoranteDetailController implements Initializable {
                     posizioneButton.setDisable(!hasLocation);
                 }
 
-                // Premio
-                if (premioLabel != null && premioContainer != null) {
-                    String premio = ristorante.getPremio();
-                    if (premio != null && !premio.trim().isEmpty()) {
-                        premioLabel.setText(premio);
-                        premioContainer.setVisible(true);
-                    } else {
-                        premioContainer.setVisible(false);
-                    }
+               
+                // ⭐ Stelle Michelin (mostra solo se contiene una stella vera)
+                String premio = ristorante.getPremio();
+                String stelleGrafiche = "";
+
+                // Normalizziamo il testo
+                String p = premio == null ? "" : premio.toLowerCase();
+
+                // Controlliamo se contiene una stella Michelin
+                if (p.contains("1") && p.contains("star")) {
+                    stelleGrafiche = "⭐";
+                } else if (p.contains("2") && p.contains("star")) {
+                    stelleGrafiche = "⭐⭐";
+                } else if (p.contains("3") && p.contains("star")) {
+                    stelleGrafiche = "⭐⭐⭐";
                 }
 
-                // Stella Verde
-                updateStellaVerdeDisplay();
+                // Se abbiamo trovato delle stelle → mostra
+                if (!stelleGrafiche.isEmpty()) {
+                    premioLabel.setText(premio);      
+                    stelleLabel.setText(stelleGrafiche); 
+                    premioContainer.setVisible(true);
+                } else {
+                    premioContainer.setVisible(false);
+                }
+
+                // Nascondi tutta la sezione premi se non c’è nulla
+                premiContainer.setVisible(premioContainer.isVisible());
+
+
 
                 // Servizi
                 if (serviziTextArea != null) {
