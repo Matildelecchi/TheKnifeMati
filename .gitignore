@@ -10,3 +10,4 @@
 /dataSources.local.xml
 /TheKnifeMati/target
 .idea
+src/main/resources/secret.properties

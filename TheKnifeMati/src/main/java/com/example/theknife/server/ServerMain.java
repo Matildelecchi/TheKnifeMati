@@ -2,9 +2,13 @@ package com.example.theknife.server;
 
 import java.io.InputStream;
 import java.io.StringReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.rmi.RemoteException;
-import org.postgresql.PGConnection;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
@@ -17,7 +21,10 @@ import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.stream.Collectors;
+
+import org.postgresql.PGConnection;
 
 import com.example.theknife.common.DBService;
 import com.example.theknife.common.Recensione;
@@ -89,7 +96,7 @@ public class ServerMain implements DBService {
     /**
      * Password utilizzata per la connessione al database.
      */
-    private static final String PASSWORD = "1234";
+    private static String PASSWORD = "";
 
     
 
@@ -104,7 +111,6 @@ public class ServerMain implements DBService {
  * @throws SQLException se la connessione non può essere stabilita.
  */
     public Connection getConnection() throws SQLException {
-        // Con JDBC moderni non serve più chiamare esplicitamente Class.forName
         return DriverManager.getConnection(URL, USER, PASSWORD);
     }
 
@@ -115,6 +121,22 @@ public class ServerMain implements DBService {
  *                         dell'oggetto remoto.
  */
     public ServerMain() throws RemoteException {
+    }
+
+    private static void saveProprieta() {
+        Properties props = new Properties();
+
+        try (InputStream inSecret = ServerMain.class.getResourceAsStream("/secret.properties")) {
+            props.load(inSecret);
+            PASSWORD = props.getProperty("database.password");
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
+        
+        if (PASSWORD.equals("") || PASSWORD == null) {
+            //System.err.println("Errore riguardo la password su properties");
+            throw new RuntimeException("Errore riguardo la password!");
+        }
     }
 
 /**
@@ -131,6 +153,13 @@ public class ServerMain implements DBService {
  */
     public static void main(String[] args) throws RemoteException {
         System.out.println("Hello from Server!");
+
+        if (args.length > 0) {
+            serverCommand(args.clone());
+            return;
+        }
+
+        saveProprieta();
         ensureDatabaseExists();
         DBService stub = null;
 
@@ -156,6 +185,54 @@ public class ServerMain implements DBService {
             e.printStackTrace();
         }
         System.err.println("Server ready");
+    }
+
+    private static void serverCommand(String[] args) {
+        Properties props = new Properties();
+
+        File file = new File("src/main/resources/secret.properties");
+        try {
+            if (file.createNewFile()) {
+                try (FileWriter fwriter = new FileWriter(file)) {
+                    System.out.println("Il file è stato creato");
+                    fwriter.write("\ndatabase.password=\n");
+                }
+            } else {
+                System.out.println("Il file esiste già");
+            }
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
+
+        try (InputStream inSecret = ServerMain.class.getResourceAsStream("/secret.properties")) {
+            props.load(inSecret);
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            switch(args[0]) {
+                case "--add":
+                case "-a":
+                    if (args.length < 2 || args[1].isEmpty() || args[1] == null) throw new CommandError();
+                    props.setProperty("database.password", args[1]);
+                    File secretFile = new File("src/main/resources/secret.properties");
+
+                    try (FileOutputStream fout = new FileOutputStream(secretFile)) {
+                        props.store(fout, "Password aggiornata!");
+                    } catch(IOException e) {
+                        System.out.println("Salvataggio errato!");
+                        e.printStackTrace();
+                    }
+
+                    System.out.println("Password aggiornata con successo.");
+                    break;
+                default:
+                    throw new CommandError();
+            }
+        } catch(CommandError c) {
+            System.out.println(c.getMessage());
+        } 
     }
 
 /**
