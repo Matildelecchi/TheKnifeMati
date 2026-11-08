@@ -2,11 +2,6 @@ package com.example.theknife.server;
 
 import java.io.InputStream;
 import java.io.StringReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -21,7 +16,7 @@ import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
+import java.util.Scanner;
 import java.util.stream.Collectors;
 
 import org.postgresql.PGConnection;
@@ -123,22 +118,6 @@ public class ServerMain implements DBService {
     public ServerMain() throws RemoteException {
     }
 
-    private static void saveProprieta() {
-        Properties props = new Properties();
-
-        try (InputStream inSecret = ServerMain.class.getResourceAsStream("/secret.properties")) {
-            props.load(inSecret);
-            PASSWORD = props.getProperty("database.password");
-        } catch(IOException e) {
-            e.printStackTrace();
-        }
-        
-        if (PASSWORD.equals("") || PASSWORD == null) {
-            //System.err.println("Errore riguardo la password su properties");
-            throw new RuntimeException("Errore riguardo la password!");
-        }
-    }
-
 /**
  * Avvia il server RMI dell'applicazione.
  *
@@ -152,14 +131,20 @@ public class ServerMain implements DBService {
  *                         l'inizializzazione del servizio remoto.
  */
     public static void main(String[] args) throws RemoteException {
-        System.out.println("Hello from Server!");
-
-        if (args.length > 0) {
+        System.out.println("Hello from Server!\n");
+        Scanner scanner = new Scanner(System.in);
+        /*if (args.length > 0) {
             serverCommand(args.clone());
             return;
+        }*/
+        System.out.println("Inserire la password per accedere al database:");
+        PASSWORD = scanner.next();
+        scanner.close();
+        //saveProprieta();
+        if (PASSWORD == null || PASSWORD.isEmpty()) {
+            System.err.println("Errore riguardante Password");
+            return;
         }
-
-        saveProprieta();
         ensureDatabaseExists();
         DBService stub = null;
 
@@ -187,54 +172,6 @@ public class ServerMain implements DBService {
         System.err.println("Server ready");
     }
 
-    private static void serverCommand(String[] args) {
-        Properties props = new Properties();
-
-        File file = new File("src/main/resources/secret.properties");
-        try {
-            if (file.createNewFile()) {
-                try (FileWriter fwriter = new FileWriter(file)) {
-                    System.out.println("Il file è stato creato");
-                    fwriter.write("\ndatabase.password=\n");
-                }
-            } else {
-                System.out.println("Il file esiste già");
-            }
-        } catch(IOException e) {
-            e.printStackTrace();
-        }
-
-        try (InputStream inSecret = ServerMain.class.getResourceAsStream("/secret.properties")) {
-            props.load(inSecret);
-        } catch(IOException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            switch(args[0]) {
-                case "--add":
-                case "-a":
-                    if (args.length < 2 || args[1].isEmpty() || args[1] == null) throw new CommandError();
-                    props.setProperty("database.password", args[1]);
-                    File secretFile = new File("src/main/resources/secret.properties");
-
-                    try (FileOutputStream fout = new FileOutputStream(secretFile)) {
-                        props.store(fout, "Password aggiornata!");
-                    } catch(IOException e) {
-                        System.out.println("Salvataggio errato!");
-                        e.printStackTrace();
-                    }
-
-                    System.out.println("Password aggiornata con successo.");
-                    break;
-                default:
-                    throw new CommandError();
-            }
-        } catch(CommandError c) {
-            System.out.println(c.getMessage());
-        } 
-    }
-
 /**
  * Verifica che il database 'theknife' esista; se non esiste lo crea e lo
  * popola eseguendo il dump SQL incluso nelle risorse del progetto.
@@ -250,6 +187,7 @@ public class ServerMain implements DBService {
                 System.out.println("Database 'theknife' non trovato. Inizializzazione in corso...");
             } else {
                 System.err.println("Errore connessione al database: " + e.getMessage());
+                e.printStackTrace();
                 return;
             }
         }
