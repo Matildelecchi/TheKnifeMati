@@ -16856,6 +16856,8 @@ ALTER TABLE ONLY public.proprietari_ristoranti
 
 ALTER TABLE ONLY public.recensioni
     ADD CONSTRAINT recensioni_pkey PRIMARY KEY (id_rec);
+    ALTER TABLE ONLY public.recensioni
+    ADD CONSTRAINT recensioni_utente_ristorante_unique UNIQUE (username, num_tel);
 
 
 --

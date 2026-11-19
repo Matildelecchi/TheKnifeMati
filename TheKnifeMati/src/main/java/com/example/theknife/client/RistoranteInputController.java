@@ -87,6 +87,12 @@ public class RistoranteInputController implements Initializable {
     /** Servizio remoto database */
     private static DBService server;
 
+    /** Ristorante da modificare; null quando si sta aggiungendo un nuovo ristorante. */
+    private Ristorante ristoranteInModifica;
+
+    /** Numero di telefono originale, utile per identificare il ristorante nel database. */
+    private String vecchioNumeroTelefono;
+
     /**
      * Imposta il callback da eseguire per tornare alla dashboard principale.
      * Questo metodo viene utilizzato per implementare la navigazione tra le scene.
@@ -104,6 +110,59 @@ public class RistoranteInputController implements Initializable {
      */
     public void setAggiornaDatabaseRistorantiCallback(Runnable callback) {
         this.aggiornaDatabaseRistorantiCallback = callback;
+    }
+
+    /**
+     * Prepara il modulo per la modifica di un ristorante esistente.
+     *
+     * Salva il riferimento al ristorante originale e il suo numero
+     * di telefono, poi carica tutti i dati nei rispettivi campi
+     * del modulo, consentendo al ristoratore di modificarli.
+     *
+     * @param ristorante ristorante selezionato da modificare
+     */
+    public void impostaRistoranteDaModificare(Ristorante ristorante) {
+
+        // Memorizza il ristorante originale e il suo numero di telefono.
+        // Quest'ultimo servirà per individuare il record nel database.
+        this.ristoranteInModifica = ristorante;
+        this.vecchioNumeroTelefono = ristorante.getNumeroTelefono();
+
+        // Compila i campi di testo con i dati già presenti nel database.
+        nomeField.setText(ristorante.getNome());
+        indirizzoField.setText(ristorante.getIndirizzo());
+        cittaField.setText(ristorante.getCitta());
+        telefonoField.setText(ristorante.getNumeroTelefono());
+        urlField.setText(ristorante.getUrl());
+        sitoWebField.setText(ristorante.getSitoWeb());
+        descrizioneArea.setText(ristorante.getDescrizione());
+
+        // Imposta i valori selezionati nelle ComboBox.
+        prezzoComboBox.setValue(ristorante.getPrezzo());
+
+        // Se il ristorante non ha un premio, seleziona "Nessun premio".
+        premiComboBox.setValue(
+            ristorante.getPremio() == null ? "Nessun premio" : ristorante.getPremio()
+        );
+
+        // Imposta la selezione della Stella Verde Michelin.
+        stellaVerdeCheckBox.setSelected(ristorante.getStellaVerde());
+
+        // Seleziona i tipi di cucina già associati al ristorante.
+        cucinaListView.getSelectionModel().clearSelection();
+        if (ristorante.getCucina() != null) {
+            for (String cucina : ristorante.getCucina().split(",\\s*")) {
+                cucinaListView.getSelectionModel().select(cucina);
+            }
+        }
+
+        // Seleziona i servizi già offerti dal ristorante.
+        checkBoxServizi.getSelectionModel().clearSelection();
+        if (ristorante.getServizi() != null) {
+            for (String servizio : ristorante.getServizi().split(",\\s*")) {
+                checkBoxServizi.getSelectionModel().select(servizio);
+            }
+        }
     }
 
     /**
@@ -181,17 +240,23 @@ public class RistoranteInputController implements Initializable {
 
             String tel = telefonoField.getText().trim();
             String nome = nomeField.getText().trim();
-            try {
-                Ristorante r = server.getRistorante(tel);
-                if(r != null) {
-                    if (r.getNumeroTelefono() != null) {
-                        mostraErrore("Errore", "Esiste già un ristorante con questo numero di telefono. Scegli un numero di telefono diverso.");
-                        return;
-                    }
-                }
+
+            // Controlla eventuali duplicati.
+            // In modifica, il numero originale può essere mantenuto.
+            if (ristoranteInModifica == null || !tel.equals(vecchioNumeroTelefono)) {
+                try {
+                    Ristorante r = server.getRistorante(tel);
+                    
+                        if (r != null && r.getNumeroTelefono() != null) {
+                            mostraErrore("Errore", "Esiste già un ristorante con questo numero di telefono. Scegli un numero di telefono diverso.");
+                            return;
+                        }       
             } catch(RemoteException | SQLException e) {
                 e.printStackTrace();
+                mostraErrore("Errore", "Impossibile verificare il numero di telefono.");
+                return;
             }
+        }
 
             String cucine = cucinaListView.getSelectionModel().getSelectedItems()
                     .stream()
@@ -201,8 +266,10 @@ public class RistoranteInputController implements Initializable {
                     .stream()
                     .collect(Collectors.joining(", "));
 
+            System.out.println("STELLA VERDE SELEZIONATA: " + stellaVerdeCheckBox.isSelected());
+            
             Ristorante nuovoRistorante = new Ristorante(
-                    telefonoField.getText().trim(),
+                    tel,
                     nome,
                     indirizzoField.getText().trim(),
                     "", // stato non disponibile nel form
@@ -212,20 +279,43 @@ public class RistoranteInputController implements Initializable {
                     sitoWebField.getText().trim(),
                     premiComboBox.getValue(),
                     cucine,
-                    stellaVerdeCheckBox.isSelected() ? 0.0 : 1.0,
+                    0.0,
+                    stellaVerdeCheckBox.isSelected(), // Stella Verde Michelin
                     prezzoComboBox.getValue(),
                     false, // prenotazione
                     false, // consegna
                     descrizioneArea.getText().trim(),
                     SessioneUtente.getUsernameUtente()
             );
+            nuovoRistorante.setUrl(urlField.getText().trim());
+            
+            boolean successo;
 
-            aggiungiRistoranteAlDB(nuovoRistorante);
+            // Se esiste un ristorante in modifica, esegue UPDATE.
+            if (ristoranteInModifica != null) {
+                Boolean risultato = server.modificaRistorante(
+                        nuovoRistorante,
+                        vecchioNumeroTelefono,
+                        SessioneUtente.getUsernameUtente()
+                );
+
+                successo = risultato != null && risultato;
+
+            } else {
+                // Altrimenti esegue il normale INSERT.
+               
+                successo =  aggiungiRistoranteAlDB(nuovoRistorante);
+            }
+
+            if (!successo) {
+                mostraErrore("Errore", "Non è stato possibile salvare il ristorante.");
+                return;
+            }
 
             Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
             successAlert.setTitle("Successo");
             successAlert.setHeaderText(null);
-            successAlert.setContentText("Il ristorante è stato aggiunto con successo!");
+            successAlert.setContentText( ristoranteInModifica != null ? "Il ristorante è stato modificato con successo!" : "Il ristorante è stato aggiunto con successo!");
             successAlert.showAndWait();
 
             System.out.println("Debug: Salvataggio ristorante completato");
@@ -316,18 +406,20 @@ public class RistoranteInputController implements Initializable {
      * Salva il ristorante nel database remoto tramite {@link DBService}.
      *
      * @param ristorante oggetto da salvare
+     * @return true se il salvataggio è riuscito, false altrimenti
      * @throws IOException in caso di errore di comunicazione
      */
-    private void aggiungiRistoranteAlDB(Ristorante ristorante) throws IOException {
+    private boolean aggiungiRistoranteAlDB(Ristorante ristorante) throws IOException {
         Boolean risultato = server.setRistorante(ristorante, SessioneUtente.getUsernameUtente());
             // Usa un percorso esterno, che si trova nella stessa directory del JAR
             
            if (risultato != null && risultato) {
-                System.out.println("DEBUG: Ristorante salvato nel database: " + ristorante.toString());
+                System.out.println("DEBUG: Ristorante salvato nel database: " + ristorante);
+                return true;
             
             } else {
-                System.err.println("ERRORE: Impossibile salvare il ristorante nel database: " + ristorante.toString());
-                
+                System.err.println("ERRORE: Impossibile salvare il ristorante nel database: " + ristorante);
+                return false;
             }
     }
 }

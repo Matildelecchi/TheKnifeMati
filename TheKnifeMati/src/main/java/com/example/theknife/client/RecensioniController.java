@@ -83,6 +83,7 @@ import javafx.util.StringConverter;
             
             /** Area di input recensione */
             @FXML private TextArea recensioneTextArea;
+            @FXML private Label recensioneLabel;
 
            /** Pulsanti azioni */
             @FXML private Button inviaButton;
@@ -289,6 +290,13 @@ import javafx.util.StringConverter;
                 boolean isUtenteLoggato = SessioneUtente.isUtenteLoggato();
                 boolean isRistoratore = SessioneUtente.isRistoratore();
 
+                if (isRistoratore) {
+                    recensioneLabel.setText("Recensione da parte dell'utente:");
+                } else if (isUtenteLoggato) {
+                    recensioneLabel.setText("La tua recensione:");
+                }  else {
+                    recensioneLabel.setText("Recensioni");
+                }
                 // Verifica se il ristoratore possiede questo ristorante
                 boolean isProprietario = false;
                 if (isRistoratore && numTelefono != null) {
@@ -556,14 +564,20 @@ import javafx.util.StringConverter;
      *
      * @param tel il numero di telefono del ristorante
      */
-    public void setRistoranteTel(String tel) {
-        this.numTelefono = tel;
-        refreshData();
-        aggiornaPieChart();
+public void setRistoranteTel(String tel) {
+    this.numTelefono = tel;
+    refreshData();
+    aggiornaPieChart();
+    setupUI();
+}
 
-        // Ri-configura l'UI con il nuovo ristorante
-        setupUI();
-    }
+    /**
+     * Imposta la modalità di visualizzazione per il ristoratore.
+     */
+public void impostaModalitaRistoratore() {
+
+    recensioneLabel.setText("Recensione da parte dell'utente:");
+}
     /**
      * Torna al menu principale.
      */
@@ -654,13 +668,28 @@ import javafx.util.StringConverter;
                 SessioneUtente.getUsernameUtente()
         );
         gestioneRecensioni.aggiungiRecensione(recensione);*/
-        try {
-            server.saveRecensione(titoloText.getText().trim(), recensioneTextArea.getText().trim(), stelleSelezionate, numTelefono, SessioneUtente.getUsernameUtente());
-        } catch(SQLException | RemoteException e) {
+              try {
+            boolean salvata = server.saveRecensione(
+                    titoloText.getText().trim(),
+                    recensioneTextArea.getText().trim(),
+                    stelleSelezionate,
+                    numTelefono,
+                    SessioneUtente.getUsernameUtente()
+            );
+
+            if (!salvata) {
+                mostraErrore("Recensione non salvata",
+                        "Il server non ha accettato la recensione.");
+                return;
+            }
+
+            refreshData();
+            notificaAggiornamentoRecensioni();
+
+        } catch (SQLException | RemoteException e) {
             e.printStackTrace();
+            mostraErrore("Errore", "Impossibile salvare la recensione.");
         }
-        refreshData();
-        notificaAggiornamentoRecensioni();
     }
 
     /**
@@ -685,7 +714,7 @@ import javafx.util.StringConverter;
                 (int) stelleSlider.getValue()
         );*/
         try {
-            server.modifyRecensione(selected.getIdRec(), titoloText.getText(), recensioneTextArea.getText(), stelleSelezionate);
+            server.modifyRecensione(selected.getIdRec(), titoloText.getText(), recensioneTextArea.getText(), stelleSelezionate, SessioneUtente.getUsernameUtente());
         } catch(SQLException | RemoteException e) {
             e.printStackTrace();
         }
@@ -710,7 +739,7 @@ import javafx.util.StringConverter;
 
         //gestioneRecensioni.eliminaRecensione(selected.getUsername(), numTelefono);
         try {
-            server.removeRecensione(selected.getIdRec());
+            server.removeRecensione(selected.getIdRec(), SessioneUtente.getUsernameUtente());
         } catch(SQLException | RemoteException e) {
             e.printStackTrace();
         }
@@ -736,7 +765,7 @@ import javafx.util.StringConverter;
         selected.setRisposta(rispostaTextArea.getText().trim());
         //gestioneRecensioni.salvaRispostaRecensione(selected);
         try {
-            server.saveRisposta(selected.getIdRec(), selected.getRisposta());
+            server.saveRisposta(selected.getIdRec(), selected.getRisposta(),  SessioneUtente.getUsernameUtente());
         } catch(SQLException | RemoteException e) {
             e.printStackTrace();
         }
@@ -802,7 +831,7 @@ import javafx.util.StringConverter;
         } catch(RemoteException | SQLException e) {
             e.printStackTrace();
         }
-        if (!ownedRestaurants.contains(numTelefono)) {
+        if (ownedRestaurants == null || !ownedRestaurants.contains(numTelefono)) {
             mostraErrore("Errore", "Puoi modificare le risposte solo nei tuoi ristoranti.");
             return;
         }
@@ -816,7 +845,7 @@ import javafx.util.StringConverter;
         selected.setRisposta(rispostaTextArea.getText().trim());
         //gestioneRecensioni.salvaRispostaRecensione(selected);
         try {
-            server.modifyRisposta(selected.getIdRec(), selected.getRisposta());
+            server.modifyRisposta(selected.getIdRec(), selected.getRisposta(),  SessioneUtente.getUsernameUtente());
         } catch(SQLException | RemoteException e) {
             e.printStackTrace();
         }

@@ -90,9 +90,14 @@ public class Ristorante implements Serializable {
     private String premio;
 
     /**
-     * Il riconoscimento "stella verde" del ristorante.
+     * La valutazione numerica del ristorante.
      */
     private double stelle;
+
+    /**
+     * Indica se il ristorante possiede la Stella Verde Michelin.
+     */
+    private boolean stellaVerde;
 
     /**
      * I servizi offerti dal ristorante.
@@ -142,6 +147,7 @@ public class Ristorante implements Serializable {
      * @param premio premio Michelin assegnato
      * @param cucina tipologia di cucina
      * @param stelle valore della Stella Verde Michelin
+     * @param stellaVerde indica se il ristorante possiede la Stella Verde Michelin
      * @param prezzo fascia di prezzo
      * @param prenotazione indica se il ristorante accetta prenotazioni
      * @param consegna indica se il ristorante effettua consegne
@@ -150,7 +156,7 @@ public class Ristorante implements Serializable {
      */
      
     public Ristorante(String numeroTelefono, String nome, String indirizzo, String stato, String citta, String servizi, 
-                      String sitoWeb, String premio, String cucina,double stelle, String prezzo, 
+                      String sitoWeb, String premio, String cucina,double stelle, boolean stellaVerde, String prezzo, 
                       boolean prenotazione,boolean consegna, String descrizione, String proprietario) {
         this.nome = nome;
         this.indirizzo = indirizzo;
@@ -165,6 +171,7 @@ public class Ristorante implements Serializable {
         this.sitoWeb = sitoWeb;
         this.premio = premio;
         this.stelle = stelle;
+        this.stellaVerde = stellaVerde;
         this.servizi = servizi;
         this.descrizione = descrizione;
         this.proprietario = proprietario;
@@ -250,6 +257,14 @@ public class Ristorante implements Serializable {
     public String getUrl() {
         return url;
     }
+    /**
+     * Imposta l'URL della pagina del ristorante nella Guida Michelin.
+     *
+     * @param url l'URL della pagina Michelin.
+     */
+    public void setUrl(String url) {
+        this.url = url;
+    }
 
     /**
      * Restituisce il sito web del ristorante.
@@ -270,12 +285,23 @@ public class Ristorante implements Serializable {
     }
 
     /**
-     * Restituisce lo status "stella verde" del ristorante.
+     * Restituisce se il ristorante possiede la Stella Verde Michelin.
      *
-     * @return lo status "stella verde".
+     * @return {@code true} se il ristorante possiede la Stella Verde,
+     *         {@code false} altrimenti.
      */
-    public double getStellaVerde() {
-        return stelle;
+    public boolean getStellaVerde() {
+        return stellaVerde;
+    }
+
+    /**
+     * Imposta la presenza o meno della Stella Verde Michelin.
+     *
+     * @param stellaVerde {@code true} se il ristorante possiede la Stella Verde,
+     *                    {@code false} altrimenti.
+     */
+    public void setStellaVerde(boolean stellaVerde) {
+        this.stellaVerde = stellaVerde;
     }
 
      /**

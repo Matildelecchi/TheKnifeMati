@@ -27,7 +27,7 @@
     </HBox>
 
     <!-- Main Content -->
-    <SplitPane dividerPositions="0.4" VBox.vgrow="ALWAYS">
+    <SplitPane dividerPositions="0.3" VBox.vgrow="ALWAYS">
         <!-- Left Panel - Restaurant List -->
         <VBox spacing="10">
             <Label text="I Miei Ristoranti" styleClass="section-title">
@@ -74,6 +74,11 @@
                         <Label fx:id="cucinaLabel" styleClass="details-value" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
                     </GridPane>
 
+                     <Button text="Modifica ristorante"
+                            styleClass="secondary-button"
+                            onAction="#onModificaRistoranteClick"/>
+
+
                     <!-- Statistics Section -->
                     <VBox spacing="10">
                         <Label text="Statistiche Recensioni" styleClass="section-title">
@@ -81,17 +86,25 @@
                                 <Font size="16.0"/>
                             </font>
                         </Label>
-                        <HBox spacing="20" alignment="CENTER_LEFT">
-                            <VBox spacing="5">
-                                <Label text="Media Stelle"/>
-                                <HBox fx:id="starBox" spacing="2"/>
-                            </VBox>
-                            <VBox spacing="5">
-                                <Label text="Totale Recensioni"/>
-                                <Label fx:id="totaleRecensioniLabel" styleClass="stats-value"/>
-                            </VBox>
-                        </HBox>
-                        <PieChart fx:id="recensioniChart"/>
+
+                    <GridPane maxWidth="Infinity" hgap="0">
+                        <columnConstraints>
+                            <ColumnConstraints percentWidth="50" hgrow="ALWAYS"/>
+                            <ColumnConstraints percentWidth="50" hgrow="ALWAYS"/>
+                        </columnConstraints>
+
+                        <VBox spacing="5" GridPane.columnIndex="0">
+                            <Label text="Media Stelle"/>
+                            <HBox fx:id="starBox" spacing="2"/>
+                        </VBox>
+
+                        <VBox spacing="5" GridPane.columnIndex="1">
+                            <Label text="Totale Recensioni"/>
+                            <Label fx:id="totaleRecensioniLabel" styleClass="stats-value"/>
+                        </VBox>
+                    </GridPane>
+
+
                     </VBox>
 
                     <!-- Recent Reviews Section -->

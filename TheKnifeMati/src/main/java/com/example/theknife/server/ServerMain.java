@@ -293,10 +293,11 @@ public class ServerMain implements DBService {
  * Restituisce la data e l'ora correnti del server.
  *
  * @return una stringa contenente data e ora correnti.
- * @throws RemoteException se si verifica un errore nella comunicazione remota.
+ * @throws RemoteException 12se si verifica un errore nella comunicazione remota.
  */
     @Override
     public String getCurrentDateTime() throws RemoteException {
+        System.out.println("SERVER CORRETTO CONTATTATO!");
         return ""+ LocalDateTime.now();
     }
 
@@ -352,12 +353,14 @@ public class ServerMain implements DBService {
                         rs.getString("premi"),
                         rs.getString("cucina"),
                         rs.getDouble("stelle"),
+                        rs.getBoolean("stellaverde"),
                         rs.getString("prezzo"),
                         rs.getBoolean("prenotazione"),
                         rs.getBoolean("consegna"),
                         rs.getString("descrizione"),
                         rs.getString("proprietario")
                 );
+                ristorante.setUrl(rs.getString("sitoPremio"));
                 //System.out.println(ristorante);
                 results.add(ristorante);
             }
@@ -403,6 +406,7 @@ public class ServerMain implements DBService {
 
         } catch (SQLException e) {
             System.err.println("Errore DB getRistoranti: " + e.getMessage());
+            throw e;
         }
 
         return results;
@@ -639,12 +643,14 @@ public class ServerMain implements DBService {
                         rs.getString("premi"),
                         rs.getString("cucina"),
                         rs.getDouble("stelle"),
+                        rs.getBoolean("stellaverde"),
                         rs.getString("prezzo"),
                         rs.getBoolean("prenotazione"),
                         rs.getBoolean("consegna"),
                         rs.getString("descrizione"),
                         rs.getString("proprietario")
                 );
+                ristorante.setUrl(rs.getString("sitoPremio"));
                 results.add(ristorante);
             }
             rs.close();
@@ -888,7 +894,7 @@ public class ServerMain implements DBService {
         //System.out.println(ristorante);
 
         // Aggiunta della foreign key 'username' che punta alla tabella 'utenti'
-        String insertQuery = "INSERT INTO ristoranti (nome, indirizzo, citta, prezzo, cucina, num_tel, sito, sitoPremio, premi, stelle, servizi, descrizione, proprietario, stato) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String insertQuery = "INSERT INTO ristoranti (nome, indirizzo, citta, prezzo, cucina, num_tel, sito, sitoPremio, premi, stelle, stellaverde, servizi, descrizione, proprietario, stato) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         synchronized(this) {
             try (Connection conn = getConnection();
@@ -903,12 +909,13 @@ public class ServerMain implements DBService {
                 ps.setString(7, ristorante.getSitoWeb());
                 ps.setString(8, ristorante.getUrl());
                 ps.setString(9, ristorante.getPremio());
-                ps.setDouble(10, ristorante.getStellaVerde());
-                ps.setString(11, ristorante.getServizi());
-                ps.setString(12, ristorante.getDescrizione());
+                ps.setDouble(10, ristorante.getStelle());
+                ps.setBoolean(11, ristorante.getStellaVerde());
+                ps.setString(12, ristorante.getServizi());
+                ps.setString(13, ristorante.getDescrizione());
                 // Imposta la foreign key verso l'utente proprietario (username)
-                ps.setString(13, utente);
-                ps.setString(14, ristorante.getStato());
+                ps.setString(14, utente);
+                ps.setString(15, ristorante.getStato());
 
                 return ps.executeUpdate() > 0;
             } catch (SQLException e) {
@@ -918,6 +925,58 @@ public class ServerMain implements DBService {
         }
         
     }
+
+    /**
+ * Modifica i dati di un ristorante già presente nel database.
+ *
+ * Il proprietario può modificare esclusivamente il proprio ristorante.
+ *
+ * @param ristorante ristorante contenente i dati aggiornati.
+ * @param vecchioNumeroTelefono numero di telefono originale.
+ * @param utente username del proprietario.
+ * @return true se la modifica è avvenuta correttamente.
+ * @throws RemoteException in caso di errore nella comunicazione remota.
+ */
+@Override
+public Boolean modificaRistorante(Ristorante ristorante, String vecchioNumeroTelefono, String utente)
+        throws RemoteException {
+    System.out.println("SERVER - Stella Verde ricevuta: " + ristorante.getStellaVerde());
+
+    if (ristorante == null || vecchioNumeroTelefono == null || utente == null) {
+        return false;
+    }
+
+    String updateQuery = "UPDATE ristoranti SET nome = ?, indirizzo = ?, citta = ?, prezzo = ?, cucina = ?, num_tel = ?, sito = ?, sitoPremio = ?, premi = ?, stelle = ?, stellaverde = ?, servizi = ?, descrizione = ?, stato = ? WHERE num_tel = ? AND proprietario = ?";
+
+    synchronized (this) {
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(updateQuery)) {
+
+            ps.setString(1, ristorante.getNome());
+            ps.setString(2, ristorante.getIndirizzo());
+            ps.setString(3, ristorante.getCitta());
+            ps.setString(4, ristorante.getPrezzo());
+            ps.setString(5, ristorante.getCucina());
+            ps.setString(6, ristorante.getNumeroTelefono());
+            ps.setString(7, ristorante.getSitoWeb());
+            ps.setString(8, ristorante.getUrl());
+            ps.setString(9, ristorante.getPremio());
+            ps.setDouble(10, ristorante.getStelle());
+            ps.setBoolean(11, ristorante.getStellaVerde());
+            ps.setString(12, ristorante.getServizi());
+            ps.setString(13, ristorante.getDescrizione());
+            ps.setString(14, ristorante.getStato());
+            ps.setString(15, vecchioNumeroTelefono);
+            ps.setString(16, utente);
+
+            return ps.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            System.err.println("Errore DB modificaRistorante: " + e.getMessage());
+            return false;
+        }
+    }
+}
 
 /**
  * Restituisce il ristorante associato al numero di telefono specificato.
@@ -953,13 +1012,16 @@ public class ServerMain implements DBService {
                     rs.getString("premi"),
                     rs.getString("cucina"),
                     rs.getDouble("stelle"),
+                    rs.getBoolean("stellaverde"),
                     rs.getString("prezzo"),
                     rs.getBoolean("prenotazione"),
                     rs.getBoolean("consegna"),
                     rs.getString("descrizione"),
                     rs.getString("proprietario")
                 );
+                ristorante.setUrl(rs.getString("sitoPremio"));
             }
+            
             //System.out.println(ristorante);
             results = ristorante;
             rs.close();
@@ -1009,12 +1071,14 @@ public class ServerMain implements DBService {
                         rs.getString("premi"),
                         rs.getString("cucina"),
                         rs.getDouble("stelle"),
+                        rs.getBoolean("stellaverde"),
                         rs.getString("prezzo"),
                         rs.getBoolean("prenotazione"),
                         rs.getBoolean("consegna"),
                         rs.getString("descrizione"),
                         rs.getString("proprietario")
                 );
+                ristorante.setUrl(rs.getString("sitoPremio"));
                 //System.out.println(ristorante);
                 results.add(ristorante);
             }
@@ -1143,35 +1207,62 @@ public class ServerMain implements DBService {
  *
  * @param id_rec l'identificativo della recensione.
  * @param testo il testo della risposta.
+ * @param username lo username del ristoratore.
  * @return {@code true} se la risposta è stata salvata correttamente,
  *         {@code false} altrimenti.
  * @throws RemoteException se si verifica un errore nella comunicazione remota.
  * @throws SQLException se si verifica un errore durante l'accesso al database.
  */
     @Override
-    public boolean saveRisposta(int id_rec, String testo) throws RemoteException, SQLException {
+    public boolean saveRisposta(int id_rec, String testo, String username) throws RemoteException, SQLException {
         //ArrayList results = new ArrayList<>();
-        if (id_rec <= 0) {
+        if (id_rec <= 0 || testo == null || testo.trim().isEmpty()  || username == null || username.trim().isEmpty()) {
             // TODO: implement SQL query execution for recensioni
             return false;
         }
-        synchronized(this) {
+
+          // Verifica che l'account esista e sia un ristoratore
+        Utente utente = getUtenteByUsername(username);
+
+        if (utente == null || !utente.isRistoratore()) {
+            return false;
+        }
+
+         // Verifica che il ristoratore possieda il locale della recensione
+            String verificaQuery =
+            "SELECT COUNT(*) FROM recensioni rec "
+            + "JOIN ristoranti r ON rec.num_tel = r.num_tel "
+            + "WHERE rec.id_rec = ? AND r.proprietario = ?";
+
+               synchronized (this) {
+        try (Connection conn = getConnection();
+             PreparedStatement verifica = conn.prepareStatement(verificaQuery)) {
+
+            verifica.setInt(1, id_rec);
+            verifica.setString(2, username.trim());
+
+            try (ResultSet rs = verifica.executeQuery()) {
+                if (!rs.next() || rs.getInt(1) == 0) {
+                    return false;
+                }
+            }
+
             if (existRisposta(id_rec)) {
                 return false;
             }
+       
             String query = "INSERT INTO risposte(id_rec, testo) VALUES(?, ?);";
             //query = query.replace("?",""+id_rec+"");
-            try (Connection conn = getConnection();
-                PreparedStatement ps = conn.prepareStatement(query)) {
+            try (PreparedStatement ps = conn.prepareStatement(query)) {
                 ps.setInt(1, id_rec);
-                ps.setString(2, testo);
+                ps.setString(2, testo.trim());
                 return ps.executeUpdate() > 0;
             } catch (SQLException e) {
                 System.err.println("Errore DB saveRisposta: " + e.getMessage());
                 throw e;
             }
+           } 
         }
-        //return true;
     }
 
 /**
@@ -1213,28 +1304,42 @@ public class ServerMain implements DBService {
  *
  * @param id_rec l'identificativo della recensione.
  * @param testo il nuovo testo della risposta.
+ * @param username lo username del ristoratore proprietario del locale.
  * @return {@code true} se la modifica è stata eseguita correttamente,
  *         {@code false} altrimenti.
  * @throws RemoteException se si verifica un errore nella comunicazione remota.
  * @throws SQLException se si verifica un errore durante l'accesso al database.
  */
     @Override
-    public boolean modifyRisposta(int id_rec, String testo) throws RemoteException, SQLException {
+    public boolean modifyRisposta(int id_rec, String testo, String username) throws RemoteException, SQLException {
         //ArrayList results = new ArrayList<>();
-        if (id_rec <= 0) {
+        if (id_rec <= 0 || testo == null || testo.trim().isEmpty()
+            || username == null || username.trim().isEmpty()) {
             // TODO: implement SQL query execution for recensioni
             return false;
         }
-        synchronized(this) {
-            if (!existRisposta(id_rec)) {
-                return false;
-            }
-            String query = "UPDATE risposte SET testo = ? WHERE id_rec = ?;";
+
+        Utente utente = getUtenteByUsername(username);
+        if (utente == null || !utente.isRistoratore()) {
+            return false;
+        }
+
+            String query =
+            "UPDATE risposte SET testo = ? "
+            + "WHERE id_rec = ? "
+            + "AND EXISTS ("
+            + "SELECT 1 FROM recensioni rec "
+            + "JOIN ristoranti r ON rec.num_tel = r.num_tel "
+            + "WHERE rec.id_rec = risposte.id_rec "
+            + "AND r.proprietario = ?"
+            + ");";
             //query = query.replace("?",""+id_rec+"");
+           synchronized (this) {
             try (Connection conn = getConnection();
                 PreparedStatement ps = conn.prepareStatement(query)) {
-                ps.setString(1, testo);
+                ps.setString(1, testo.trim());
                 ps.setInt(2, id_rec);
+                ps.setString(3, username.trim());
                 return ps.executeUpdate() > 0;
             } catch (SQLException e) {
                 System.err.println("Errore DB modifyRisposta: " + e.getMessage());
@@ -1265,17 +1370,41 @@ public class ServerMain implements DBService {
             // TODO: implement SQL query execution for recensioni
             return false;
         }*/
-        String query = "INSERT INTO recensioni(titolo,testo,stelle,num_tel,username)" +
+
+        if (titolo == null || titolo.trim().isEmpty()
+            || testo == null || testo.trim().isEmpty()
+            || num_tel == null || num_tel.trim().isEmpty()
+            || username == null || username.trim().isEmpty()
+            || stelle < 0 || stelle > 5) {
+        return false;
+        }
+        
+        // Verifica che l'utente esista
+        Utente utente = getUtenteByUsername(username);
+
+        if (utente == null) {
+            return false;
+        }
+
+        // Un ristoratore non può recensire un proprio ristorante
+        if (utente.isRistoratore()) {
+            ArrayList<String> ristorantiProprietario = getNumeriTelefonoRisoranti(username);
+
+            if (ristorantiProprietario == null || ristorantiProprietario.contains(num_tel)) {
+                return false;
+            }
+        }
+            String query = "INSERT INTO recensioni(titolo,testo,stelle,num_tel,username)" +
                        "VALUES(?,?,?,?,?);";
         //query = query.replace("?",""+id_rec+"");
         synchronized(this) {
             try (Connection conn = getConnection();
                 PreparedStatement ps = conn.prepareStatement(query)) {
-                ps.setString(1, titolo);
-                ps.setString(2, testo);
+                ps.setString(1, titolo.trim());
+                ps.setString(2, testo.trim());
                 ps.setDouble(3, stelle);
-                ps.setString(4, num_tel);
-                ps.setString(5, username);
+                ps.setString(4, num_tel.trim());
+                ps.setString(5, username.trim());
 
                 //ps.executeUpdate();
                 //return true;
@@ -1329,22 +1458,26 @@ public class ServerMain implements DBService {
  * @throws SQLException se si verifica un errore durante l'accesso al database.
  */
     @Override
-    public boolean modifyRecensione(int id_rec, String titolo, String testo, double stelle) throws RemoteException, SQLException {
+    public boolean modifyRecensione(int id_rec, String titolo, String testo, double stelle, String username) throws RemoteException, SQLException {
         //ArrayList results = new ArrayList<>();
-        if (id_rec <= 0 || !existRecensione(id_rec)) {
+        if (id_rec <= 0 
+            || titolo == null || titolo.trim().isEmpty()
+            || testo == null || testo.trim().isEmpty()
+            || username == null || username.trim().isEmpty()
+            || stelle < 0 || stelle > 5) {
             // TODO: implement SQL query execution for recensioni
             return false;
         }
-        String query = "UPDATE recensioni SET testo = ?, titolo = ?, stelle = ? WHERE id_rec = ?;";
+        String query = "UPDATE recensioni SET testo = ?, titolo = ?, stelle = ? WHERE id_rec = ? AND username = ?;";
         //query = query.replace("?",""+id_rec+"");
         synchronized(this) {
-            if (!existRecensione(id_rec)) return false;
             try (Connection conn = getConnection();
                 PreparedStatement ps = conn.prepareStatement(query)) {
-                ps.setString(1, testo);
-                ps.setString(2, titolo);
+                ps.setString(1, testo.trim());
+                ps.setString(2, titolo.trim());
                 ps.setDouble(3, stelle);
                 ps.setInt(4,id_rec);
+                ps.setString(5, username.trim());
                 return ps.executeUpdate() > 0;
             } catch (SQLException e) {
                 System.err.println("Errore DB modifyRecensione: " + e.getMessage());
@@ -1364,20 +1497,20 @@ public class ServerMain implements DBService {
  * @throws SQLException se si verifica un errore durante l'accesso al database.
  */
     @Override
-    public boolean removeRecensione(int id_rec) throws RemoteException, SQLException {
+    public boolean removeRecensione(int id_rec, String username) throws RemoteException, SQLException {
         //ArrayList results = new ArrayList<>();
-        if (id_rec <= 0) {
+        if (id_rec <= 0 || username == null || username.trim().isEmpty()) {
             // TODO: implement SQL query execution for recensioni
             return false;
         }
-        String query = "DELETE FROM recensioni WHERE id_rec = ?;";
+        String query = "DELETE FROM recensioni WHERE id_rec = ? AND username = ?;";
 
         //query = query.replace("?",""+id_rec+"");
         synchronized(this) {
-            if(!existRecensione(id_rec)) return false;
             try (Connection conn = getConnection();
                 PreparedStatement ps = conn.prepareStatement(query)) {
                 ps.setInt(1, id_rec);
+                ps.setString(2, username.trim());
                 return ps.executeUpdate() > 0;
             } catch (SQLException e) {
                 System.err.println("Errore DB removeRecensione: " + e.getMessage());

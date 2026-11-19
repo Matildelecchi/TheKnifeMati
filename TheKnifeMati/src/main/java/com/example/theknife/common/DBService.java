@@ -106,6 +106,19 @@ public interface DBService extends Remote {
     Boolean setRistorante(Ristorante ristorante, String utente) throws RemoteException;
 
     /**
+     * Modifica i dati di un ristorante già presente nel database.
+     *
+     * @param ristorante il ristorante contenente i dati aggiornati.
+     * @param vecchioNumeroTelefono il numero di telefono originale del ristorante.
+     * @param utente lo username del proprietario che richiede la modifica.
+     * @return {@code true} se la modifica è avvenuta correttamente,
+     *         {@code false} altrimenti.
+     * @throws RemoteException se si verifica un errore nella comunicazione remota.
+     */
+    Boolean modificaRistorante(Ristorante ristorante, String vecchioNumeroTelefono, String utente)
+            throws RemoteException;
+
+    /**
      * Restituisce il ristorante associato al numero di telefono specificato.
      *
      * @param num_tel il numero di telefono del ristorante.
@@ -189,7 +202,7 @@ public interface DBService extends Remote {
      * @throws RemoteException se si verifica un errore nella comunicazione remota.
      * @throws SQLException se si verifica un errore durante l'accesso al database.
      */
-    boolean saveRisposta(int id_rec, String testo) throws RemoteException, SQLException;
+    boolean saveRisposta(int id_rec, String testo, String username) throws RemoteException, SQLException;
 
     /**
      * Elimina la risposta associata a una recensione.
@@ -212,7 +225,7 @@ public interface DBService extends Remote {
      * @throws RemoteException se si verifica un errore nella comunicazione remota.
      * @throws SQLException se si verifica un errore durante l'accesso al database.
      */
-    boolean modifyRisposta(int id_rec, String testo) throws RemoteException, SQLException;
+    boolean modifyRisposta(int id_rec, String testo, String username) throws RemoteException, SQLException;
 
     /**
      * Inserisce una nuova recensione nel database.
@@ -241,7 +254,7 @@ public interface DBService extends Remote {
      * @throws RemoteException se si verifica un errore nella comunicazione remota.
      * @throws SQLException se si verifica un errore durante l'accesso al database.
      */
-    boolean modifyRecensione(int id_rec, String titolo, String testo, double stelle) throws RemoteException, SQLException;
+    boolean modifyRecensione(int id_rec, String titolo, String testo, double stelle, String username) throws RemoteException, SQLException;
 
     /**
      * Elimina una recensione dal database.
@@ -252,7 +265,7 @@ public interface DBService extends Remote {
      * @throws RemoteException se si verifica un errore nella comunicazione remota.
      * @throws SQLException se si verifica un errore durante l'accesso al database.
      */
-    boolean removeRecensione(int id_rec) throws RemoteException, SQLException;
+    boolean removeRecensione(int id_rec, String username) throws RemoteException, SQLException;
 
     /**
      * Restituisce la media delle valutazioni assegnate a un ristorante.

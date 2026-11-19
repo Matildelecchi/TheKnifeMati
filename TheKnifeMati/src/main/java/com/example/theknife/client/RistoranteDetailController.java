@@ -92,6 +92,7 @@ public class RistoranteDetailController implements Initializable {
     @FXML private Hyperlink sitoWebLink1;
     /** Pulsante per aprire la posizione del ristorante su Google Maps. */
     @FXML private Button posizioneButton;
+    @FXML private Button modificaRistoranteButton;
     /** Etichetta per visualizzare l'eventuale premio Michelin del ristorante. */
     @FXML private Label premioLabel;
     /** ImageView per visualizzare l'icona della stella verde Michelin. */
@@ -114,6 +115,12 @@ public class RistoranteDetailController implements Initializable {
     @FXML private Button preferitoButton;
     /** ListView per visualizzare le recensioni più recenti del ristorante. */
     @FXML private ListView<Recensione> recensioniRecentList;
+
+    /** Contenitore delle stelle che rappresentano la media delle recensioni. */
+    @FXML private HBox recensioniStarBox;
+
+    /** Etichetta che mostra il numero totale delle recensioni. */
+    @FXML private Label totaleRecensioniDettagliLabel;
     /** Pulsante per navigare alla schermata completa di tutte le recensioni. */
     @FXML private Button mostraRecensioniButton;
 
@@ -166,6 +173,42 @@ public class RistoranteDetailController implements Initializable {
     }
 
     /**
+     * Apre il modulo di modifica del ristorante selezionato.
+     */
+    @FXML
+    private void handleModificaRistorante() {
+        if (ristorante == null) {
+            return;
+        }
+
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("ristorante-input.fxml")
+            );
+            Parent root = loader.load();
+
+            RistoranteInputController controller = loader.getController();
+
+            controller.impostaRistoranteDaModificare(ristorante);
+
+            Scene currentScene = nomeLabel.getScene();
+            Parent detailRoot = currentScene.getRoot();
+
+            controller.setTornaAllaDashboardCallback(() -> {
+                currentScene.setRoot(detailRoot);
+                Platform.runLater(() -> {
+                    setRistorante(ristorante);
+                });
+            });
+
+            currentScene.setRoot(root);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * Metodo di inizializzazione del controller.
      * Viene chiamato automaticamente dopo che il file FXML è stato caricato.
      * Configura i componenti dell'interfaccia, come le TextAreas, i pulsanti e la ListView delle recensioni.
@@ -210,8 +253,10 @@ public class RistoranteDetailController implements Initializable {
                     Label stelleLabel = new Label("⭐".repeat(item.getStelle()));
                     Label dataLabel = new Label(item.getData());
                     dataLabel.getStyleClass().add("data-label");
+
                     Label utenteLabel = new Label("da " + item.getUsername());
                     utenteLabel.getStyleClass().add("utente-label");
+
                     headerBox.getChildren().addAll(stelleLabel, dataLabel, utenteLabel);
 
                     Label testoLabel = new Label(item.getTesto());
@@ -222,10 +267,13 @@ public class RistoranteDetailController implements Initializable {
                     if (!item.getRisposta().isEmpty()) {
                         VBox rispostaBox = new VBox(5);
                         rispostaBox.getStyleClass().add("risposta-box");
+
                         Label rispostaLabel = new Label("Risposta del ristoratore:");
                         rispostaLabel.getStyleClass().add("risposta-header");
+
                         Label rispostaTestoLabel = new Label(item.getRisposta());
                         rispostaTestoLabel.setWrapText(true);
+
                         rispostaBox.getChildren().addAll(rispostaLabel, rispostaTestoLabel);
                         container.getChildren().add(rispostaBox);
                     }
@@ -294,6 +342,31 @@ public class RistoranteDetailController implements Initializable {
      */
     public void setRistorante(Ristorante ristorante) {
         this.ristorante = ristorante;
+
+        // Mostra il pulsante di modifica solo al proprietario del ristorante.
+        boolean isProprietario = false;
+
+        if (SessioneUtente.isRistoratore() && ristorante != null) {
+            String currentUser = SessioneUtente.getUsernameUtente();
+
+            if (currentUser != null) {
+                try {
+                    ArrayList<String> numRistoranti =
+                            server.getNumeriTelefonoRisoranti(currentUser);
+
+                    isProprietario = numRistoranti.contains(
+                            ristorante.getNumeroTelefono()
+                    );
+                } catch (RemoteException | SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        if (modificaRistoranteButton != null) {
+            modificaRistoranteButton.setVisible(isProprietario);
+            modificaRistoranteButton.setManaged(isProprietario);
+        }
 
         if (ristorante != null) {
             System.out.println("=== DEBUG RISTORANTE ===");
@@ -380,13 +453,21 @@ public class RistoranteDetailController implements Initializable {
 
                 // Sito web
                 if (sitoWebLink != null) {
+                    String urlMichelin = ristorante.getUrl();
+                    boolean disponibile = urlMichelin != null && !urlMichelin.trim().isEmpty();
+                         sitoWebLink.setText("Visita il sito web nella Guida Michelin");
+                        sitoWebLink.setVisible(disponibile);
+                        sitoWebLink.setManaged(disponibile);
+
+                }
+                // Sito web ufficiale del ristorante
+                if (sitoWebLink1 != null) {
                     String sitoWeb = ristorante.getSitoWeb();
-                    if (sitoWeb != null && !sitoWeb.trim().isEmpty()) {
-                        sitoWebLink.setText("Visita il sito web nella Guida Michelin");
-                        sitoWebLink.setVisible(true);
-                    } else {
-                        sitoWebLink.setVisible(false);
-                    }
+                    boolean disponibile = sitoWeb != null && !sitoWeb.trim().isEmpty();
+
+                    sitoWebLink1.setText("Visita il sito ufficiale del ristorante");
+                    sitoWebLink1.setVisible(disponibile);
+                    sitoWebLink1.setManaged(disponibile);
                 }
 
                 // Bottone posizione - aggiorna la visibilità
@@ -399,22 +480,24 @@ public class RistoranteDetailController implements Initializable {
                
                 // ⭐ Stelle Michelin (mostra solo se contiene una stella vera)
                 String premio = ristorante.getPremio();
-                String stelleGrafiche = "";
-
                 // Normalizziamo il testo
                 String p = premio == null ? "" : premio.toLowerCase();
+                
+                String stelleGrafiche = "";
+
+                
 
                 // Controlliamo se contiene una stella Michelin
-                if (p.contains("1") && p.contains("star")) {
+                if (p.contains("1") && p.contains("stell")) {
                     stelleGrafiche = "⭐";
-                } else if (p.contains("2") && p.contains("star")) {
+                } else if (p.contains("2") && p.contains("stell")) {
                     stelleGrafiche = "⭐⭐";
-                } else if (p.contains("3") && p.contains("star")) {
+                } else if (p.contains("3") && p.contains("stell")) {
                     stelleGrafiche = "⭐⭐⭐";
                 }
 
                 // Se abbiamo trovato delle stelle → mostra
-                if (!stelleGrafiche.isEmpty()) {
+                if (!p.isEmpty() && !p.equals("nessun premio")) {
                     premioLabel.setText(premio);      
                     stelleLabel.setText(stelleGrafiche); 
                     premioContainer.setVisible(true);
@@ -422,10 +505,19 @@ public class RistoranteDetailController implements Initializable {
                     premioContainer.setVisible(false);
                 }
 
-                // Nascondi tutta la sezione premi se non c’è nulla
-                premiContainer.setVisible(premioContainer.isVisible());
+                // Aggiorna la visualizzazione della Stella Verde Michelin
+                updateStellaVerdeDisplay();
+
+                // Mostra la sezione riconoscimenti se è presente
+                // almeno un premio Michelin oppure la Stella Verde
+                boolean mostraPremi = premioContainer.isVisible()
+                        || stellaVerdeContainer.isVisible();
+
+                premiContainer.setVisible(mostraPremi);
+                premiContainer.setManaged(mostraPremi);
 
 
+                
 
                 // Servizi
                 if (serviziTextArea != null) {
@@ -605,15 +697,20 @@ public class RistoranteDetailController implements Initializable {
     private void updateStellaVerdeDisplay() {
         if (stellaVerdeLabel == null) return;
 
-        double stellaVerde = ristorante.getStellaVerde();
+        boolean stellaVerde = ristorante.getStellaVerde();
+        System.out.println("DEBUG STELLA VERDE: " + stellaVerde);
+        System.out.println("DEBUG CONTAINER: " + stellaVerdeContainer);
+        System.out.println("DEBUG LABEL: " + stellaVerdeLabel);
+        
         /*if (stellaVerde != null && !stellaVerde.trim().isEmpty() &&
                 !"No".equalsIgnoreCase(stellaVerde.trim()))*/ 
-        if (stellaVerde > 0){
+        if (stellaVerde){
             stellaVerdeLabel.setText("Stella Verde");
 
             // Mostra il container della stella verde se disponibile
             if (stellaVerdeContainer != null) {
                 stellaVerdeContainer.setVisible(true);
+                stellaVerdeContainer.setManaged(true);
             }
 
             // Carica icona stella verde se disponibile
@@ -630,6 +727,7 @@ public class RistoranteDetailController implements Initializable {
             // Nascondi il container della stella verde
             if (stellaVerdeContainer != null) {
                 stellaVerdeContainer.setVisible(false);
+                stellaVerdeContainer.setManaged(false);
             }
         }
     }
@@ -656,6 +754,25 @@ public class RistoranteDetailController implements Initializable {
         return formatted;
     }
 
+    /**
+     * Gestisce il click sul collegamento alla Guida Michelin.
+     */
+    @FXML
+    private void handleMichelinClick() {
+        if (ristorante == null || ristorante.getUrl() == null ||
+                ristorante.getUrl().trim().isEmpty()) {
+            showAlert("Attenzione", "Nessun collegamento alla Guida Michelin disponibile.");
+            return;
+        }
+
+        String url = ristorante.getUrl().trim();
+
+        if (!url.startsWith("http://") && !url.startsWith("https://")) {
+            url = "https://" + url;
+        }
+
+        openExternalUrl(url);
+    }
     /**
      * Gestisce l'evento di click sull'hyperlink del sito web.
      * Aggiunge un protocollo HTTPS se mancante e tenta di aprire l'URL esterno.
@@ -765,23 +882,40 @@ public class RistoranteDetailController implements Initializable {
         }
     }
 
-    /**
-     * Carica le recensioni più recenti per il ristorante.
-     * Recupera tutte le recensioni, le ordina per data (dalla più recente) e visualizza solo le prime tre nella {@link ListView}.
-     */
-    private void loadRecensioni() {
+        /**
+         * Carica le recensioni più recenti per il ristorante.
+         * Recupera tutte le recensioni, le ordina per data (dalla più recente) e visualizza solo le prime tre nella {@link ListView}.
+         */
+        private void loadRecensioni() {
         if (ristorante == null || recensioniRecentList == null) return;
 
         // Load only the 3 most recent reviews
-        ArrayList<Recensione> listaRecensioni = null;//gestioneRecensioni.getRecensioniRistorante(ristorante.getNome());
+        ArrayList<Recensione> listaRecensioni =  new ArrayList<>();//gestioneRecensioni.getRecensioniRistorante(ristorante.getNome());
         try {
             listaRecensioni = server.getRecensioni(ristorante.getNumeroTelefono());
+            if (listaRecensioni == null) {
+            listaRecensioni = new ArrayList<>();
+            }
         } catch (RemoteException | SQLException e) {
             e.printStackTrace();
         } 
+        // Calcola la media utilizzando tutte le recensioni.
+        double media = listaRecensioni.stream()
+                .mapToInt(Recensione::getStelle)
+                .average()
+                .orElse(0.0);
+
+        // Aggiorna le stelle e il numero totale delle recensioni.
+        aggiornaStelleRecensioni(media);
+
+        totaleRecensioniDettagliLabel.setText(
+                listaRecensioni.size() +
+                (listaRecensioni.size() == 1 ? " recensione" : " recensioni")
+        );
         ObservableList<Recensione> recensioni = FXCollections.observableArrayList(listaRecensioni);
         recensioni.sort((r1, r2) -> r2.getData().compareTo(r1.getData())); // Sort by date descending
 
+        // Mostra soltanto le tre recensioni più recenti.
         List<Recensione> tmp = listaRecensioni;
         if (recensioni.size() > 3) {
             tmp = recensioni.subList(0, 3);
@@ -789,6 +923,42 @@ public class RistoranteDetailController implements Initializable {
 
         recensioniRecentList.setItems(FXCollections.observableArrayList(tmp));
     }
+
+    /**
+     * Visualizza graficamente la media delle recensioni tramite cinque stelle.
+     *
+     * @param media media delle valutazioni ricevute dal ristorante
+     */
+    private void aggiornaStelleRecensioni(double media) {
+
+    recensioniStarBox.getChildren().clear();
+
+    int stelleIntere = (int) Math.floor(media);
+    boolean mezzaStella = (media - stelleIntere) >= 0.5;
+
+    for (int i = 0; i < 5; i++) {
+
+        Label stella = new Label();
+
+        if (i < stelleIntere) {
+            stella.setText("\u2605");
+            stella.setStyle(
+                    "-fx-font-size: 18px; -fx-text-fill: gold;");
+
+        } else if (i == stelleIntere && mezzaStella) {
+            stella.setText("\u2605");
+            stella.setStyle(
+                    "-fx-font-size: 18px; -fx-text-fill: gold; -fx-opacity: 0.5;");
+
+        } else {
+            stella.setText("\u2606");
+            stella.setStyle(
+                    "-fx-font-size: 18px; -fx-text-fill: gold;");
+        }
+
+        recensioniStarBox.getChildren().add(stella);
+    }
+}
 
     /**
      * Restituisce l'oggetto ristorante attualmente visualizzato dal controller.

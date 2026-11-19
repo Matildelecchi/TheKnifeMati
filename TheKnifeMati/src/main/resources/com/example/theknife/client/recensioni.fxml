@@ -39,7 +39,7 @@
         </columns>
       </TableView>
       <VBox spacing="5">
-        <Label text="La tua recensione:" />
+        <Label fx:id="recensioneLabel" text="La tua recensione:" />
         <TextArea fx:id="recensioneTextArea" prefRowCount="3" wrapText="true" />
         <HBox alignment="CENTER_LEFT" spacing="10">
           <Label text="Stelle:" />

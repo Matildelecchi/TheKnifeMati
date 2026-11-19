@@ -385,15 +385,12 @@ public class UserProfileController implements Initializable {
      * @param nomeRistorante Il nome del ristorante da visualizzare.
      */
     private void openRistoranteDetail(String numRistorante) {
-        System.out.println("DEBUG: Cercando ristorante con nome: '" + numRistorante + "'");
-
         Ristorante ristorante = null;
         try {
             // Tentativo 1: Forza il ricaricamento dei ristoranti (se il metodo è disponibile).
             //gestioneRistorante.caricaRistoranti();
             ristorante = server.getRistorante(numRistorante);
         } catch (RemoteException | SQLException e) {
-            System.out.println("DEBUG: Metodo non disponibile: " + e.getMessage());
         }
 
         //Ristorante ristorante = gestioneRistorante.getRistorante(numRistorante);
@@ -448,7 +445,6 @@ public class UserProfileController implements Initializable {
 
             // Imposta un callback per tornare a questa schermata dopo la chiusura dei dettagli.
             controller.setTornaAlMenuPrincipaleCallback(() -> {
-                System.out.println("DEBUG: Callback eseguita, torno al profilo utente");
                 currentStage.setScene(originalScene);
                 currentStage.show();
                 this.refreshData();

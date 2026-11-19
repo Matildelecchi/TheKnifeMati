@@ -19,6 +19,10 @@
                 <!-- HEADER -->
                 <HBox alignment="CENTER_RIGHT" maxWidth="1100">
                     <Region HBox.hgrow="ALWAYS" />
+                    <Button fx:id="modificaRistoranteButton"
+                        text="Modifica ristorante"
+                        onAction="#handleModificaRistorante"
+                        styleClass="guest-button" />
                     <Button onAction="#handleTornaAlMenuPrincipale"
                             text="← Torna indietro"
                             styleClass="secondary-button" />
@@ -87,15 +91,25 @@
                         <!-- PREMI -->
                         <VBox spacing="10" styleClass="info-block" fx:id="premiContainer">
 
+                        <!-- Titolo -->
+                            <Label text="🏆 Riconoscimento Michelin:"
+                                styleClass="block-title" />
+
                             <!-- Premio Michelin -->
-                            <HBox fx:id="premioContainer" spacing="6">
-                                <Label text="🏆 Stelle Michelin:" styleClass="block-title" />
+                            <HBox fx:id="premioContainer" spacing="6" alignment="CENTER_LEFT">
                                 <Label fx:id="premioLabel" text="" wrapText="false" styleClass="block-value" />
                                 <Label fx:id="stelleLabel" text="" wrapText="false" styleClass="block-value" /> 
                             </HBox>
 
-                        </VBox>
-
+                         <!-- Stella Verde Michelin -->
+                            <VBox fx:id="stellaVerdeContainer" spacing="6" alignment="CENTER_LEFT" visible="false" managed="false">
+                                <HBox spacing="6" alignment="CENTER_LEFT">
+                                    <ImageView fx:id="stellaVerdeIcon" fitWidth="22" fitHeight="22" preserveRatio="true" />
+                                    <Label fx:id="stellaVerdeLabel" text="Stella Verde" styleClass="block-value" />
+                                </HBox>
+                            
+                            </VBox>
+                    </VBox>
 
                     </VBox>
 
@@ -130,6 +144,11 @@
                                         onAction="#handleMostraRecensioni"
                                         text="Vedi tutte"
                                         styleClass="secondary-button" />
+                            </HBox>
+
+                            <HBox alignment="CENTER_LEFT" spacing="10">
+                                <HBox fx:id="recensioniStarBox" alignment="CENTER_LEFT" spacing="2"/>
+                                <Label fx:id="totaleRecensioniDettagliLabel" text="0 recensioni"/>
                             </HBox>
 
                             <ListView fx:id="recensioniRecentList"

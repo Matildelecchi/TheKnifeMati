@@ -386,18 +386,9 @@ public class RistoratoreDashboardController implements Initializable {
                 .mapToInt(Recensione::getStelle)
                 .average()
                 .orElse(0.0);
-        mediaLabel.setText(String.format("%.1f", media));
         updateStars(media);
 
         totaleRecensioniLabel.setText(String.valueOf(recensioni.size()));
-
-        Map<Integer, Integer> stelleCount = new HashMap<>();
-        recensioni.forEach(r -> stelleCount.merge(r.getStelle(), 1, Integer::sum));
-
-        ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList();
-        stelleCount.forEach((stelle, count) ->
-                pieChartData.add(new PieChart.Data(stelle + " ⭐", count)));
-        recensioniChart.setData(pieChartData);
     }
 
     /**
@@ -414,6 +405,7 @@ public class RistoratoreDashboardController implements Initializable {
             System.out.println("errore con il server");
             e.printStackTrace();
         }
+       
         recensioni.sort((r1, r2) -> r2.getData().compareTo(r1.getData()));
         List<Recensione> tmp = recensioni;
         if (recensioni.size() > 5) {
@@ -458,7 +450,19 @@ public class RistoratoreDashboardController implements Initializable {
             if (!risposta.isEmpty()) {
                 recensione.setRisposta(risposta);
                 try {
-                    server.saveRisposta(recensione.getIdRec(), risposta);
+                    if (hasRisposta) {
+                        server.modifyRisposta(
+                                recensione.getIdRec(),
+                                risposta,
+                                SessioneUtente.getUsernameUtente()
+                        );
+                    } else {
+                        server.saveRisposta(
+                                recensione.getIdRec(),
+                                risposta,
+                                SessioneUtente.getUsernameUtente()
+                        );
+                    }                
                 } catch(RemoteException | SQLException ex) {
                     System.out.println("errore con il server");
                     ex.printStackTrace();
@@ -561,6 +565,56 @@ public class RistoratoreDashboardController implements Initializable {
         }
     }
 
+    /**
+     * Apre il modulo di inserimento in modalità modifica,
+     * caricando i dati del ristorante selezionato.
+     *
+     * @param event evento generato dal pulsante di modifica
+     */
+    @FXML
+    private void onModificaRistoranteClick(ActionEvent event) {
+
+        // Verifica che sia stato selezionato un ristorante.
+        if (selectedRistorante == null) {
+            return;
+        }
+
+        try {
+            // Carica il modulo utilizzato anche per aggiungere un ristorante.
+            FXMLLoader loader = new FXMLLoader(
+                getClass().getResource("ristorante-input.fxml")
+            );
+            Parent root = loader.load();
+
+            // Recupera il controller del modulo.
+            RistoranteInputController controller = loader.getController();
+
+            // Recupera la scena attuale e conserva la dashboard.
+            Scene currentScene = ristorantiTable.getScene();
+            Parent dashboardRoot = currentScene.getRoot();
+
+            final RistoratoreDashboardController dashboard = this;
+
+            // Carica i dati del ristorante selezionato nei campi del modulo.
+            controller.impostaRistoranteDaModificare(selectedRistorante);
+
+            // Imposta il comportamento del pulsante per tornare alla dashboard.
+            controller.setTornaAllaDashboardCallback(() -> {
+                currentScene.setRoot(dashboardRoot);
+
+                // Aggiorna i dati visualizzati nella dashboard.
+                Platform.runLater(dashboard::refreshData);
+            });
+
+            // Mostra il modulo di modifica.
+            currentScene.setRoot(root);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            showError("Errore nell'apertura del modulo di modifica", e);
+        }
+    }
+
     /** Aggiornamento recensione esterna. */
     public void onRecensioneUpdated() {
         updateStatistiche();
@@ -615,6 +669,7 @@ public class RistoratoreDashboardController implements Initializable {
             Parent recensioniRoot = loader.load();
             RecensioniController controller = loader.getController();
             controller.setRistoranteTel(selectedRistorante.getNumeroTelefono());
+            controller.impostaModalitaRistoratore();
             controller.setParentController(this);
             Parent rootToRestore = ristorantiTable.getScene().getRoot();
             controller.setRootToRestore(rootToRestore);
