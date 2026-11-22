@@ -883,7 +883,7 @@ public class ServerMain implements DBService {
  */
     @Override
     public Boolean setRistorante(Ristorante ristorante,String utente) throws RemoteException {
-        if (ristorante == null) {
+        
         if (ristorante == null || utente == null || utente.isEmpty()) {
             return false;
         }
@@ -925,6 +925,7 @@ public class ServerMain implements DBService {
         }
         
     }
+    
 
     /**
  * Modifica i dati di un ristorante già presente nel database.
@@ -938,8 +939,8 @@ public class ServerMain implements DBService {
  * @throws RemoteException in caso di errore nella comunicazione remota.
  */
 @Override
-public Boolean modificaRistorante(Ristorante ristorante, String vecchioNumeroTelefono, String utente)
-        throws RemoteException {
+public Boolean modificaRistorante(Ristorante ristorante, String vecchioNumeroTelefono, String utente) throws RemoteException {
+    
     System.out.println("SERVER - Stella Verde ricevuta: " + ristorante.getStellaVerde());
 
     if (ristorante == null || vecchioNumeroTelefono == null || utente == null) {
@@ -979,7 +980,7 @@ public Boolean modificaRistorante(Ristorante ristorante, String vecchioNumeroTel
             }
         }
     }
-}
+
 
 /**
  * Restituisce il ristorante associato al numero di telefono specificato.
@@ -1070,6 +1071,7 @@ public Boolean modificaRistorante(Ristorante ristorante, String vecchioNumeroTel
                         rs.getString("citta"),
                         rs.getString("servizi"),
                         rs.getString("sito"),
+                        rs.getString("sitopremio"),
                         rs.getString("premi"),
                         rs.getString("cucina"),
                         rs.getDouble("stelle"),
