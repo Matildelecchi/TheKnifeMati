@@ -24,7 +24,8 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
 /**
- * Controller per la gestione dell'interfaccia di inserimento di un nuovo ristorante.
+ * Controller per la gestione dell'interfaccia di inserimento di un nuovo
+ * ristorante.
  * <p>
  * Questa classe collega la view FXML con la logica di business per la creazione
  * e il salvataggio di un ristorante nel sistema.
@@ -47,39 +48,53 @@ import javafx.scene.control.TextField;
  */
 public class RistoranteInputController implements Initializable {
     /** Campo di testo per il nome del ristorante. */
-    @FXML private TextField nomeField;
+    @FXML
+    private TextField nomeField;
     /** Campo di testo per l'indirizzo del ristorante. */
-    @FXML private TextField indirizzoField;
+    @FXML
+    private TextField indirizzoField;
     /** Campo di testo per la località del ristorante. */
-    @FXML private TextField cittaField;
+    @FXML
+    private TextField cittaField;
     /** ComboBox per la selezione della fascia di prezzo. */
-    @FXML private ComboBox<String> prezzoComboBox;
+    @FXML
+    private ComboBox<String> prezzoComboBox;
     /** ListView per la selezione multipla dei tipi di cucina. */
-    @FXML private ListView<String> cucinaListView;
+    @FXML
+    private ListView<String> cucinaListView;
     /** ComboBox per la selezione del premio Michelin. */
-    @FXML private ComboBox<String> premiComboBox;
+    @FXML
+    private ComboBox<String> premiComboBox;
     /** CheckBox per indicare la presenza della stella verde. */
-    @FXML private CheckBox stellaVerdeCheckBox;
+    @FXML
+    private CheckBox stellaVerdeCheckBox;
     /** Campo di testo per la longitudine. */
     /** @FXML private TextField longitudineField; Coordinate commentate */
     /** Campo di testo per la latitudine. */
-    /**  @FXML private TextField latitudineField; Coordinate commentate */
+    /** @FXML private TextField latitudineField; Coordinate commentate */
     /** Campo di testo per il numero di telefono. */
-    @FXML private TextField telefonoField;
+    @FXML
+    private TextField telefonoField;
     /** Campo di testo per l'URL del ristorante. */
-    @FXML private TextField urlField;
+    @FXML
+    private TextField urlField;
     /** Campo di testo per il sito web del ristorante. */
-    @FXML private TextField sitoWebField;
+    @FXML
+    private TextField sitoWebField;
     /** ListView per la selezione multipla dei servizi offerti. */
-    @FXML private ListView<String> checkBoxServizi;
+    @FXML
+    private ListView<String> checkBoxServizi;
     /** Area di testo per la descrizione del ristorante. */
-    @FXML private TextArea descrizioneArea;
+    @FXML
+    private TextArea descrizioneArea;
     /** Pulsante per avviare il salvataggio dei dati. */
-    @FXML private Button salvaButton;
+    @FXML
+    private Button salvaButton;
     /** Pulsante per annullare l'operazione. */
-    @FXML private Button annullaButton;
+    @FXML
+    private Button annullaButton;
 
-     /** Callback ritorno dashboard */
+    /** Callback ritorno dashboard */
     private Runnable tornaAllaDashboardCallback;
     /** Callback aggiornamento lista ristoranti */
     private Runnable aggiornaDatabaseRistorantiCallback;
@@ -87,17 +102,23 @@ public class RistoranteInputController implements Initializable {
     /** Servizio remoto database */
     private static DBService server;
 
-    /** Ristorante da modificare; null quando si sta aggiungendo un nuovo ristorante. */
+    /**
+     * Ristorante da modificare; null quando si sta aggiungendo un nuovo ristorante.
+     */
     private Ristorante ristoranteInModifica;
 
-    /** Numero di telefono originale, utile per identificare il ristorante nel database. */
+    /**
+     * Numero di telefono originale, utile per identificare il ristorante nel
+     * database.
+     */
     private String vecchioNumeroTelefono;
 
     /**
      * Imposta il callback da eseguire per tornare alla dashboard principale.
      * Questo metodo viene utilizzato per implementare la navigazione tra le scene.
      *
-     * @param callback L'oggetto {@link Runnable} che esegue l'operazione di ritorno.
+     * @param callback L'oggetto {@link Runnable} che esegue l'operazione di
+     *                 ritorno.
      */
     public void setTornaAllaDashboardCallback(Runnable callback) {
         this.tornaAllaDashboardCallback = callback;
@@ -133,7 +154,7 @@ public class RistoranteInputController implements Initializable {
         indirizzoField.setText(ristorante.getIndirizzo());
         cittaField.setText(ristorante.getCitta());
         telefonoField.setText(ristorante.getNumeroTelefono());
-        urlField.setText(ristorante.getUrl());
+        urlField.setText(ristorante.getUrlMichelin());
         sitoWebField.setText(ristorante.getSitoWeb());
         descrizioneArea.setText(ristorante.getDescrizione());
 
@@ -142,8 +163,7 @@ public class RistoranteInputController implements Initializable {
 
         // Se il ristorante non ha un premio, seleziona "Nessun premio".
         premiComboBox.setValue(
-            ristorante.getPremio() == null ? "Nessun premio" : ristorante.getPremio()
-        );
+                ristorante.getPremio() == null ? "Nessun premio" : ristorante.getPremio());
 
         // Imposta la selezione della Stella Verde Michelin.
         stellaVerdeCheckBox.setSelected(ristorante.getStellaVerde());
@@ -171,13 +191,13 @@ public class RistoranteInputController implements Initializable {
      * Configura:
      * </p>
      * <ul>
-     *     <li>valori delle ComboBox</li>
-     *     <li>liste di cucine e servizi</li>
-     *     <li>modalità di selezione multipla</li>
-     *     <li>connessione al server remoto</li>
+     * <li>valori delle ComboBox</li>
+     * <li>liste di cucine e servizi</li>
+     * <li>modalità di selezione multipla</li>
+     * <li>connessione al server remoto</li>
      * </ul>
      *
-     * @param location URL del file FXML
+     * @param location  URL del file FXML
      * @param resources risorse di localizzazione
      */
     @Override
@@ -193,7 +213,8 @@ public class RistoranteInputController implements Initializable {
         } catch (RemoteException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        } 
+        }
+        System.out.println("Server: " + server);
         cucinaListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         cucinaListView.setItems(FXCollections.observableArrayList(
                 "Creativa", "Contemporanea", "Coreana", "Francese", "Italiana",
@@ -201,13 +222,11 @@ public class RistoranteInputController implements Initializable {
                 "Americana", "Messicana", "Thailandese", "Vegetariana", "Vegana",
                 "Frutti di mare", "Steakhouse", "Tradizionale", "Moderna", "Internazionale",
                 "Di Mare", "Contadina", "Alpina", "Siciliana", "Toscana", "Innovativa",
-                "Di Stagione", "Classica"
-        ));
+                "Di Stagione", "Classica"));
 
         premiComboBox.setItems(FXCollections.observableArrayList(
                 "Nessun premio", "1 Stella", "2 Stelle",
-                "3 Stelle", "Bib Gourmand"
-        ));
+                "3 Stelle", "Bib Gourmand"));
         premiComboBox.setValue("Nessun premio");
 
         checkBoxServizi.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
@@ -215,8 +234,7 @@ public class RistoranteInputController implements Initializable {
                 "Aria condizionata", "Giardino o parco", "Interessante carta dei vini",
                 "Terrazza", "Accesso per sedie a rotelle", "Vista magnifica",
                 "Ristorante con menu vegetariani", "Delivery", "Prenotazione on-line", "Cena al bancone",
-                "Parcheggio"
-        ));
+                "Parcheggio"));
     }
 
     /**
@@ -235,8 +253,14 @@ public class RistoranteInputController implements Initializable {
 
         try {
             /** Gestione delle coordinate commentata */
-            /** double longitudine = longitudineField.getText().isEmpty() ? 0.0 : Double.parseDouble(longitudineField.getText()); */
-            /** double latitudine = latitudineField.getText().isEmpty() ? 0.0 : Double.parseDouble(latitudineField.getText()); */
+            /**
+             * double longitudine = longitudineField.getText().isEmpty() ? 0.0 :
+             * Double.parseDouble(longitudineField.getText());
+             */
+            /**
+             * double latitudine = latitudineField.getText().isEmpty() ? 0.0 :
+             * Double.parseDouble(latitudineField.getText());
+             */
 
             String tel = telefonoField.getText().trim();
             String nome = nomeField.getText().trim();
@@ -246,17 +270,18 @@ public class RistoranteInputController implements Initializable {
             if (ristoranteInModifica == null || !tel.equals(vecchioNumeroTelefono)) {
                 try {
                     Ristorante r = server.getRistorante(tel);
-                    
-                        if (r != null && r.getNumeroTelefono() != null) {
-                            mostraErrore("Errore", "Esiste già un ristorante con questo numero di telefono. Scegli un numero di telefono diverso.");
-                            return;
-                        }       
-            } catch(RemoteException | SQLException e) {
-                e.printStackTrace();
-                mostraErrore("Errore", "Impossibile verificare il numero di telefono.");
-                return;
+
+                    if (r != null && r.getNumeroTelefono() != null) {
+                        mostraErrore("Errore",
+                                "Esiste già un ristorante con questo numero di telefono. Scegli un numero di telefono diverso.");
+                        return;
+                    }
+                } catch (RemoteException | SQLException e) {
+                    e.printStackTrace();
+                    mostraErrore("Errore", "Impossibile verificare il numero di telefono.");
+                    return;
+                }
             }
-        }
 
             String cucine = cucinaListView.getSelectionModel().getSelectedItems()
                     .stream()
@@ -267,28 +292,28 @@ public class RistoranteInputController implements Initializable {
                     .collect(Collectors.joining(", "));
 
             System.out.println("STELLA VERDE SELEZIONATA: " + stellaVerdeCheckBox.isSelected());
-            
+
             Ristorante nuovoRistorante = new Ristorante(
                     tel,
                     nome,
                     indirizzoField.getText().trim(),
-                    "", // stato non disponibile nel form
+                    " ", // stato non disponibile nel form
                     cittaField.getText().trim(),
                     servizi,
-                    //urlField.getText().trim(),
                     sitoWebField.getText().trim(),
+                    urlField.getText().trim(),
                     premiComboBox.getValue(),
                     cucine,
                     0.0,
                     stellaVerdeCheckBox.isSelected(), // Stella Verde Michelin
                     prezzoComboBox.getValue(),
-                    false, // prenotazione
-                    false, // consegna
+                    false, // prenotazione to add
+                    false, // consegna to add
                     descrizioneArea.getText().trim(),
-                    SessioneUtente.getUsernameUtente()
-            );
-            nuovoRistorante.setUrl(urlField.getText().trim());
-            
+                    SessioneUtente.getUsernameUtente());
+            // System.out.println(nuovoRistorante);
+            // nuovoRistorante.setUrlMichelin("test");//urlField.getText().trim());
+
             boolean successo;
 
             // Se esiste un ristorante in modifica, esegue UPDATE.
@@ -296,15 +321,14 @@ public class RistoranteInputController implements Initializable {
                 Boolean risultato = server.modificaRistorante(
                         nuovoRistorante,
                         vecchioNumeroTelefono,
-                        SessioneUtente.getUsernameUtente()
-                );
+                        SessioneUtente.getUsernameUtente());
 
                 successo = risultato != null && risultato;
 
             } else {
                 // Altrimenti esegue il normale INSERT.
-               
-                successo =  aggiungiRistoranteAlDB(nuovoRistorante);
+
+                successo = aggiungiRistoranteAlDB(nuovoRistorante);
             }
 
             if (!successo) {
@@ -315,7 +339,8 @@ public class RistoranteInputController implements Initializable {
             Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
             successAlert.setTitle("Successo");
             successAlert.setHeaderText(null);
-            successAlert.setContentText( ristoranteInModifica != null ? "Il ristorante è stato modificato con successo!" : "Il ristorante è stato aggiunto con successo!");
+            successAlert.setContentText(ristoranteInModifica != null ? "Il ristorante è stato modificato con successo!"
+                    : "Il ristorante è stato aggiunto con successo!");
             successAlert.showAndWait();
 
             System.out.println("Debug: Salvataggio ristorante completato");
@@ -355,18 +380,21 @@ public class RistoranteInputController implements Initializable {
             errori.append("- Il tipo di cucina è obbligatorio\n");
         }
         /** Gestione delle coordinate commentata */
-        /** if (!longitudineField.getText().trim().isEmpty() || !latitudineField.getText().trim().isEmpty()) {
-            try {
-                if (!longitudineField.getText().trim().isEmpty()) {
-                    Double.parseDouble(longitudineField.getText());
-                }
-                if (!latitudineField.getText().trim().isEmpty()) {
-                    Double.parseDouble(latitudineField.getText());
-                }
-            } catch (NumberFormatException e) {
-                errori.append("- Le coordinate devono essere numeri validi\n");
-            }
-        }*/
+        /**
+         * if (!longitudineField.getText().trim().isEmpty() ||
+         * !latitudineField.getText().trim().isEmpty()) {
+         * try {
+         * if (!longitudineField.getText().trim().isEmpty()) {
+         * Double.parseDouble(longitudineField.getText());
+         * }
+         * if (!latitudineField.getText().trim().isEmpty()) {
+         * Double.parseDouble(latitudineField.getText());
+         * }
+         * } catch (NumberFormatException e) {
+         * errori.append("- Le coordinate devono essere numeri validi\n");
+         * }
+         * }
+         */
         if (errori.length() > 0) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Errore");
@@ -391,7 +419,7 @@ public class RistoranteInputController implements Initializable {
     /**
      * Mostra un messaggio di errore all'utente.
      *
-     * @param titolo titolo della finestra
+     * @param titolo    titolo della finestra
      * @param messaggio contenuto dell'errore
      */
     private void mostraErrore(String titolo, String messaggio) {
@@ -410,16 +438,18 @@ public class RistoranteInputController implements Initializable {
      * @throws IOException in caso di errore di comunicazione
      */
     private boolean aggiungiRistoranteAlDB(Ristorante ristorante) throws IOException {
+        // System.out.println("Test: "+ristorante);
+        // System.out.println("Test: "+ristorante.getUrlMichelin());
         Boolean risultato = server.setRistorante(ristorante, SessioneUtente.getUsernameUtente());
-            // Usa un percorso esterno, che si trova nella stessa directory del JAR
-            
-           if (risultato != null && risultato) {
-                System.out.println("DEBUG: Ristorante salvato nel database: " + ristorante);
-                return true;
-            
-            } else {
-                System.err.println("ERRORE: Impossibile salvare il ristorante nel database: " + ristorante);
-                return false;
-            }
+        // Usa un percorso esterno, che si trova nella stessa directory del JAR
+
+        if (risultato != null && risultato) {
+            System.out.println("DEBUG: Ristorante salvato nel database: " + ristorante);
+            return true;
+
+        } else {
+            System.out.println("ERRORE: Impossibile salvare il ristorante nel database: " + ristorante);
+            return false;
+        }
     }
 }
