@@ -142,7 +142,7 @@ public class ServerMain implements DBService {
         scanner.close();
         //saveProprieta();
         if (PASSWORD == null || PASSWORD.isEmpty()) {
-            System.err.println("Errore riguardante Password");
+            System.err.println("Password risulta vuota!");
             return;
         }
         ensureDatabaseExists();
@@ -349,7 +349,7 @@ public class ServerMain implements DBService {
                         rs.getString("citta"),
                         rs.getString("servizi"),
                         rs.getString("sito"),
-                        
+                        rs.getString("sitopremio"),
                         rs.getString("premi"),
                         rs.getString("cucina"),
                         rs.getDouble("stelle"),
@@ -358,10 +358,7 @@ public class ServerMain implements DBService {
                         rs.getBoolean("prenotazione"),
                         rs.getBoolean("consegna"),
                         rs.getString("descrizione"),
-                        rs.getString("proprietario")
-                );
-                ristorante.setUrl(rs.getString("sitoPremio"));
-                //System.out.println(ristorante);
+                        rs.getString("proprietario"));
                 results.add(ristorante);
             }
             rs.close();
@@ -648,9 +645,7 @@ public class ServerMain implements DBService {
                         rs.getBoolean("prenotazione"),
                         rs.getBoolean("consegna"),
                         rs.getString("descrizione"),
-                        rs.getString("proprietario")
-                );
-                ristorante.setUrl(rs.getString("sitoPremio"));
+                        rs.getString("proprietario"));
                 results.add(ristorante);
             }
             rs.close();
@@ -889,14 +884,17 @@ public class ServerMain implements DBService {
     @Override
     public Boolean setRistorante(Ristorante ristorante,String utente) throws RemoteException {
         if (ristorante == null) {
+        if (ristorante == null || utente == null || utente.isEmpty()) {
             return false;
         }
         //System.out.println(ristorante);
 
         // Aggiunta della foreign key 'username' che punta alla tabella 'utenti'
-        String insertQuery = "INSERT INTO ristoranti (nome, indirizzo, citta, prezzo, cucina, num_tel, sito, sitoPremio, premi, stelle, stellaverde, servizi, descrizione, proprietario, stato) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-        synchronized(this) {
+        String insertQuery = "INSERT INTO ristoranti (nome, indirizzo, citta, prezzo, cucina, num_tel, sito, sitopremio, premi, stelle, stellaverde, servizi, descrizione, proprietario, stato, consegna, prenotazione) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        /*
+        select stellaVerde from ristoranti 
+        */
+        synchronized (this) {
             try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(insertQuery)) {
 
@@ -907,7 +905,7 @@ public class ServerMain implements DBService {
                 ps.setString(5, ristorante.getCucina());
                 ps.setString(6, ristorante.getNumeroTelefono());
                 ps.setString(7, ristorante.getSitoWeb());
-                ps.setString(8, ristorante.getUrl());
+                ps.setString(8, ristorante.getUrlMichelin());
                 ps.setString(9, ristorante.getPremio());
                 ps.setDouble(10, ristorante.getStelle());
                 ps.setBoolean(11, ristorante.getStellaVerde());
@@ -916,7 +914,9 @@ public class ServerMain implements DBService {
                 // Imposta la foreign key verso l'utente proprietario (username)
                 ps.setString(14, utente);
                 ps.setString(15, ristorante.getStato());
-
+                ps.setBoolean(16, ristorante.getConsegnabile());
+                ps.setBoolean(17, ristorante.getPrenotabile());
+        
                 return ps.executeUpdate() > 0;
             } catch (SQLException e) {
                 System.err.println("Errore DB setRistorante: " + e.getMessage());
@@ -946,34 +946,37 @@ public Boolean modificaRistorante(Ristorante ristorante, String vecchioNumeroTel
         return false;
     }
 
-    String updateQuery = "UPDATE ristoranti SET nome = ?, indirizzo = ?, citta = ?, prezzo = ?, cucina = ?, num_tel = ?, sito = ?, sitoPremio = ?, premi = ?, stelle = ?, stellaverde = ?, servizi = ?, descrizione = ?, stato = ? WHERE num_tel = ? AND proprietario = ?";
+        String updateQuery = "UPDATE ristoranti SET nome = ?, indirizzo = ?, citta = ?, prezzo = ?, cucina = ?, num_tel = ?, sito = ?, sitoPremio = ?, premi = ?, stelle = ?, stellaverde = ?, servizi = ?, descrizione = ?, stato = ?, consegna = ?, prenotazione = ? WHERE num_tel = ? AND proprietario = ?";
 
-    synchronized (this) {
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(updateQuery)) {
+        synchronized (this) {
+            try (Connection conn = getConnection();
+                    PreparedStatement ps = conn.prepareStatement(updateQuery)) {
 
-            ps.setString(1, ristorante.getNome());
-            ps.setString(2, ristorante.getIndirizzo());
-            ps.setString(3, ristorante.getCitta());
-            ps.setString(4, ristorante.getPrezzo());
-            ps.setString(5, ristorante.getCucina());
-            ps.setString(6, ristorante.getNumeroTelefono());
-            ps.setString(7, ristorante.getSitoWeb());
-            ps.setString(8, ristorante.getUrl());
-            ps.setString(9, ristorante.getPremio());
-            ps.setDouble(10, ristorante.getStelle());
-            ps.setBoolean(11, ristorante.getStellaVerde());
-            ps.setString(12, ristorante.getServizi());
-            ps.setString(13, ristorante.getDescrizione());
-            ps.setString(14, ristorante.getStato());
-            ps.setString(15, vecchioNumeroTelefono);
-            ps.setString(16, utente);
+                ps.setString(1, ristorante.getNome());
+                ps.setString(2, ristorante.getIndirizzo());
+                ps.setString(3, ristorante.getCitta());
+                ps.setString(4, ristorante.getPrezzo());
+                ps.setString(5, ristorante.getCucina());
+                ps.setString(6, ristorante.getNumeroTelefono());
+                ps.setString(7, ristorante.getSitoWeb());
+                ps.setString(8, ristorante.getUrlMichelin());
+                ps.setString(9, ristorante.getPremio());
+                ps.setDouble(10, ristorante.getStelle());
+                ps.setBoolean(11, ristorante.getStellaVerde());
+                ps.setString(12, ristorante.getServizi());
+                ps.setString(13, ristorante.getDescrizione());
+                ps.setString(14, ristorante.getStato());
+                ps.setBoolean(15,ristorante.getConsegnabile());
+                ps.setBoolean(16,ristorante.getPrenotabile());
+                ps.setString(17, vecchioNumeroTelefono);
+                ps.setString(18, utente);
 
-            return ps.executeUpdate() > 0;
+                return ps.executeUpdate() > 0;
 
-        } catch (SQLException e) {
-            System.err.println("Errore DB modificaRistorante: " + e.getMessage());
-            return false;
+            } catch (SQLException e) {
+                System.err.println("Errore DB modificaRistorante: " + e.getMessage());
+                return false;
+            }
         }
     }
 }
@@ -1002,24 +1005,23 @@ public Boolean modificaRistorante(Ristorante ristorante, String vecchioNumeroTel
             Ristorante ristorante = null;
             if(rs.next()) {
                 ristorante = new Ristorante(
-                    rs.getString("num_tel"),
-                    rs.getString("nome"),
-                    rs.getString("indirizzo"),
-                    rs.getString("stato"),
-                    rs.getString("citta"),
-                    rs.getString("servizi"),
-                    rs.getString("sito"),
-                    rs.getString("premi"),
-                    rs.getString("cucina"),
-                    rs.getDouble("stelle"),
-                    rs.getBoolean("stellaverde"),
-                    rs.getString("prezzo"),
-                    rs.getBoolean("prenotazione"),
-                    rs.getBoolean("consegna"),
-                    rs.getString("descrizione"),
-                    rs.getString("proprietario")
-                );
-                ristorante.setUrl(rs.getString("sitoPremio"));
+                        rs.getString("num_tel"),
+                        rs.getString("nome"),
+                        rs.getString("indirizzo"),
+                        rs.getString("stato"),
+                        rs.getString("citta"),
+                        rs.getString("servizi"),
+                        rs.getString("sito"),
+                        rs.getString("sitopremio"),
+                        rs.getString("premi"),
+                        rs.getString("cucina"),
+                        rs.getDouble("stelle"),
+                        rs.getBoolean("stellaverde"),
+                        rs.getString("prezzo"),
+                        rs.getBoolean("prenotazione"),
+                        rs.getBoolean("consegna"),
+                        rs.getString("descrizione"),
+                        rs.getString("proprietario"));
             }
             
             //System.out.println(ristorante);
@@ -1076,10 +1078,8 @@ public Boolean modificaRistorante(Ristorante ristorante, String vecchioNumeroTel
                         rs.getBoolean("prenotazione"),
                         rs.getBoolean("consegna"),
                         rs.getString("descrizione"),
-                        rs.getString("proprietario")
-                );
-                ristorante.setUrl(rs.getString("sitoPremio"));
-                //System.out.println(ristorante);
+                        rs.getString("proprietario"));
+                // System.out.println(ristorante);
                 results.add(ristorante);
             }
             rs.close();

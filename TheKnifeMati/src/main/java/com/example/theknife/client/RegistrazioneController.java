@@ -26,6 +26,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
@@ -424,6 +425,8 @@ public class RegistrazioneController {
     private void mostraAvviso(String titolo, String messaggio, Alert.AlertType tipoAvviso) {
         Alert avviso = new Alert(tipoAvviso);
         avviso.setTitle(titolo);
+        Stage stage = (Stage) avviso.getDialogPane().getScene().getWindow();
+        stage.getIcons().add(new Image(getClass().getResourceAsStream("/data/IMG/LOGO.png")));
         avviso.setHeaderText(null);
         avviso.setContentText(messaggio);
         avviso.showAndWait();

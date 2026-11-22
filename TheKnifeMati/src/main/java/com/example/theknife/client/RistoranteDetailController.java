@@ -453,7 +453,7 @@ public class RistoranteDetailController implements Initializable {
 
                 // Sito web
                 if (sitoWebLink != null) {
-                    String urlMichelin = ristorante.getUrl();
+                    String urlMichelin = ristorante.getUrlMichelin();
                     boolean disponibile = urlMichelin != null && !urlMichelin.trim().isEmpty();
                          sitoWebLink.setText("Visita il sito web nella Guida Michelin");
                         sitoWebLink.setVisible(disponibile);
@@ -759,13 +759,13 @@ public class RistoranteDetailController implements Initializable {
      */
     @FXML
     private void handleMichelinClick() {
-        if (ristorante == null || ristorante.getUrl() == null ||
-                ristorante.getUrl().trim().isEmpty()) {
+        if (ristorante == null || ristorante.getUrlMichelin() == null ||
+                ristorante.getUrlMichelin().trim().isEmpty()) {
             showAlert("Attenzione", "Nessun collegamento alla Guida Michelin disponibile.");
             return;
         }
 
-        String url = ristorante.getUrl().trim();
+        String url = ristorante.getUrlMichelin().trim();
 
         if (!url.startsWith("http://") && !url.startsWith("https://")) {
             url = "https://" + url;

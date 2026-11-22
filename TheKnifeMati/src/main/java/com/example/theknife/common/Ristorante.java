@@ -47,7 +47,7 @@ public class Ristorante implements Serializable {
     /**
      * La località in cui si trova il ristorante.
      */
-    private String localita;
+    //private String localita;
 
     /**
      * Il prezzo medio espresso come stringa.
@@ -77,7 +77,7 @@ public class Ristorante implements Serializable {
     /**
      * L'URL associato al ristorante.
      */
-    private String url;
+    private String urlMichelin;
 
     /**
      * Il sito web del ristorante.
@@ -156,11 +156,12 @@ public class Ristorante implements Serializable {
      */
      
     public Ristorante(String numeroTelefono, String nome, String indirizzo, String stato, String citta, String servizi, 
-                      String sitoWeb, String premio, String cucina,double stelle, boolean stellaVerde, String prezzo, 
+                      String sitoWeb, String sitoMichelin, String premio, String cucina,double stelle, boolean stellaVerde, String prezzo, 
                       boolean prenotazione,boolean consegna, String descrizione, String proprietario) {
         this.nome = nome;
         this.indirizzo = indirizzo;
         //this.localita = citta;
+        this.urlMichelin = sitoMichelin;
         this.citta = citta;
         this.prezzo = prezzo;
         this.cucina = cucina;
@@ -200,8 +201,24 @@ public class Ristorante implements Serializable {
      *
      * @return la località del ristorante.
      */
-    public String getLocalita() {
+    /*public String getLocalita() {
         return localita;
+    }*/
+
+    public boolean getPrenotabile(){
+        return this.prenotazione;
+    }
+
+    public void setPrenotabile(boolean prenotazione){
+        this.prenotazione = prenotazione;
+    }
+
+    public boolean getConsegnabile(){
+        return this.consegna;
+    }
+
+    public void setConsegnabile(boolean consegna){
+        this.consegna = consegna;
     }
 
     /**
@@ -254,16 +271,16 @@ public class Ristorante implements Serializable {
      *
      * @return l'URL del ristorante.
      */
-    public String getUrl() {
-        return url;
+    public String getUrlMichelin() {
+        return urlMichelin;
     }
     /**
      * Imposta l'URL della pagina del ristorante nella Guida Michelin.
      *
      * @param url l'URL della pagina Michelin.
      */
-    public void setUrl(String url) {
-        this.url = url;
+    public void setUrlMichelin(String url) {
+        this.urlMichelin = urlMichelin;
     }
 
     /**
@@ -383,13 +400,13 @@ public class Ristorante implements Serializable {
         return "Ristorante{" +
                 "nome='" + nome + '\'' +
                 ", indirizzo='" + indirizzo + '\'' +
-                ", localita='" + localita + '\'' +
+                //", localita='" + localita + '\'' +
                 ", prezzo='" + prezzo + '\'' +
                 ", cucina='" + cucina + '\'' +
                 //", longitudine=" + longitudine + 
                 //", latitudine=" + latitudine + 
                 ", numeroTelefono='" + numeroTelefono + '\'' +
-                ", url='" + url + '\'' +
+                ", url='" + urlMichelin + '\'' +
                 ", sitoWeb='" + sitoWeb + '\'' +
                 ", premio='" + premio + '\'' +
                 ", stellaVerde='" + stelle + '\'' +
