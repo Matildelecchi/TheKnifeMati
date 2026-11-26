@@ -73,6 +73,18 @@
                 <!-- Sito Web -->
                 <Label text="Sito Web del Ristorante:" GridPane.rowIndex="9" />
                 <TextField fx:id="sitoWebField" promptText="Sito web del ristorante" GridPane.columnIndex="1" GridPane.rowIndex="9" />
+
+                <!-- Stato -->
+                <Label text="Stato*:" GridPane.rowIndex="10" />
+                <TextField fx:id="statoField" promptText="Es. Italia" GridPane.columnIndex="1" GridPane.rowIndex="10" />
+
+                <!-- Prenotazione -->
+                <Label text="Prenotazione:" GridPane.rowIndex="11" />
+                <CheckBox fx:id="prenotazioneCheckBox" text="Prenotazione disponibile" GridPane.columnIndex="1" GridPane.rowIndex="11" />
+
+                <!-- Consegna -->
+                <Label text="Consegna:" GridPane.rowIndex="12" />
+                <CheckBox fx:id="consegnaCheckBox" text="Consegna disponibile" GridPane.columnIndex="1" GridPane.rowIndex="12" />
             <rowConstraints>
                <!--<RowConstraints /> Commentato quello delle coordinate che non serve più -->
                <RowConstraints />

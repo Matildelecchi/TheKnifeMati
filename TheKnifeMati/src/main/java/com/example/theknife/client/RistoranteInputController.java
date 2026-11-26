@@ -56,6 +56,18 @@ public class RistoranteInputController implements Initializable {
     /** Campo di testo per la località del ristorante. */
     @FXML
     private TextField cittaField;
+    /** Campo per lo stato/nazione del ristorante. */
+    @FXML
+    private TextField statoField;
+
+    /** Checkbox per indicare se il ristorante accetta prenotazioni. */
+    @FXML
+    private CheckBox prenotazioneCheckBox;
+
+    /** Checkbox per indicare se il ristorante offre consegna. */
+    @FXML
+    private CheckBox consegnaCheckBox;
+    
     /** ComboBox per la selezione della fascia di prezzo. */
     @FXML
     private ComboBox<String> prezzoComboBox;
@@ -153,6 +165,7 @@ public class RistoranteInputController implements Initializable {
         nomeField.setText(ristorante.getNome());
         indirizzoField.setText(ristorante.getIndirizzo());
         cittaField.setText(ristorante.getCitta());
+        statoField.setText(ristorante.getStato());
         telefonoField.setText(ristorante.getNumeroTelefono());
         urlField.setText(ristorante.getUrlMichelin());
         sitoWebField.setText(ristorante.getSitoWeb());
@@ -165,6 +178,12 @@ public class RistoranteInputController implements Initializable {
         premiComboBox.setValue(
                 ristorante.getPremio() == null ? "Nessun premio" : ristorante.getPremio());
 
+        // Imposta la checkbox in base alla disponibilità di prenotazione del ristorante.
+        prenotazioneCheckBox.setSelected(ristorante.getPrenotabile());
+
+        // Imposta la checkbox in base alla disponibilità del servizio di consegna.
+        consegnaCheckBox.setSelected(ristorante.getConsegnabile());
+        
         // Imposta la selezione della Stella Verde Michelin.
         stellaVerdeCheckBox.setSelected(ristorante.getStellaVerde());
 
@@ -297,7 +316,7 @@ public class RistoranteInputController implements Initializable {
                     tel,
                     nome,
                     indirizzoField.getText().trim(),
-                    " ", // stato non disponibile nel form
+                    statoField.getText().trim(),
                     cittaField.getText().trim(),
                     servizi,
                     sitoWebField.getText().trim(),
@@ -307,8 +326,8 @@ public class RistoranteInputController implements Initializable {
                     0.0,
                     stellaVerdeCheckBox.isSelected(), // Stella Verde Michelin
                     prezzoComboBox.getValue(),
-                    false, // prenotazione to add
-                    false, // consegna to add
+                    prenotazioneCheckBox.isSelected(), // Disponibilità prenotazione
+                    consegnaCheckBox.isSelected(), // Disponibilità consegna
                     descrizioneArea.getText().trim(),
                     SessioneUtente.getUsernameUtente());
             // System.out.println(nuovoRistorante);
@@ -372,6 +391,11 @@ public class RistoranteInputController implements Initializable {
         }
         if (cittaField.getText().trim().isEmpty()) {
             errori.append("- La località è obbligatoria\n");
+        }
+
+        // Verifica che lo stato/nazione sia stato inserito.
+        if (statoField.getText().trim().isEmpty()) {
+            errori.append("- Lo stato è obbligatorio\n");
         }
         if (prezzoComboBox.getValue() == null) {
             errori.append("- La fascia di prezzo è obbligatoria\n");

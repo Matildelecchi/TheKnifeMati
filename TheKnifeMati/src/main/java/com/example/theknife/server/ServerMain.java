@@ -638,6 +638,7 @@ public class ServerMain implements DBService {
                         rs.getString("servizi"),
                         rs.getString("sito"),
                         rs.getString("premi"),
+                        rs.getString("sitopremio"),
                         rs.getString("cucina"),
                         rs.getDouble("stelle"),
                         rs.getBoolean("stellaverde"),
