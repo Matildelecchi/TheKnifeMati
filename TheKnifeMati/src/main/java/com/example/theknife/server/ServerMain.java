@@ -150,26 +150,17 @@ public class ServerMain implements DBService {
 
         ServerMain obj = new ServerMain();
         //obj.initializeDatabase();
-        try {
-            stub = (DBService) UnicastRemoteObject.exportObject(
-                    obj, PORT_STUB);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-
         // Bind the remote object's stub in the registry
         Registry registry = null;
         try {
+            stub = (DBService) UnicastRemoteObject.exportObject(
+                    obj, PORT_STUB);
             registry = LocateRegistry.createRegistry(PORT);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-        try {
             registry.rebind("TimeService", stub);
+            System.err.println("Server ready");
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-        System.err.println("Server ready");
     }
 
 /**
@@ -637,8 +628,8 @@ public class ServerMain implements DBService {
                         rs.getString("citta"),
                         rs.getString("servizi"),
                         rs.getString("sito"),
-                        rs.getString("premi"),
                         rs.getString("sitopremio"),
+                        rs.getString("premi"),
                         rs.getString("cucina"),
                         rs.getDouble("stelle"),
                         rs.getBoolean("stellaverde"),
@@ -941,9 +932,6 @@ public class ServerMain implements DBService {
  */
 @Override
 public Boolean modificaRistorante(Ristorante ristorante, String vecchioNumeroTelefono, String utente) throws RemoteException {
-    
-    System.out.println("SERVER - Stella Verde ricevuta: " + ristorante.getStellaVerde());
-
     if (ristorante == null || vecchioNumeroTelefono == null || utente == null) {
         return false;
     }
