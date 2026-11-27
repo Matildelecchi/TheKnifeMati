@@ -33,344 +33,412 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 
-
 /**
-         * Controller per la gestione delle recensioni di un ristorante.
-         * <p>
-         * Questa classe gestisce l'interfaccia grafica relativa alle recensioni e consente
-         * a utenti e ristoratori di interagire con il sistema.
-         * </p>
-         *
-         * <p>Funzionalità principali:</p>
-         * <ul>
-         *   <li>Visualizzazione delle recensioni in una TableView</li>
-         *   <li>Inserimento di nuove recensioni da parte degli utenti autenticati</li>
-         *   <li>Modifica ed eliminazione delle proprie recensioni</li>
-         *   <li>Risposta alle recensioni da parte dei ristoratori proprietari</li>
-         *   <li>Modifica delle risposte già inserite</li>
-         *   <li>Filtraggio delle recensioni in base al numero di stelle</li>
-         *   <li>Visualizzazione statistica tramite PieChart</li>
-         * </ul>
-         *
-         * <p>
-         * La comunicazione con il server avviene tramite {@link DBService} (RMI).
-         * L'interfaccia è realizzata in JavaFX.
-         * </p>
-         *
-         * @author Claudio Bonci, 759939, Sede CO
-         * @author Eleonora Anna Caredda, 762576, Sede CO
-         * @author Filippo Crippa, 762174, Sede CO
-         * @author Matilde Lecchi, 759875, Sede CO
-         * @version 1.0
-         * @since 2026-05-20
+ * Controller per la gestione delle recensioni di un ristorante.
+ * <p>
+ * Questa classe gestisce l'interfaccia grafica relativa alle recensioni e
+ * consente
+ * a utenti e ristoratori di interagire con il sistema.
+ * </p>
+ *
+ * <p>
+ * Funzionalità principali:
+ * </p>
+ * <ul>
+ * <li>Visualizzazione delle recensioni in una TableView</li>
+ * <li>Inserimento di nuove recensioni da parte degli utenti autenticati</li>
+ * <li>Modifica ed eliminazione delle proprie recensioni</li>
+ * <li>Risposta alle recensioni da parte dei ristoratori proprietari</li>
+ * <li>Modifica delle risposte già inserite</li>
+ * <li>Filtraggio delle recensioni in base al numero di stelle</li>
+ * <li>Visualizzazione statistica tramite PieChart</li>
+ * </ul>
+ *
+ * <p>
+ * La comunicazione con il server avviene tramite {@link DBService} (RMI).
+ * L'interfaccia è realizzata in JavaFX.
+ * </p>
+ *
+ * @author Claudio Bonci, 759939, Sede CO
+ * @author Eleonora Anna Caredda, 762576, Sede CO
+ * @author Filippo Crippa, 762174, Sede CO
+ * @author Matilde Lecchi, 759875, Sede CO
+ * @version 1.0
+ * @since 2026-05-20
+ */
+public class RecensioniController {
+    /** Grafico a torta per la distribuzione delle stelle */
+    @FXML
+    private PieChart pieChart;
+
+    /** CheckComboBox per filtrare recensioni per stelle */
+    @FXML
+    private CheckComboBox<Integer> comboBox;
+
+    /** Colonne della tabella */
+    @FXML
+    private TableView<Recensione> tableView;
+    @FXML
+    private TableColumn<Recensione, Integer> colId;
+    @FXML
+    private TableColumn<Recensione, String> colTitolo;
+    @FXML
+    private TableColumn<Recensione, Integer> colStelle;
+    @FXML
+    private TableColumn<Recensione, String> colTesto;
+    @FXML
+    private TableColumn<Recensione, String> colData;
+    @FXML
+    private TableColumn<Recensione, String> colUtente;
+    @FXML
+    private TableColumn<Recensione, String> colRisposta;
+
+    /** Area di input recensione */
+    @FXML
+    private TextArea recensioneTextArea;
+    @FXML
+    private Label recensioneLabel;
+
+    /** Pulsanti azioni */
+    @FXML
+    private Button inviaButton;
+    @FXML
+    private Button modificaButton;
+    @FXML
+    private Button eliminaButton;
+    @FXML
+    private Button rispondiButton;
+    @FXML
+    private Button indietroButton;
+    @FXML
+    private Button modificaRispostaButton;
+
+    /** Area risposta ristoratore */
+    @FXML
+    private VBox rispostaBox;
+    @FXML
+    private TextArea rispostaTextArea;
+
+    /** UI informazioni */
+    @FXML
+    private Label totaleRecensioniLabel;
+    @FXML
+    private TextField titoloText;
+
+    /** Stelle UI */
+    @FXML
+    private Label stelleLabel;
+    @FXML
+    private Label star1;
+    @FXML
+    private Label star2;
+    @FXML
+    private Label star3;
+    @FXML
+    private Label star4;
+    @FXML
+    private Label star5;
+
+    /** Stelle selezionate dall’utente */
+    private int stelleSelezionate = 3;
+
+    /** ID ristorante corrente */
+    private String numTelefono;
+
+    /** Lista principale delle recensioni */
+    private ObservableList<Recensione> masterRecensioniList;
+
+    /** Controller padre (dashboard ristoratore) */
+    private RistoratoreDashboardController parentController;
+
+    /** Root da ripristinare nella navigazione */
+    private Parent rootToRestore;
+
+    /** Callback per ritorno al menu principale */
+    private Runnable tornaAlMenuPrincipaleCallback;
+
+    /** Servizio remoto DB */
+    private static DBService server;
+
+    /**
+     * Imposta il controller della dashboard del ristoratore come parent.
+     *
+     * @param controller il controller padre della dashboard
+     */
+    public void setParentController(RistoratoreDashboardController controller) {
+        this.parentController = controller;
+    }
+
+    /**
+     * Notifica il controller padre di eventuali aggiornamenti alle recensioni.
+     */
+    private void notificaAggiornamentoRecensioni() {
+        if (parentController != null) {
+            parentController.onRecensioneUpdated();
+        }
+    }
+
+    /**
+     * Imposta la root da ripristinare dopo la navigazione.
+     *
+     * @param root nodo root originale
+     */
+    public void setRootToRestore(Parent root) {
+        this.rootToRestore = root;
+    }
+
+    /**
+     * Imposta callback per ritorno al menu principale.
+     *
+     * @param callback azione da eseguire
+     */
+    public void setTornaAlMenuPrincipaleCallback(Runnable callback) {
+        this.tornaAlMenuPrincipaleCallback = callback;
+    }
+
+    /**
+     * Inizializza il controller e configura:
+     * <ul>
+     * <li>Connessione al server RMI</li>
+     * <li>Tabella recensioni</li>
+     * <li>Filtro stelle</li>
+     * <li>UI stelle interattive</li>
+     * <li>Listener e comportamenti UI</li>
+     * </ul>
+     */
+    @FXML
+    public void initialize() {
+        /*
+         * System.out.println(star1);
+         * System.out.println(star2);
+         * System.out.println(star3);
+         * System.out.println(star4);
+         * System.out.println(star5);
          */
-        public class RecensioniController {
-            /** Grafico a torta per la distribuzione delle stelle */
-            @FXML private PieChart pieChart;
+        try {
+            server = ClientMain.getServer();
+            System.out.println("server = " + server);
+        } catch (RemoteException | NotBoundException e) {
+            System.out.println("errore con il server");
+            e.printStackTrace();
+        }
 
-            /** CheckComboBox per filtrare recensioni per stelle */
-            @FXML private CheckComboBox<Integer> comboBox;
+        /**
+         * Configura la visibilità dei componenti UI in base al ruolo utente:
+         * <ul>
+         * <li>Utente normale</li>
+         * <li>Ristoratore proprietario</li>
+         * </ul>
+         */
+        setupUI();
 
-            /** Colonne della tabella */
-            @FXML private TableView<Recensione> tableView;
-            @FXML private TableColumn<Recensione, Integer> colId;
-            @FXML private TableColumn<Recensione, String> colTitolo;
-            @FXML private TableColumn<Recensione, Integer> colStelle;
-            @FXML private TableColumn<Recensione, String> colTesto;
-            @FXML private TableColumn<Recensione, String> colData;
-            @FXML private TableColumn<Recensione, String> colUtente;
-            @FXML private TableColumn<Recensione, String> colRisposta;
-            
-            /** Area di input recensione */
-            @FXML private TextArea recensioneTextArea;
-            @FXML private Label recensioneLabel;
+        /**
+         * Configura la TableView delle recensioni:
+         * <ul>
+         * <li>Binding colonne</li>
+         * <li>Lista osservabile</li>
+         * <li>Render stelle grafiche</li>
+         * </ul>
+         */
+        setupTable();
 
-           /** Pulsanti azioni */
-            @FXML private Button inviaButton;
-            @FXML private Button modificaButton;
-            @FXML private Button eliminaButton;
-            @FXML private Button rispondiButton;
-            @FXML private Button indietroButton;
-            @FXML private Button modificaRispostaButton;
-            
-            /** Area risposta ristoratore */
-            @FXML private VBox rispostaBox;
-            @FXML private TextArea rispostaTextArea;
+        /**
+         * Configura il filtro per stelle tramite CheckComboBox.
+         */
+        setupStarFilter();
 
-            /** UI informazioni */
-            @FXML private Label totaleRecensioniLabel;
-            @FXML private TextField titoloText;
+        /**
+         * Imposta i listener della tabella recensioni.
+         * Gestisce:
+         * <ul>
+         * <li>Selezione recensione</li>
+         * <li>Abilitazione pulsanti</li>
+         * <li>Gestione campi input</li>
+         * </ul>
+         */
+        setupListeners();
 
-            /** Stelle UI */
-            @FXML private Label stelleLabel;
-            @FXML private Label star1;
-            @FXML private Label star2;
-            @FXML private Label star3;
-            @FXML private Label star4;
-            @FXML private Label star5;
+        ritornaCampi();
+        // STELLE
+        Label[] stars = { star1, star2, star3, star4, star5 };
 
-            /** Stelle selezionate dall’utente */
-            private int stelleSelezionate = 3;
-           
-            /** ID ristorante corrente */
-            private String numTelefono;
-            
-             /** Lista principale delle recensioni */
-            private ObservableList<Recensione> masterRecensioniList;
-            
-            /** Controller padre (dashboard ristoratore) */
-            private RistoratoreDashboardController parentController;
-            
-            /** Root da ripristinare nella navigazione */
-            private Parent rootToRestore;
-           
-            /** Callback per ritorno al menu principale */
-            private Runnable tornaAlMenuPrincipaleCallback;
-
-            /** Servizio remoto DB */
-            private static DBService server;
-
-            /**
-             * Imposta il controller della dashboard del ristoratore come parent.
-             *
-             * @param controller il controller padre della dashboard
-             */
-            public void setParentController(RistoratoreDashboardController controller) {
-                this.parentController = controller;
-            }
-
-            /**
-             * Notifica il controller padre di eventuali aggiornamenti alle recensioni.
-             */
-            private void notificaAggiornamentoRecensioni() {
-                if (parentController != null) {
-                    parentController.onRecensioneUpdated();
-                }
-            }
-
-            /**
-            * Imposta la root da ripristinare dopo la navigazione.
-            *
-            * @param root nodo root originale
-            */
-            public void setRootToRestore(Parent root) {
-                this.rootToRestore = root;
-            }
-
-            /**
-             * Imposta callback per ritorno al menu principale.
-             *
-             * @param callback azione da eseguire
-             */
-            public void setTornaAlMenuPrincipaleCallback(Runnable callback) {
-                this.tornaAlMenuPrincipaleCallback = callback;
-            }
-
-            /**
-             * Inizializza il controller e configura:
-             * <ul>
-             *   <li>Connessione al server RMI</li>
-             *   <li>Tabella recensioni</li>
-             *   <li>Filtro stelle</li>
-             *   <li>UI stelle interattive</li>
-             *   <li>Listener e comportamenti UI</li>
-             * </ul>
-             */
-            @FXML
-            public void initialize() {
-                System.out.println(star1);
-                System.out.println(star2);
-                System.out.println(star3);
-                System.out.println(star4);
-                System.out.println(star5);
-                try {
-                    server = ClientMain.getServer();
-                    System.out.println("server = "+server);
-                } catch(RemoteException | NotBoundException e) {
-                    System.out.println("errore con il server");
-                    e.printStackTrace();
-                }
-                
-                /**
-                 * Configura la visibilità dei componenti UI in base al ruolo utente:
-                 * <ul>
-                 *   <li>Utente normale</li>
-                 *   <li>Ristoratore proprietario</li>
-                 * </ul>
-                 */
-                setupUI();
-
-                /**
-                 * Configura la TableView delle recensioni:
-                 * <ul>
-                 *   <li>Binding colonne</li>
-                 *   <li>Lista osservabile</li>
-                 *   <li>Render stelle grafiche</li>
-                 * </ul>
-                 */
-                setupTable();
-
-                /**
-                 * Configura il filtro per stelle tramite CheckComboBox.
-                 */
-                setupStarFilter();
-
-                /**
-                 * Imposta i listener della tabella recensioni.
-                 * Gestisce:
-                 * <ul>
-                 *   <li>Selezione recensione</li>
-                 *   <li>Abilitazione pulsanti</li>
-                 *   <li>Gestione campi input</li>
-                 * </ul>
-                 */
-                setupListeners();
-
-                // STELLE 
-                Label[] stars = {star1, star2, star3, star4, star5};
-
-                stelleSelezionate = 3;
-                java.util.function.IntConsumer renderStars = (int value) -> {
-                    for (int i = 0; i < stars.length; i++) {
+        stelleSelezionate = 3;
+        java.util.function.IntConsumer renderStars = (int value) -> {
+            for (int i = 0; i < stars.length; i++) {
                 stars[i].setText(i < value ? "★" : "☆");
-                }
-            };
-
-                 // stato iniziale
-                renderStars.accept(stelleSelezionate);
-
-                for (int i = 0; i < stars.length; i++) {
-                    stars[i].setText(i < stelleSelezionate ? "★" : "☆");
-                }
-
-                for (int i = 0; i < stars.length; i++) {
-                    int value = i + 1;
-
-                    stars[i].setOnMouseClicked(e -> {
-                        stelleSelezionate = value;
-
-                        for (int j = 0; j < stars.length; j++) {
-                            stars[j].setText(j < value ? "★" : "☆");
-                        }
-                    });
-
-                    stars[i].setOnMouseEntered(e -> {
-                        for (int j = 0; j < stars.length; j++) {
-                            stars[j].setText(j < value ? "★" : "☆");
-                        }
-                    });
-
-                    stars[i].setOnMouseExited(e -> {
-                        for (int j = 0; j < stars.length; j++) {
-                            stars[j].setText(j < stelleSelezionate ? "★" : "☆");
-                        }
-                    });
-                }
-
-
-                colId.setReorderable(false);
-                colTitolo.setReorderable(false);
-                colStelle.setReorderable(false);
-                colTesto.setReorderable(false);
-                colData.setReorderable(false);
-                colUtente.setReorderable(false);
-                colRisposta.setReorderable(false);
             }
+        };
 
-            /**
-             * Configura l'interfaccia utente in base al ruolo e allo stato dell'utente corrente.
-             * <p>
-             * - Mostra i pulsanti e i campi di input per le recensioni se l'utente è loggato
-             *   e non è un ristoratore proprietario del ristorante.
-             * - Mostra i pulsanti per rispondere/modificare risposte se l'utente è un ristoratore
-             *   proprietario del ristorante.
-             * </p>
-             */
-            private void setupUI() {
-                boolean isUtenteLoggato = SessioneUtente.isUtenteLoggato();
-                boolean isRistoratore = SessioneUtente.isRistoratore();
+        // stato iniziale
+        renderStars.accept(stelleSelezionate);
 
-                if (isRistoratore) {
-                    recensioneLabel.setText("Recensione da parte dell'utente:");
-                } else if (isUtenteLoggato) {
-                    recensioneLabel.setText("La tua recensione:");
-                }  else {
-                    recensioneLabel.setText("Recensioni");
-                }
-                // Verifica se il ristoratore possiede questo ristorante
-                boolean isProprietario = false;
-                if (isRistoratore && numTelefono != null) {
-                    String currentUser = SessioneUtente.getUsernameUtente();
-                    //List<String> ownedRestaurants = ownershipService.getOwnedRestaurants(currentUser);
-                    //isProprietario = ownedRestaurants.contains(numTelefono);
-                    try {
-                        ArrayList<String> numRistoranti = server.getNumeriTelefonoRisoranti(currentUser);
-                        isProprietario = numRistoranti.contains(numTelefono);
-                    } catch(RemoteException | SQLException e) {
-                        e.printStackTrace();
-                    }
-                }
+        setStelleUI(3);
 
-                boolean puo_recensire = isUtenteLoggato && (!isRistoratore || !isProprietario);
+        colId.setReorderable(false);
+        colTitolo.setReorderable(false);
+        colStelle.setReorderable(false);
+        colTesto.setReorderable(false);
+        colData.setReorderable(false);
+        colUtente.setReorderable(false);
+        colRisposta.setReorderable(false);
+    }
 
-                // Nasconde o mostra i bottoni in base al ruolo dell'utente
-                inviaButton.setVisible(puo_recensire && !isProprietario);
-                modificaButton.setVisible(false);
-                eliminaButton.setVisible(false);
-                indietroButton.setVisible(false);
-                rispondiButton.setVisible(isRistoratore && isProprietario);
-                modificaRispostaButton.setVisible(false); // Inizialmente nascosto
-                rispostaBox.setVisible(isRistoratore && isProprietario);
-                //rispostaBox.setVisible(false);
-                //rispostaTextArea.setVisible(false);
-                
-                // I campi di input per le recensioni sono visibili per chi può recensire
-                //recensioneTextArea.setVisible(false);
-                /*star1.setVisible(puo_recensire);
-                star2.setVisible(puo_recensire);
-                star3.setVisible(puo_recensire);
-                star4.setVisible(puo_recensire);
-                star5.setVisible(puo_recensire);*/            
+    /**
+     * Configura l'interfaccia utente in base al ruolo e allo stato dell'utente
+     * corrente.
+     * <p>
+     * - Mostra i pulsanti e i campi di input per le recensioni se l'utente è
+     * loggato
+     * e non è un ristoratore proprietario del ristorante.
+     * - Mostra i pulsanti per rispondere/modificare risposte se l'utente è un
+     * ristoratore
+     * proprietario del ristorante.
+     * </p>
+     */
+    private void setupUI() {
+        boolean isUtenteLoggato = SessioneUtente.isUtenteLoggato();
+        boolean isRistoratore = SessioneUtente.isRistoratore();
+
+        if (isRistoratore) {
+            recensioneLabel.setText("Recensione da parte dell'utente:");
+        } else if (isUtenteLoggato) {
+            recensioneLabel.setText("La tua recensione:");
+        } else {
+            recensioneLabel.setText("Recensioni");
+        }
+        // Verifica se il ristoratore possiede questo ristorante
+        boolean isProprietario = false;
+        if (isRistoratore && numTelefono != null) {
+            String currentUser = SessioneUtente.getUsernameUtente();
+            // List<String> ownedRestaurants =
+            // ownershipService.getOwnedRestaurants(currentUser);
+            // isProprietario = ownedRestaurants.contains(numTelefono);
+            try {
+                ArrayList<String> numRistoranti = server.getNumeriTelefonoRisoranti(currentUser);
+                isProprietario = numRistoranti.contains(numTelefono);
+            } catch (RemoteException | SQLException e) {
+                e.printStackTrace();
             }
-            /**
-             * Inizializza la tabella delle recensioni configurando le colonne
-             * e preparando le liste osservabili necessarie per filtrare i dati.
-             */
-            private void setupTable() {
-                // Collegamento colonne --> proprietà del model Recensione
-                colId.setCellValueFactory(new PropertyValueFactory<>("idRec"));
-                colTitolo.setCellValueFactory(new PropertyValueFactory<>("titolo"));
-                colStelle.setCellValueFactory(new PropertyValueFactory<>("stelle"));
-                colTesto.setCellValueFactory(new PropertyValueFactory<>("testo"));
-                colData.setCellValueFactory(new PropertyValueFactory<>("data"));
-                colUtente.setCellValueFactory(new PropertyValueFactory<>("username"));
-                colRisposta.setCellValueFactory(new PropertyValueFactory<>("risposta"));
+        }
 
-                // Lista osservabile delle recensioni
-                masterRecensioniList = FXCollections.observableArrayList();
-                tableView.setItems(masterRecensioniList);
-                
-                 // Tabella si adatta automaticamente
-                tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        boolean puo_recensire = isUtenteLoggato && (!isRistoratore || !isProprietario);
 
-               // Personalizza la colonna "stelle" per mostrare stelle grafiche
-                colStelle.setCellFactory(col -> new TableCell<Recensione, Integer>() {
+        // Nasconde o mostra i bottoni in base al ruolo dell'utente
+        inviaButton.setVisible(puo_recensire && !isProprietario);
+        modificaButton.setVisible(false);
+        eliminaButton.setVisible(false);
+        indietroButton.setVisible(false);
+        rispondiButton.setVisible(isRistoratore && isProprietario);
+        modificaRispostaButton.setVisible(false); // Inizialmente nascosto
+        rispostaBox.setVisible(isRistoratore && isProprietario);
+        // rispostaBox.setVisible(false);
+        // rispostaTextArea.setVisible(false);
 
-                 @Override
-                protected void updateItem(Integer stelle, boolean empty) {
-                    super.updateItem(stelle, empty);
+        // I campi di input per le recensioni sono visibili per chi può recensire
+        // recensioneTextArea.setVisible(false);
+        /*
+         * star1.setVisible(puo_recensire);
+         * star2.setVisible(puo_recensire);
+         * star3.setVisible(puo_recensire);
+         * star4.setVisible(puo_recensire);
+         * star5.setVisible(puo_recensire);
+         */
+    }
 
-                    // Se la riga è vuota o senza valore, non mostra nulla
-                    if (empty || stelle == null) {
-                        setText(null);
-                    } else {
-                        // Converte numero (1-5) in stelle grafiche
-                        // esempio: 4 → ★★★★☆
-                        setText("★".repeat(stelle) + "☆".repeat(5 - stelle));
-                    }
+    private void ritornaCampi() {
+        if (tableView == null || tableView.getItems().isEmpty())
+            return;
+        tableView.getItems().forEach((oldVal) -> {
+            String user = SessioneUtente.getUsernameUtente();
+            if (oldVal.getUsername().equals(user)) {
+                tableView.getSelectionModel().select(oldVal);
+            }
+        });
+        Recensione selected = tableView.getSelectionModel().getSelectedItem();
+        if (selected != null) {
+            setPersonal(selected);
+        } else {
+            pulisciCampi();
+        }
+    }
+
+    private void setPersonal(Recensione recensione) {
+        System.out.println(recensione);
+        inviaButton.setVisible(false);
+        modificaButton.setVisible(true);
+        eliminaButton.setVisible(true);
+        titoloText.setText(recensione.getTitolo());
+        recensioneTextArea.setText(recensione.getTesto());
+        setStelleUI(recensione.getStelle());
+    }
+
+    private void setStelleUI(int n) {
+        stelleSelezionate = n;
+        Label[] stars = { star1, star2, star3, star4, star5 };
+        for (int i = 0; i < stars.length; i++) {
+            stars[i].setText(i < stelleSelezionate ? "★" : "☆");
+        }
+
+        for (int i = 0; i < stars.length; i++) {
+            int value = i + 1;
+            stars[i].setOnMouseClicked(e -> {
+                stelleSelezionate = value;
+                for (int j = 0; j < stars.length; j++) {
+                    stars[j].setText(j < value ? "★" : "☆");
+                }
+            });
+            stars[i].setOnMouseEntered(e -> {
+                for (int j = 0; j < stars.length; j++) {
+                    stars[j].setText(j < value ? "★" : "☆");
+                }
+            });
+            stars[i].setOnMouseExited(e -> {
+                for (int j = 0; j < stars.length; j++) {
+                    stars[j].setText(j < stelleSelezionate ? "★" : "☆");
                 }
             });
         }
+    }
+
+    /**
+     * Inizializza la tabella delle recensioni configurando le colonne
+     * e preparando le liste osservabili necessarie per filtrare i dati.
+     */
+    private void setupTable() {
+        // Collegamento colonne --> proprietà del model Recensione
+        colId.setCellValueFactory(new PropertyValueFactory<>("idRec"));
+        colTitolo.setCellValueFactory(new PropertyValueFactory<>("titolo"));
+        colStelle.setCellValueFactory(new PropertyValueFactory<>("stelle"));
+        colTesto.setCellValueFactory(new PropertyValueFactory<>("testo"));
+        colData.setCellValueFactory(new PropertyValueFactory<>("data"));
+        colUtente.setCellValueFactory(new PropertyValueFactory<>("username"));
+        colRisposta.setCellValueFactory(new PropertyValueFactory<>("risposta"));
+
+        // Lista osservabile delle recensioni
+        masterRecensioniList = FXCollections.observableArrayList();
+        tableView.setItems(masterRecensioniList);
+
+        // Tabella si adatta automaticamente
+        tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+        // Personalizza la colonna "stelle" per mostrare stelle grafiche
+        colStelle.setCellFactory(col -> new TableCell<Recensione, Integer>() {
+
+            @Override
+            protected void updateItem(Integer stelle, boolean empty) {
+                super.updateItem(stelle, empty);
+
+                // Se la riga è vuota o senza valore, non mostra nulla
+                if (empty || stelle == null) {
+                    setText(null);
+                } else {
+                    // Converte numero (1-5) in stelle grafiche
+                    // esempio: 4 → ★★★★☆
+                    setText("★".repeat(stelle) + "☆".repeat(5 - stelle));
+                }
+            }
+        });
+    }
 
     /**
      * Configura il {@link CheckComboBox} utilizzato per filtrare le recensioni
@@ -408,6 +476,7 @@ import javafx.util.StringConverter;
             refreshData();
         });
     }
+
     /**
      * Imposta i listener sugli elementi dell'interfaccia, in particolare
      * sulla selezione della tabella delle recensioni.
@@ -430,7 +499,7 @@ import javafx.util.StringConverter;
                 try {
                     ArrayList<String> numRistoranti = server.getNumeriTelefonoRisoranti(currentUser);
                     isProprietario = numRistoranti.contains(numTelefono);
-                } catch(RemoteException | SQLException e) {
+                } catch (RemoteException | SQLException e) {
                     e.printStackTrace();
                 }
             }
@@ -449,14 +518,14 @@ import javafx.util.StringConverter;
                 // Visibilità per ristoratore proprietario
                 rispondiButton.setVisible(isRistoratore && isProprietario && !hasRisposta);
                 modificaRispostaButton.setVisible(isRistoratore && isProprietario && hasRisposta);
-                //rispostaBox.setVisible(isRistoratore && isProprietario);
+                // rispostaBox.setVisible(isRistoratore && isProprietario);
 
                 // Precompila i campi se è l'autore della recensione
                 recensioneTextArea.setText(newVal.getTesto());
                 stelleSelezionate = newVal.getStelle();
 
                 // Aggiorna la visualizzazione delle stelle
-                Label[] stars = {star1, star2, star3, star4, star5};
+                Label[] stars = { star1, star2, star3, star4, star5 };
                 for (int i = 0; i < stars.length; i++) {
                     stars[i].setText(i < stelleSelezionate ? "★" : "☆");
                 }
@@ -480,27 +549,31 @@ import javafx.util.StringConverter;
                     titoloText.setDisable(true);
                     indietroButton.setVisible(true);
                 }
-                /*if (isAutore && puo_recensire) {
-                    recensioneTextArea.setText(newVal.getTesto());
-                    stelleSlider.setValue(newVal.getStelle());
-                    titoloText.setText(newVal.getTitolo());
-                } else {
-                    recensioneTextArea.clear();
-                    stelleSlider.setValue(3);
-                    titoloText.setText("");
-                }*/
+                /*
+                 * if (isAutore && puo_recensire) {
+                 * recensioneTextArea.setText(newVal.getTesto());
+                 * stelleSlider.setValue(newVal.getStelle());
+                 * titoloText.setText(newVal.getTitolo());
+                 * } else {
+                 * recensioneTextArea.clear();
+                 * stelleSlider.setValue(3);
+                 * titoloText.setText("");
+                 * }
+                 */
 
                 // Precompila la risposta se il ristoratore proprietario ha già risposto
-                /*if (isRistoratore && isProprietario && hasRisposta) {
-                    rispostaTextArea.setText(newVal.getRisposta());
-                } else if (isRistoratore && isProprietario) {
-                    rispostaTextArea.clear();
-                }*/
+                /*
+                 * if (isRistoratore && isProprietario && hasRisposta) {
+                 * rispostaTextArea.setText(newVal.getRisposta());
+                 * } else if (isRistoratore && isProprietario) {
+                 * rispostaTextArea.clear();
+                 * }
+                 */
 
-                if(hasRisposta) {
+                if (hasRisposta) {
                     rispostaBox.setVisible(true);
                     rispostaTextArea.setText(newVal.getRisposta());
-                    if(isProprietario && isRistoratore) {
+                    if (isProprietario && isRistoratore) {
                         modificaRispostaButton.setVisible(true);
                         rispondiButton.setVisible(false);
                         rispostaTextArea.setDisable(false);
@@ -510,21 +583,24 @@ import javafx.util.StringConverter;
                         rispondiButton.setVisible(false);
                     }
                 } else {
-                    if(isProprietario && isRistoratore) {
+                    if (isProprietario && isRistoratore) {
                         modificaRispostaButton.setVisible(false);
                         rispondiButton.setVisible(true);
                     } else {
                         rispostaBox.setVisible(false);
-                    }   
+                    }
                 }
 
             } else {
-                pulisciCampi();
-                modificaButton.setVisible(false);
-                eliminaButton.setVisible(false);
-                rispondiButton.setVisible(false);
-                modificaRispostaButton.setVisible(false);
-                inviaButton.setVisible(puo_recensire);
+                // pulisciCampi();
+                ritornaCampi();
+                /*
+                 * modificaButton.setVisible(false);
+                 * eliminaButton.setVisible(false);
+                 * rispondiButton.setVisible(false);
+                 * modificaRispostaButton.setVisible(false);
+                 * inviaButton.setVisible(puo_recensire);
+                 */
             }
         });
     }
@@ -536,7 +612,8 @@ import javafx.util.StringConverter;
         if (numTelefono != null) {
             loadFilteredReviewsFromServer();
             aggiornaPieChart();
-            pulisciCampi();
+            // pulisciCampi();
+            ritornaCampi();
         }
     }
 
@@ -564,20 +641,21 @@ import javafx.util.StringConverter;
      *
      * @param tel il numero di telefono del ristorante
      */
-public void setRistoranteTel(String tel) {
-    this.numTelefono = tel;
-    refreshData();
-    aggiornaPieChart();
-    setupUI();
-}
+    public void setRistoranteTel(String tel) {
+        this.numTelefono = tel;
+        refreshData();
+        aggiornaPieChart();
+        // setupUI();
+    }
 
     /**
      * Imposta la modalità di visualizzazione per il ristoratore.
      */
-public void impostaModalitaRistoratore() {
+    public void impostaModalitaRistoratore() {
 
-    recensioneLabel.setText("Recensione da parte dell'utente:");
-}
+        recensioneLabel.setText("Recensione da parte dell'utente:");
+    }
+
     /**
      * Torna al menu principale.
      */
@@ -604,7 +682,8 @@ public void impostaModalitaRistoratore() {
      */
     @FXML
     private void handleIndietro() {
-        pulisciCampi();
+        // pulisciCampi();
+        ritornaCampi();
         recensioneTextArea.setDisable(false);
         star1.setDisable(false);
         star2.setDisable(false);
@@ -616,14 +695,16 @@ public void impostaModalitaRistoratore() {
     }
 
     /**
-     * Aggiorna il grafico a torta con il conteggio delle recensioni per ogni numero di stelle.
+     * Aggiorna il grafico a torta con il conteggio delle recensioni per ogni numero
+     * di stelle.
      */
     private void aggiornaPieChart() {
         pieChart.getData().clear();
         Map<Integer, Integer> recensioniMap = new HashMap<>();
         int totale = 0;
 
-        // Conta le recensioni per ogni numero di stelle basandosi sulla lista filtrata lato server
+        // Conta le recensioni per ogni numero di stelle basandosi sulla lista filtrata
+        // lato server
         for (Recensione r : masterRecensioniList) {
             recensioniMap.merge(r.getStelle(), 1, Integer::sum);
             totale++;
@@ -659,23 +740,23 @@ public void impostaModalitaRistoratore() {
             return;
         }
         // Controllo se l'utente ha già recensito questo ristorante
-        
 
-        /*Recensione recensione = new Recensione(
-                (int) stelleSlider.getValue(),
-                recensioneTextArea.getText().trim(),
-                numTelefono,
-                SessioneUtente.getUsernameUtente()
-        );
-        gestioneRecensioni.aggiungiRecensione(recensione);*/
-              try {
+        /*
+         * Recensione recensione = new Recensione(
+         * (int) stelleSlider.getValue(),
+         * recensioneTextArea.getText().trim(),
+         * numTelefono,
+         * SessioneUtente.getUsernameUtente()
+         * );
+         * gestioneRecensioni.aggiungiRecensione(recensione);
+         */
+        try {
             boolean salvata = server.saveRecensione(
                     titoloText.getText().trim(),
                     recensioneTextArea.getText().trim(),
                     stelleSelezionate,
                     numTelefono,
-                    SessioneUtente.getUsernameUtente()
-            );
+                    SessioneUtente.getUsernameUtente());
 
             if (!salvata) {
                 mostraErrore("Recensione non salvata",
@@ -706,16 +787,19 @@ public void impostaModalitaRistoratore() {
             mostraErrore("Errore", "Puoi modificare solo le tue recensioni.");
             return;
         }
-        
-        /*gestioneRecensioni.modificaRecensione(
-                selected.getUsername(),
-                numTelefono,
-                recensioneTextArea.getText(),
-                (int) stelleSlider.getValue()
-        );*/
+
+        /*
+         * gestioneRecensioni.modificaRecensione(
+         * selected.getUsername(),
+         * numTelefono,
+         * recensioneTextArea.getText(),
+         * (int) stelleSlider.getValue()
+         * );
+         */
         try {
-            server.modifyRecensione(selected.getIdRec(), titoloText.getText(), recensioneTextArea.getText(), stelleSelezionate, SessioneUtente.getUsernameUtente());
-        } catch(SQLException | RemoteException e) {
+            server.modifyRecensione(selected.getIdRec(), titoloText.getText(), recensioneTextArea.getText(),
+                    stelleSelezionate, SessioneUtente.getUsernameUtente());
+        } catch (SQLException | RemoteException e) {
             e.printStackTrace();
         }
         refreshData();
@@ -737,13 +821,14 @@ public void impostaModalitaRistoratore() {
             return;
         }
 
-        //gestioneRecensioni.eliminaRecensione(selected.getUsername(), numTelefono);
+        // gestioneRecensioni.eliminaRecensione(selected.getUsername(), numTelefono);
         try {
             server.removeRecensione(selected.getIdRec(), SessioneUtente.getUsernameUtente());
-        } catch(SQLException | RemoteException e) {
+        } catch (SQLException | RemoteException e) {
             e.printStackTrace();
         }
         refreshData();
+        pulisciCampi();
         notificaAggiornamentoRecensioni();
     }
 
@@ -763,10 +848,10 @@ public void impostaModalitaRistoratore() {
         }
 
         selected.setRisposta(rispostaTextArea.getText().trim());
-        //gestioneRecensioni.salvaRispostaRecensione(selected);
+        // gestioneRecensioni.salvaRispostaRecensione(selected);
         try {
-            server.saveRisposta(selected.getIdRec(), selected.getRisposta(),  SessioneUtente.getUsernameUtente());
-        } catch(SQLException | RemoteException e) {
+            server.saveRisposta(selected.getIdRec(), selected.getRisposta(), SessioneUtente.getUsernameUtente());
+        } catch (SQLException | RemoteException e) {
             e.printStackTrace();
         }
         refreshData();
@@ -780,12 +865,18 @@ public void impostaModalitaRistoratore() {
         titoloText.setText("");
         recensioneTextArea.clear();
         rispostaTextArea.clear();
-        stelleSelezionate = 3;
-
-        Label[] stars = {star1, star2, star3, star4, star5};
-        for (int i = 0; i < stars.length; i++) {
-            stars[i].setText(i < stelleSelezionate ? "★" : "☆");
-        }
+        /*
+         * stelleSelezionate = 3;
+         * 
+         * Label[] stars = { star1, star2, star3, star4, star5 };
+         * for (int i = 0; i < stars.length; i++) {
+         * stars[i].setText(i < stelleSelezionate ? "★" : "☆");
+         * }
+         */
+        setStelleUI(3);
+        inviaButton.setVisible(true);
+        modificaButton.setVisible(false);
+        eliminaButton.setVisible(false);
         tableView.getSelectionModel().clearSelection();
     }
 
@@ -801,14 +892,15 @@ public void impostaModalitaRistoratore() {
     }
 
     /**
-     * Gestisce la modifica della risposta a una recensione da parte del ristoratore.
+     * Gestisce la modifica della risposta a una recensione da parte del
+     * ristoratore.
      * <p>
      * Controlla che:
      * <ul>
-     *   <li>ci sia una recensione selezionata,</li>
-     *   <li>l'utente sia un ristoratore,</li>
-     *   <li>il ristoratore sia proprietario del ristorante,</li>
-     *   <li>il testo della risposta non sia vuoto.</li>
+     * <li>ci sia una recensione selezionata,</li>
+     * <li>l'utente sia un ristoratore,</li>
+     * <li>il ristoratore sia proprietario del ristorante,</li>
+     * <li>il testo della risposta non sia vuoto.</li>
      * </ul>
      * Se le condizioni sono soddisfatte, aggiorna la risposta e la salva tramite
      * {@code gestioneRecensioni}, ricaricando i dati e notificando l'aggiornamento.
@@ -824,11 +916,12 @@ public void impostaModalitaRistoratore() {
 
         // Verifica che il ristoratore sia proprietario del ristorante
         String currentUser = SessioneUtente.getUsernameUtente();
-        //List<String> ownedRestaurants = ownershipService.getOwnedRestaurants(currentUser);
+        // List<String> ownedRestaurants =
+        // ownershipService.getOwnedRestaurants(currentUser);
         ArrayList<String> ownedRestaurants = null;
         try {
             ownedRestaurants = server.getNumeriTelefonoRisoranti(currentUser);
-        } catch(RemoteException | SQLException e) {
+        } catch (RemoteException | SQLException e) {
             e.printStackTrace();
         }
         if (ownedRestaurants == null || !ownedRestaurants.contains(numTelefono)) {
@@ -843,10 +936,10 @@ public void impostaModalitaRistoratore() {
 
         // Aggiorna la risposta
         selected.setRisposta(rispostaTextArea.getText().trim());
-        //gestioneRecensioni.salvaRispostaRecensione(selected);
+        // gestioneRecensioni.salvaRispostaRecensione(selected);
         try {
-            server.modifyRisposta(selected.getIdRec(), selected.getRisposta(),  SessioneUtente.getUsernameUtente());
-        } catch(SQLException | RemoteException e) {
+            server.modifyRisposta(selected.getIdRec(), selected.getRisposta(), SessioneUtente.getUsernameUtente());
+        } catch (SQLException | RemoteException e) {
             e.printStackTrace();
         }
         refreshData();
